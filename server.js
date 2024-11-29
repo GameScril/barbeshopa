@@ -53,23 +53,35 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
         }
 
         // Save appointment to database
-        const [result] = await pool.execute(
-            'INSERT INTO appointments (service, price, date, time, name, phone, email) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [
-                req.body.service,
-                req.body.price,
-                req.body.date,
-                req.body.time,
-                req.body.name,
-                req.body.phone,
-                req.body.email
-            ]
-        );
+        try {
+            const [result] = await pool.execute(
+                'INSERT INTO appointments (service, price, date, time, name, phone, email) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                [
+                    req.body.service,
+                    req.body.price,
+                    req.body.date,
+                    req.body.time,
+                    req.body.name,
+                    req.body.phone,
+                    req.body.email
+                ]
+            );
 
-        res.json({ 
-            success: true, 
-            appointment: { id: result.insertId, ...req.body }
-        });
+            // Create response with a safe fallback for id
+            const appointmentData = {
+                ...req.body,
+                id: result && result.insertId ? result.insertId : Date.now() // Use timestamp as fallback ID
+            };
+
+            res.json({ 
+                success: true, 
+                appointment: appointmentData
+            });
+
+        } catch (dbError) {
+            console.error('Database error:', dbError);
+            throw dbError;
+        }
 
     } catch (error) {
         console.error('Appointment creation error:', error);
