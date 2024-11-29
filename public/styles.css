@@ -1,0 +1,400 @@
+:root {
+    --gold: #D4AF37;
+    --black: #1a1a1a;
+    --dark-gray: #333;
+    --light-gold: #F4E4BC;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, var(--black) 0%, #2c2c2c 100%);
+    color: white;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+h1 {
+    text-align: center;
+    color: var(--gold);
+    font-size: 3rem;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.booking-form {
+    background: rgba(51, 51, 51, 0.95);
+    padding: 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+}
+
+h2 {
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+}
+
+.service-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.service-card {
+    background: linear-gradient(145deg, #222 0%, var(--black) 100%);
+    padding: 2rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    text-align: center;
+}
+
+.service-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+}
+
+.service-card.selected {
+    border-color: var(--gold);
+    background: linear-gradient(145deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.2) 100%);
+}
+
+.price {
+    color: var(--gold);
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-top: 1rem;
+}
+
+.time-slots {
+    display: none;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+    margin-top: 1.5rem;
+    background: var(--black);
+    padding: 1rem;
+    border-radius: 0 0 12px 12px;
+}
+
+.time-slots.visible {
+    display: grid;
+}
+
+.time-slot {
+    padding: 0.8rem;
+    background: var(--black);
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.time-slot:hover:not(.booked) {
+    background: var(--gold);
+    color: var(--black);
+    transform: scale(1.05);
+}
+
+.time-slot.selected {
+    background: var(--gold);
+    color: var(--black);
+    font-weight: bold;
+}
+
+.time-slot.booked {
+    background: #444;
+    border-color: #555;
+    cursor: not-allowed;
+    opacity: 0.7;
+    position: relative;
+}
+
+.time-slot.booked::after {
+    content: '✕';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #ff4444;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.time-slot.booked:hover {
+    transform: none;
+    background: #444;
+    color: white;
+}
+
+input {
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    background: rgba(0,0,0,0.2);
+    border: 2px solid var(--dark-gray);
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    border-color: var(--gold);
+    outline: none;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+}
+
+.book-btn {
+    width: 100%;
+    padding: 1.2rem;
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 2rem;
+}
+
+.book-btn:hover {
+    background: var(--light-gold);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    h1 {
+        font-size: 2rem;
+    }
+    
+    .booking-form {
+        padding: 1.5rem;
+    }
+    
+    .service-options {
+        grid-template-columns: 1fr;
+    }
+} 
+
+.calendar-wrapper {
+    background: var(--black);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
+
+.calendar {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.calendar-header button {
+    background: var(--gold);
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    color: var(--black);
+    font-weight: bold;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: var(--gold);
+}
+
+.calendar-dates {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.calendar-dates div {
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.calendar-dates div.available:hover {
+    background: rgba(212, 175, 55, 0.2);
+}
+
+.calendar-dates div.selected {
+    background: var(--gold);
+    color: var(--black);
+}
+
+.calendar-dates div.disabled {
+    color: #666;
+    cursor: not-allowed;
+}
+
+.selected-date {
+    display: none;
+    text-align: center;
+    margin: 1rem 0;
+    padding: 1rem;
+    background: rgba(212, 175, 55, 0.1);
+    border-radius: 8px;
+    color: var(--gold);
+    font-weight: bold;
+}
+
+.selected-date.visible {
+    display: block;
+}
+
+.time-slots {
+    display: none;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+    margin-top: 1.5rem;
+    background: var(--black);
+    padding: 1rem;
+    border-radius: 0 0 12px 12px;
+}
+
+.time-slots.visible {
+    display: grid;
+}
+
+.time-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 10px;
+    margin-top: 1rem;
+}
+
+.time-slot {
+    background: var(--black);
+    border: 1px solid var(--gold);
+    padding: 0.8rem;
+    text-align: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.time-slot:not(.booked):hover {
+    background: var(--gold);
+    color: var(--black);
+    transform: scale(1.05);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--black);
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    border: 2px solid var(--gold);
+}
+
+.modal-content h3 {
+    color: var(--gold);
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.modal-content p {
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+    color: white;
+}
+
+.modal-close {
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+    background: var(--light-gold);
+    transform: translateY(-2px);
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+}
+
+.service-card[data-service="brada"]::before {
+    content: '✂️';
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.service-card[data-service="kosa"]::before {
+    content: '💇‍♂️';
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.service-card[data-service="bradaikosa"]::before {
+    content: '💈';
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 1rem;
+} 
