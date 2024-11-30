@@ -2,19 +2,25 @@ const mysql = require('mysql2/promise');
 require('dotenv').config();
 
 const pool = mysql.createPool({
-    host: process.env.MYSQLHOST || 'localhost',
-    user: process.env.MYSQLUSER || 'root',
-    password: process.env.MYSQLPASSWORD || 'your_password',
-    database: process.env.MYSQLDATABASE || 'railway',
+    host: process.env.MYSQLHOST || process.env.MYSQL_HOST,
+    user: process.env.MYSQLUSER || process.env.MYSQL_USER,
+    password: process.env.MYSQLPASSWORD || process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQLDATABASE || process.env.MYSQL_DATABASE,
     port: process.env.MYSQLPORT || 3306,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
     ssl: {
         rejectUnauthorized: false
-    },
-    connectTimeout: 10000,
-    socketPath: process.env.NODE_ENV === 'production' ? undefined : undefined
+    }
+});
+
+// Add debug logging
+console.log('Database configuration:', {
+    host: process.env.MYSQLHOST || process.env.MYSQL_HOST,
+    user: process.env.MYSQLUSER || process.env.MYSQL_USER,
+    database: process.env.MYSQLDATABASE || process.env.MYSQL_DATABASE,
+    port: process.env.MYSQLPORT || 3306
 });
 
 // Create tables if they don't exist
@@ -39,10 +45,10 @@ async function initializeDatabase() {
     } catch (error) {
         console.error('Database initialization error:', error);
         console.error('Connection details:', {
-            host: process.env.MYSQLHOST,
-            user: process.env.MYSQLUSER,
-            database: process.env.MYSQLDATABASE,
-            port: process.env.MYSQLPORT
+            host: process.env.MYSQLHOST || process.env.MYSQL_HOST,
+            user: process.env.MYSQLUSER || process.env.MYSQL_USER,
+            database: process.env.MYSQLDATABASE || process.env.MYSQL_DATABASE,
+            port: process.env.MYSQLPORT || 3306
         });
         throw error;
     }

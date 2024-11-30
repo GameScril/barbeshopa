@@ -116,6 +116,27 @@ app.get('/api/appointments', async (req, res) => {
     }
 });
 
+app.get('/api/test-db', async (req, res) => {
+    try {
+        // Try to execute a simple query
+        const [result] = await pool.execute('SELECT 1');
+        res.json({
+            success: true,
+            message: 'Database connection successful',
+            mysqlHost: process.env.MYSQLHOST,
+            database: process.env.MYSQLDATABASE
+        });
+    } catch (error) {
+        console.error('Database connection test failed:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message,
+            mysqlHost: process.env.MYSQLHOST,
+            database: process.env.MYSQLDATABASE
+        });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
