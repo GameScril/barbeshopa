@@ -39,9 +39,8 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
         const endDateTime = new Date(startDateTime);
         endDateTime.setMinutes(endDateTime.getMinutes() + 30);
 
-        // Add to calendar
+        // Add to calendar only (no email from calendar service)
         let calendarEventId = null;
-        let iCalString = null;
         try {
             const calendarResult = await calendarService.addEvent({
                 startDateTime,
@@ -57,58 +56,42 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
             
             if (calendarResult && calendarResult.success) {
                 calendarEventId = calendarResult.eventId;
-                iCalString = calendarResult.iCalString;
             }
         } catch (calendarError) {
             console.error('Calendar event creation failed:', calendarError);
         }
 
-        // If you want to send the iCal file as an attachment in email
-        if (iCalString) {
-            // You can add this to your email service to send the iCal file
-            // as an attachment to the confirmation email
-        }
-
         // Save appointment to database
-        try {
-            const [result] = await pool.execute(
-                'INSERT INTO appointments (service, price, date, time, name, phone, email, calendarEventId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                [
-                    req.body.service,
-                    req.body.price,
-                    req.body.date,
-                    req.body.time,
-                    req.body.name,
-                    req.body.phone,
-                    req.body.email,
-                    calendarEventId
-                ]
-            );
+        const [result] = await pool.execute(
+            'INSERT INTO appointments (service, price, date, time, name, phone, email, calendarEventId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [
+                req.body.service,
+                req.body.price,
+                req.body.date,
+                req.body.time,
+                req.body.name,
+                req.body.phone,
+                req.body.email,
+                calendarEventId
+            ]
+        );
 
-            // Send only one notification to owner
-            await emailService.sendOwnerNotification(req.body);
+        // Send single email notification to owner
+        await emailService.sendOwnerNotification(req.body);
 
-            // Create response with a safe fallback for id
-            const appointmentData = {
+        res.json({ 
+            success: true, 
+            appointment: {
                 ...req.body,
-                id: result && result.insertId ? result.insertId : Date.now()
-            };
-
-            res.json({ 
-                success: true, 
-                appointment: appointmentData
-            });
-
-        } catch (dbError) {
-            console.error('Database error:', dbError);
-            throw dbError;
-        }
+                id: result.insertId
+            }
+        });
 
     } catch (error) {
-        console.error('Appointment creation error:', error);
-        res.status(500).json({ 
-            success: false, 
-            error: 'Greška pri kreiranju rezervacije' 
+        console.error('Appointment creation failed:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Greška pri kreiranju rezervacije'
         });
     }
 });

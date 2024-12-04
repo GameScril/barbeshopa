@@ -118,37 +118,47 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function selectDate(date, cell) {
+        // Don't allow selecting past dates
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        if (date < today) {
+            showNotification('Upozorenje', 'Ne možete izabrati datum u prošlosti');
+            return;
+        }
+
         document.querySelectorAll('.calendar-dates div').forEach(div => {
             div.classList.remove('selected');
         });
         
         cell.classList.add('selected');
-        
         selectedDate = date;
-        const options = { 
+        
+        // Format date in Serbian
+        dateDisplay.textContent = date.toLocaleDateString('sr-Latn', { 
             weekday: 'long', 
             year: 'numeric', 
             month: 'long', 
             day: 'numeric',
             timeZone: 'Europe/Belgrade'
-        };
+        });
         
-        dateDisplay.textContent = date.toLocaleDateString('sr-Latn', options);
         dateDisplay.classList.add('visible');
-        
         generateTimeSlots(date);
     }
 
     async function generateTimeSlots(date) {
         timeSlots.innerHTML = '';
-        const startTime = 8;
-        const endTime = 16;
+        const startTime = 8; // 8 AM
+        const endTime = 16; // 4 PM
 
         try {
+            // Format date to YYYY-MM-DD for API
             const formattedDate = date.toISOString().split('T')[0];
             const response = await fetch(`${API_BASE_URL}/api/appointments?date=${formattedDate}`);
             const bookedAppointments = await response.json();
             
+            // Create Set of booked times for efficient lookup
             const bookedTimes = new Set(bookedAppointments.map(apt => apt.time));
 
             for (let hour = startTime; hour < endTime; hour++) {
@@ -170,8 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     timeSlots.appendChild(timeSlot);
                 }
             }
-            
-            timeSlots.style.display = 'grid';
         } catch (error) {
             console.error('Error fetching booked appointments:', error);
         }
