@@ -60,6 +60,15 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
                 calendarEventId = calendarResult.eventId;
             }
 
+            // Send single email notification with calendar event info
+            const emailResult = await emailService.sendOwnerNotification({
+                ...req.body,
+            });
+
+            if (!emailResult.success) {
+                throw new Error('Failed to send notification email');
+            }
+
             // Save appointment to database
             const [result] = await connection.execute(
                 'INSERT INTO appointments (service, price, date, time, name, phone, email, calendarEventId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
@@ -71,15 +80,9 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
                     req.body.name,
                     req.body.phone,
                     req.body.email,
-                    calendarEventId
+                    emailResult.calendarEventId
                 ]
             );
-
-            // Send single email notification with calendar event info
-            await emailService.sendOwnerNotification({
-                ...req.body,
-                calendarEventId
-            });
 
             await connection.commit();
             connection.release();

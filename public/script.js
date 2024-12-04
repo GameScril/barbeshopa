@@ -164,17 +164,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const bookedTimes = new Set(bookedAppointments.map(apt => apt.time));
 
             for (let hour = startTime; hour < endTime; hour++) {
-                for (let minutes of ['00', '30']) {
+                for (let minute = 0; minute < 60; minute += 30) {
+                    const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
                     const timeSlot = document.createElement('div');
-                    timeSlot.classList.add('time-slot');
-                    
-                    const formattedHour = hour.toString().padStart(2, '0');
-                    const timeString = `${formattedHour}:${minutes}`;
+                    timeSlot.className = 'time-slot';
                     timeSlot.textContent = timeString;
 
+                    // Check if this time is booked
                     if (bookedTimes.has(timeString)) {
                         timeSlot.classList.add('booked');
-                        timeSlot.title = 'Termin je zauzet';
+                        timeSlot.title = 'Termin Zauzet';
                     } else {
                         timeSlot.addEventListener('click', () => selectTimeSlot(timeSlot));
                     }
@@ -184,6 +183,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error('Error fetching booked appointments:', error);
+            showNotification('Greška', 'Greška pri učitavanju termina');
+        }
+    }
+
+    // Add this function to update time slots after successful booking
+    async function updateTimeSlotsAfterBooking() {
+        if (selectedDate) {
+            await generateTimeSlots(selectedDate);
         }
     }
 
@@ -264,16 +271,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
             
             if (result.success) {
-                showNotification('Uspješno', 'Termin uspješno rezervisan!');
-                // Reset form
+                showNotification('Uspjeh', 'Vaša rezervacija je uspješno kreirana!');
+                // Clear form
                 document.getElementById('name').value = '';
                 document.getElementById('phone').value = '';
                 document.getElementById('email').value = '';
                 selectedDate = null;
                 dateDisplay.textContent = '';
                 dateDisplay.classList.remove('visible');
-                timeSlots.innerHTML = '';
                 document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+                
+                // Regenerate time slots to show newly booked slot
+                await updateTimeSlotsAfterBooking();
+                
+                // Reset calendar
                 createCalendar(currentDate);
             } else {
                 showNotification('Greška', result.error);

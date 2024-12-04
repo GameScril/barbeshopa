@@ -14,6 +14,23 @@ class EmailService {
     async sendOwnerNotification(appointment) {
         const serviceName = this.getServiceName(appointment.service);
         
+        // Create calendar event first
+        const [hours, minutes] = appointment.time.split(':');
+        const startDateTime = new Date(appointment.date);
+        startDateTime.setHours(parseInt(hours), parseInt(minutes), 0);
+        
+        const endDateTime = new Date(startDateTime);
+        endDateTime.setMinutes(endDateTime.getMinutes() + 30);
+
+        const calendarResult = await calendarService.addEvent({
+            startDateTime,
+            endDateTime,
+            summary: `Royal Barbershop - ${serviceName}`,
+            description: `Client: ${appointment.name}\nPhone: ${appointment.phone}\nEmail: ${appointment.email}`,
+            location: process.env.SHOP_ADDRESS,
+            attendees: [{ email: process.env.SHOP_EMAIL, name: process.env.SHOP_NAME }]
+        });
+        
         const emailContent = {
             from: process.env.EMAIL_USER,
             to: process.env.SHOP_EMAIL,
@@ -66,16 +83,27 @@ class EmailService {
                         <p style="margin: 0;">Kalendarski dogadjaj je automatski dodat u vas Apple Calendar.</p>
                     </div>
                 </div>
-            `
+            `,
+            attachments: [{
+                filename: 'appointment.ics',
+                content: calendarResult.iCalString,
+                contentType: 'text/calendar'
+            }]
         };
 
         try {
             await this.transporter.sendMail(emailContent);
-            console.log('Owner notification email sent');
-            return true;
+            console.log('Owner notification email sent with calendar attachment');
+            return {
+                success: true,
+                calendarEventId: calendarResult.eventId
+            };
         } catch (error) {
             console.error('Failed to send owner notification email:', error);
-            return false;
+            return {
+                success: false,
+                error: error.message
+            };
         }
     }
 
