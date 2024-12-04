@@ -54,7 +54,8 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
                     { email: process.env.SHOP_EMAIL, name: 'Royal Barbershop' }
                 ]
             });
-            if (calendarResult.eventId) {
+            
+            if (calendarResult && calendarResult.success) {
                 calendarEventId = calendarResult.eventId;
                 iCalString = calendarResult.iCalString;
             }

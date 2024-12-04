@@ -26,21 +26,21 @@ class CalendarService {
                 ]
             });
 
-            // Generate unique ID for the event
-            const eventId = event.uid();
-
             // Generate iCal file content
             const iCalString = this.calendar.toString();
 
-            console.log('iCal event created:', eventId);
             return {
                 success: true,
-                eventId: eventId,
+                eventId: event.uid(), // Get UID directly from event
                 iCalString: iCalString
             };
         } catch (error) {
             console.error('Failed to create iCal event:', error);
-            return { success: true }; // Return success to not block appointment creation
+            return { 
+                success: false, 
+                eventId: null,
+                error: error.message 
+            };
         }
     }
 

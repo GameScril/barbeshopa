@@ -144,7 +144,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const endTime = 16; // 4 PM
 
         try {
-            const response = await fetch(`${API_BASE_URL}/api/appointments?date=${date.toISOString().split('T')[0]}`);
+            const formattedDate = date.toISOString().split('T')[0];
+            const response = await fetch(`${API_BASE_URL}/api/appointments?date=${formattedDate}`);
             const bookedAppointments = await response.json();
             
             const bookedTimes = new Set(bookedAppointments.map(apt => apt.time));
