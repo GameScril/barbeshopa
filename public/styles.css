@@ -84,35 +84,29 @@ h2 {
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     gap: 10px;
     margin-top: 1.5rem;
-    background: var(--black);
     padding: 1rem;
-    border-radius: 0 0 12px 12px;
-}
-
-.time-slots.visible {
-    display: grid;
+    border-radius: 12px;
+    background: var(--black);
 }
 
 .time-slot {
-    padding: 0.8rem;
-    background: var(--black);
-    border: 1px solid var(--gold);
+    background: linear-gradient(145deg, #222 0%, var(--black) 100%);
+    padding: 1rem;
     border-radius: 8px;
-    cursor: pointer;
     text-align: center;
+    cursor: pointer;
     transition: all 0.3s ease;
+    border: 2px solid transparent;
 }
 
-.time-slot:hover:not(.booked) {
-    background: var(--gold);
-    color: var(--black);
-    transform: scale(1.05);
+.time-slot:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
 }
 
 .time-slot.selected {
-    background: var(--gold);
-    color: var(--black);
-    font-weight: bold;
+    border-color: var(--gold);
+    background: linear-gradient(145deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.2) 100%);
 }
 
 .time-slot.booked {
@@ -126,18 +120,32 @@ h2 {
 
 .time-slot.booked:hover {
     transform: none;
+    border-color: transparent;
     background-color: #ff4444;
 }
 
-.time-slot.booked::after {
-    content: '✕';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #ff4444;
-    font-weight: bold;
-    font-size: 1.2em;
+.datetime-picker {
+    margin-bottom: 2rem;
+}
+
+.calendar-wrapper {
+    background: var(--black);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.selected-date {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: rgba(212, 175, 55, 0.1);
+    border-radius: 8px;
+    text-align: center;
+    display: none;
+}
+
+.selected-date.visible {
+    display: block;
 }
 
 input {
@@ -198,13 +206,6 @@ input:focus {
     }
 } 
 
-.calendar-wrapper {
-    background: var(--black);
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-top: 1rem;
-}
-
 .calendar {
     width: 100%;
     max-width: 400px;
@@ -264,58 +265,6 @@ input:focus {
 .calendar-dates div.disabled {
     color: #666;
     cursor: not-allowed;
-}
-
-.selected-date {
-    display: none;
-    text-align: center;
-    margin: 1rem 0;
-    padding: 1rem;
-    background: rgba(212, 175, 55, 0.1);
-    border-radius: 8px;
-    color: var(--gold);
-    font-weight: bold;
-}
-
-.selected-date.visible {
-    display: block;
-}
-
-.time-slots {
-    display: none;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 10px;
-    margin-top: 1.5rem;
-    background: var(--black);
-    padding: 1rem;
-    border-radius: 0 0 12px 12px;
-}
-
-.time-slots.visible {
-    display: grid;
-}
-
-.time-slots-grid {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    gap: 10px;
-    margin-top: 1rem;
-}
-
-.time-slot {
-    background: var(--black);
-    border: 1px solid var(--gold);
-    padding: 0.8rem;
-    text-align: center;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.time-slot:not(.booked):hover {
-    background: var(--gold);
-    color: var(--black);
-    transform: scale(1.05);
 }
 
 .modal {

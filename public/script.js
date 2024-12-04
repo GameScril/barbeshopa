@@ -144,6 +144,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         dateDisplay.classList.add('visible');
+        const timeSlotsContainer = document.getElementById('time-slots');
+        timeSlotsContainer.style.display = 'grid'; // Ensure time slots are visible
         generateTimeSlots(date);
     }
 
@@ -202,7 +204,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function selectTimeSlot(slot) {
-        document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+        document.querySelectorAll('.time-slot').forEach(s => {
+            s.classList.remove('selected');
+        });
         slot.classList.add('selected');
     }
 
