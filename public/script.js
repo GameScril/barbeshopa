@@ -170,24 +170,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     timeSlot.className = 'time-slot';
                     timeSlot.textContent = timeString;
                     
-                    // Check if this time is booked
                     if (bookedTimes.has(timeString)) {
                         timeSlot.classList.add('booked');
                         timeSlot.title = 'Termin Zauzet';
                     } else {
-                        // Only add click event listener to non-booked slots
-                        timeSlot.addEventListener('click', function(e) {
-                            // Prevent clicking if slot is booked
-                            if (this.classList.contains('booked')) {
-                                return;
+                        timeSlot.addEventListener('click', function() {
+                            const currentSelected = document.querySelector('.time-slot.selected');
+                            if (currentSelected) {
+                                currentSelected.classList.remove('selected');
                             }
-                            
-                            // Remove selected class from all slots
-                            document.querySelectorAll('.time-slot').forEach(slot => {
-                                slot.classList.remove('selected');
-                            });
-                            
-                            // Add selected class to clicked slot
                             this.classList.add('selected');
                         });
                     }
@@ -260,9 +251,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedService = document.querySelector('.service-card.selected');
         const selectedTime = document.querySelector('.time-slot.selected');
         
-        // Add check for booked slot
-        if (selectedTime && selectedTime.classList.contains('booked')) {
-            showNotification('Upozorenje', 'Ovaj termin je već rezervisan');
+        // Check if selected time is booked
+        if (!selectedTime || selectedTime.classList.contains('booked')) {
+            showNotification('Upozorenje', 'Molimo izaberite slobodan termin');
             return;
         }
 
@@ -270,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const phone = document.getElementById('phone').value;
         const email = document.getElementById('email').value;
 
-        if (!selectedService || !selectedTime || !name || !phone || !email) {
+        if (!selectedService || !name || !phone || !email) {
             showNotification('Upozorenje', 'Molimo popunite sva polja');
             return;
         }

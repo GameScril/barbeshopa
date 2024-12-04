@@ -8,6 +8,8 @@ const { emailService } = require('./services/emailService');
 
 const app = express();
 
+process.env.TZ = 'Europe/Belgrade';
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));

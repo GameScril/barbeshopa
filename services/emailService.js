@@ -18,7 +18,7 @@ class EmailService {
         // Create calendar event first
         const [hours, minutes] = appointment.time.split(':');
         const startDateTime = new Date(appointment.date);
-        startDateTime.setHours(parseInt(hours), parseInt(minutes), 0);
+        startDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
         
         const endDateTime = new Date(startDateTime);
         endDateTime.setMinutes(endDateTime.getMinutes() + 30);
@@ -32,6 +32,16 @@ class EmailService {
             attendees: [{ email: process.env.SHOP_EMAIL, name: process.env.SHOP_NAME }]
         });
         
+        // Format the date in the local timezone
+        const appointmentDate = new Date(appointment.date);
+        const formattedDate = new Intl.DateTimeFormat('sr-Latn-BA', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            timeZone: 'Europe/Belgrade'
+        }).format(appointmentDate);
+
         const emailContent = {
             from: process.env.EMAIL_USER,
             to: process.env.SHOP_EMAIL,
@@ -50,12 +60,7 @@ class EmailService {
                                 <strong style="color: #D4AF37;">Usluga:</strong> ${serviceName}
                             </p>
                             <p style="margin: 10px 0; color: #ffffff;">
-                                <strong style="color: #D4AF37;">Datum:</strong> ${new Date(appointment.date).toLocaleDateString('sr-Latn-BA', { 
-                                    weekday: 'long', 
-                                    year: 'numeric', 
-                                    month: 'long', 
-                                    day: 'numeric' 
-                                })}
+                                <strong style="color: #D4AF37;">Datum:</strong> ${formattedDate}
                             </p>
                             <p style="margin: 10px 0; color: #ffffff;">
                                 <strong style="color: #D4AF37;">Vrijeme:</strong> ${appointment.time}
