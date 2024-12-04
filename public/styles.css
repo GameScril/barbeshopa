@@ -97,6 +97,8 @@ h2 {
     transition: all 0.3s ease;
     text-align: center;
     border: 2px solid transparent;
+    position: relative;
+    color: white;
 }
 
 .time-slot:not(.booked):hover {
@@ -111,26 +113,23 @@ h2 {
 }
 
 .time-slot.booked {
-    background: linear-gradient(145deg, rgba(255, 68, 68, 0.2) 0%, rgba(255, 68, 68, 0.3) 100%);
-    color: rgba(255, 255, 255, 0.7);
+    background: #808080;
+    color: rgba(255, 255, 255, 0.5);
     cursor: not-allowed;
+    border: none;
     position: relative;
-    pointer-events: none;
-    border: 2px solid rgba(255, 68, 68, 0.5);
-    box-shadow: 0 2px 8px rgba(255, 68, 68, 0.2);
+    overflow: hidden;
 }
 
 .time-slot.booked::before,
 .time-slot.booked::after {
     content: '';
     position: absolute;
-    left: 50%;
     top: 50%;
-    width: 3px;
-    height: 28px;
-    background-color: rgba(255, 68, 68, 1);
-    transform-origin: center;
-    box-shadow: 0 0 4px rgba(255, 68, 68, 0.5);
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background-color: rgba(255, 0, 0, 0.7);
 }
 
 .time-slot.booked::before {
@@ -139,6 +138,11 @@ h2 {
 
 .time-slot.booked::after {
     transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.time-slot.booked:hover {
+    transform: none;
+    box-shadow: none;
 }
 
 .datetime-picker {

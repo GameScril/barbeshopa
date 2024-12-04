@@ -168,16 +168,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
                     const timeSlot = document.createElement('div');
                     timeSlot.className = 'time-slot';
-                    timeSlot.textContent = timeString;
-
-                    // Check if this time is booked
+                    
                     if (bookedTimes.has(timeString)) {
                         timeSlot.classList.add('booked');
                         timeSlot.title = 'Termin Zauzet';
+                        timeSlot.setAttribute('aria-disabled', 'true');
                     } else {
                         timeSlot.addEventListener('click', () => selectTimeSlot(timeSlot));
                     }
-
+                    
+                    timeSlot.textContent = timeString;
                     timeSlots.appendChild(timeSlot);
                 }
             }
@@ -211,9 +211,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function selectTimeSlot(slot) {
-        document.querySelectorAll('.time-slot').forEach(s => {
-            s.classList.remove('selected');
-        });
+        if (slot.classList.contains('booked')) {
+            return; // Don't allow selection of booked slots
+        }
+        
+        // Remove selected class from all time slots
+        document.querySelectorAll('.time-slot').forEach(ts => ts.classList.remove('selected'));
+        
+        // Add selected class to clicked slot
         slot.classList.add('selected');
     }
 
