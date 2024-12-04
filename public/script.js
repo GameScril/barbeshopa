@@ -1,3 +1,5 @@
+const API_BASE_URL = window.location.origin; // This will use the same domain as where the app is hosted
+
 document.addEventListener('DOMContentLoaded', () => {
     const serviceCards = document.querySelectorAll('.service-card');
     const timeSlots = document.getElementById('time-slots');
@@ -116,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const endTime = 16; // 4 PM
 
         try {
-            const response = await fetch(`/api/appointments?date=${date.toISOString().split('T')[0]}`);
+            const response = await fetch(`${API_BASE_URL}/api/appointments?date=${date.toISOString().split('T')[0]}`);
             const bookedAppointments = await response.json();
             
             const bookedTimes = new Set(bookedAppointments.map(apt => apt.time));
@@ -205,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-            const response = await fetch('/api/appointments', {
+            const response = await fetch(`${API_BASE_URL}/api/appointments`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

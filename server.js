@@ -39,23 +39,38 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
         endDateTime.setMinutes(endDateTime.getMinutes() + 30);
 
         // Add to calendar
+        let calendarEventId = null;
+        let iCalString = null;
         try {
-            await calendarService.addEvent({
+            const calendarResult = await calendarService.addEvent({
                 startDateTime,
                 endDateTime,
                 summary: `Royal Barbershop - ${getServiceName(req.body.service)}`,
                 description: `Client: ${req.body.name}\nPhone: ${req.body.phone}\nEmail: ${req.body.email}`,
                 location: process.env.SHOP_ADDRESS,
-                attendees: [{ email: process.env.SHOP_EMAIL }]
+                attendees: [
+                    { email: req.body.email, name: req.body.name },
+                    { email: process.env.SHOP_EMAIL, name: 'Royal Barbershop' }
+                ]
             });
+            if (calendarResult.eventId) {
+                calendarEventId = calendarResult.eventId;
+                iCalString = calendarResult.iCalString;
+            }
         } catch (calendarError) {
             console.error('Calendar event creation failed:', calendarError);
+        }
+
+        // If you want to send the iCal file as an attachment in email
+        if (iCalString) {
+            // You can add this to your email service to send the iCal file
+            // as an attachment to the confirmation email
         }
 
         // Save appointment to database
         try {
             const [result] = await pool.execute(
-                'INSERT INTO appointments (service, price, date, time, name, phone, email) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                'INSERT INTO appointments (service, price, date, time, name, phone, email, calendarEventId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
                 [
                     req.body.service,
                     req.body.price,
@@ -63,7 +78,8 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
                     req.body.time,
                     req.body.name,
                     req.body.phone,
-                    req.body.email
+                    req.body.email,
+                    calendarEventId
                 ]
             );
 
