@@ -168,16 +168,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
                     const timeSlot = document.createElement('div');
                     timeSlot.className = 'time-slot';
+                    timeSlot.textContent = timeString;
                     
+                    // Check if this time is booked
                     if (bookedTimes.has(timeString)) {
                         timeSlot.classList.add('booked');
                         timeSlot.title = 'Termin Zauzet';
-                        timeSlot.setAttribute('aria-disabled', 'true');
                     } else {
-                        timeSlot.addEventListener('click', () => selectTimeSlot(timeSlot));
+                        timeSlot.addEventListener('click', () => {
+                            document.querySelectorAll('.time-slot').forEach(slot => {
+                                slot.classList.remove('selected');
+                            });
+                            timeSlot.classList.add('selected');
+                        });
                     }
                     
-                    timeSlot.textContent = timeString;
                     timeSlots.appendChild(timeSlot);
                 }
             }
@@ -187,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Add this function to update time slots after successful booking
+    // Add this function to update time slots after booking
     async function updateTimeSlotsAfterBooking() {
         if (selectedDate) {
             await generateTimeSlots(selectedDate);
@@ -317,4 +322,42 @@ document.addEventListener('DOMContentLoaded', () => {
     modalClose.addEventListener('click', () => {
         modal.classList.remove('show');
     });
+
+    // Add to Home Screen functionality
+    let deferredPrompt;
+    const installButton = document.getElementById('install-button');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent Chrome 67 and earlier from automatically showing the prompt
+        e.preventDefault();
+        // Stash the event so it can be triggered later
+        deferredPrompt = e;
+        // Show the install button
+        installButton.style.display = 'block';
+    });
+
+    installButton.addEventListener('click', async () => {
+        if (!deferredPrompt) {
+            // The deferred prompt isn't available
+            return;
+        }
+        // Show the install prompt
+        deferredPrompt.prompt();
+        // Wait for the user to respond to the prompt
+        const { outcome } = await deferredPrompt.userChoice;
+        // We've used the prompt, and can't use it again, discard it
+        deferredPrompt = null;
+        // Hide the install button
+        installButton.style.display = 'none';
+    });
+
+    // Hide install button when app is installed
+    window.addEventListener('appinstalled', () => {
+        installButton.style.display = 'none';
+    });
+
+    // Check if running as standalone PWA
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+        installButton.style.display = 'none';
+    }
 }); 
