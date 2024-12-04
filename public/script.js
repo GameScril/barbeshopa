@@ -169,17 +169,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     const timeSlot = document.createElement('div');
                     timeSlot.className = 'time-slot';
                     timeSlot.textContent = timeString;
-                    
+
                     if (bookedTimes.has(timeString)) {
                         timeSlot.classList.add('booked');
-                        timeSlot.title = 'Termin Zauzet';
+                        timeSlot.title = 'Termin je već rezervisan';
+                        timeSlot.setAttribute('aria-disabled', 'true');
+                        // Remove any existing click listeners
+                        timeSlot.replaceWith(timeSlot.cloneNode(true));
                     } else {
                         timeSlot.addEventListener('click', function() {
-                            const currentSelected = document.querySelector('.time-slot.selected');
-                            if (currentSelected) {
-                                currentSelected.classList.remove('selected');
+                            if (!this.classList.contains('booked')) {
+                                const currentSelected = document.querySelector('.time-slot.selected');
+                                if (currentSelected) {
+                                    currentSelected.classList.remove('selected');
+                                }
+                                this.classList.add('selected');
                             }
-                            this.classList.add('selected');
                         });
                     }
                     
@@ -243,20 +248,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Booking submission
     bookButton.addEventListener('click', async () => {
+        const selectedTime = document.querySelector('.time-slot.selected');
+        
+        if (!selectedTime || selectedTime.classList.contains('booked')) {
+            showNotification('Upozorenje', 'Molimo izaberite slobodan termin');
+            return;
+        }
+
         if (!selectedDate) {
             showNotification('Upozorenje', 'Molimo izaberite datum');
             return;
         }
 
         const selectedService = document.querySelector('.service-card.selected');
-        const selectedTime = document.querySelector('.time-slot.selected');
-        
-        // Check if selected time is booked
-        if (!selectedTime || selectedTime.classList.contains('booked')) {
-            showNotification('Upozorenje', 'Molimo izaberite slobodan termin');
-            return;
-        }
-
         const name = document.getElementById('name').value;
         const phone = document.getElementById('phone').value;
         const email = document.getElementById('email').value;

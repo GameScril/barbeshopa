@@ -21,20 +21,25 @@ class EmailService {
             const [hours, minutes] = appointment.time.split(':');
             
             // Create date in Belgrade timezone
-            const startDateTime = new Date();
-            startDateTime.setFullYear(parseInt(year));
-            startDateTime.setMonth(parseInt(month) - 1);
-            startDateTime.setDate(parseInt(day));
-            startDateTime.setHours(parseInt(hours));
-            startDateTime.setMinutes(parseInt(minutes));
-            startDateTime.setSeconds(0);
-            startDateTime.setMilliseconds(0);
+            const startDateTime = new Date(
+                parseInt(year),
+                parseInt(month) - 1,
+                parseInt(day),
+                parseInt(hours),
+                parseInt(minutes),
+                0,
+                0
+            );
 
+            // Adjust for timezone offset to prevent date shifting
+            const offset = startDateTime.getTimezoneOffset();
+            startDateTime.setMinutes(startDateTime.getMinutes() + offset);
+            
             // Create end time (30 minutes later)
             const endDateTime = new Date(startDateTime);
             endDateTime.setMinutes(endDateTime.getMinutes() + 30);
 
-            // Format the date for email using Intl.DateTimeFormat
+            // Format the date for email using explicit options
             const dateFormatter = new Intl.DateTimeFormat('sr-Latn-BA', {
                 weekday: 'long',
                 year: 'numeric',
@@ -43,7 +48,8 @@ class EmailService {
                 timeZone: 'Europe/Belgrade'
             });
 
-            const formattedDate = dateFormatter.format(startDateTime);
+            // Format date without timezone conversion
+            const formattedDate = dateFormatter.format(new Date(appointment.date));
 
             // Create calendar event
             const calendarResult = await calendarService.addEvent({
