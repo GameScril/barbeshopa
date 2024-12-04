@@ -125,23 +125,24 @@ document.addEventListener('DOMContentLoaded', () => {
         cell.classList.add('selected');
         
         selectedDate = date;
-        dateDisplay.textContent = date.toLocaleDateString('sr-Latn', { 
+        const options = { 
             weekday: 'long', 
             year: 'numeric', 
             month: 'long', 
-            day: 'numeric' 
-        });
+            day: 'numeric',
+            timeZone: 'Europe/Belgrade'
+        };
+        
+        dateDisplay.textContent = date.toLocaleDateString('sr-Latn', options);
         dateDisplay.classList.add('visible');
         
-        const timeSlotsContainer = document.getElementById('time-slots');
-        timeSlotsContainer.classList.add('visible');
         generateTimeSlots(date);
     }
 
     async function generateTimeSlots(date) {
         timeSlots.innerHTML = '';
-        const startTime = 8; // 8 AM
-        const endTime = 16; // 4 PM
+        const startTime = 8;
+        const endTime = 16;
 
         try {
             const formattedDate = date.toISOString().split('T')[0];
@@ -169,9 +170,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     timeSlots.appendChild(timeSlot);
                 }
             }
+            
+            timeSlots.style.display = 'grid';
         } catch (error) {
             console.error('Error fetching booked appointments:', error);
-            generateDefaultTimeSlots();
         }
     }
 

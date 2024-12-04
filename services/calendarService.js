@@ -20,47 +20,20 @@ class CalendarService {
                     email: attendee.email,
                     name: attendee.name || '',
                 })),
-                alarms: [
-                    { type: 'display', trigger: 1800 }, // 30 minutes before
-                    { type: 'email', trigger: 86400 }   // 24 hours before
-                ]
+                alarms: [{ type: 'display', trigger: 1800 }]
             });
-
-            // Generate iCal file content
-            const iCalString = this.calendar.toString();
 
             return {
                 success: true,
-                eventId: event.uid(), // Get UID directly from event
-                iCalString: iCalString
+                eventId: event.uid(),
+                iCalString: this.calendar.toString()
             };
         } catch (error) {
             console.error('Failed to create iCal event:', error);
-            return { 
-                success: false, 
-                eventId: null,
-                error: error.message 
-            };
-        }
-    }
-
-    async deleteEvent(eventId) {
-        try {
-            // Remove event from calendar
-            this.calendar.events().forEach(event => {
-                if (event.uid() === eventId) {
-                    this.calendar.removeEvent(event);
-                }
-            });
-            return { success: true };
-        } catch (error) {
-            console.error('Failed to delete iCal event:', error);
-            return { success: false, error: error.message };
+            return { success: false, eventId: null, error: error.message };
         }
     }
 }
 
-// Create a singleton instance
 const calendarService = new CalendarService();
-
 module.exports = { calendarService };

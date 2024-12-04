@@ -116,11 +116,17 @@ h2 {
 }
 
 .time-slot.booked {
-    background-color: #ffebee;
-    color: #d32f2f;
+    background-color: #ff4444;
+    color: white;
     cursor: not-allowed;
     opacity: 0.7;
     text-decoration: line-through;
+    pointer-events: none;
+}
+
+.time-slot.booked:hover {
+    transform: none;
+    background-color: #ff4444;
 }
 
 .time-slot.booked::after {
@@ -132,11 +138,6 @@ h2 {
     color: #ff4444;
     font-weight: bold;
     font-size: 1.2em;
-}
-
-.time-slot.booked:hover {
-    background-color: #ffebee;
-    transform: none;
 }
 
 input {

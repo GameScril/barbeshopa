@@ -115,25 +115,15 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
 
 app.get('/api/appointments', async (req, res) => {
     try {
-        const { date } = req.query;
-        if (!date) {
-            return res.status(400).json({
-                success: false,
-                error: 'Date parameter is required'
-            });
-        }
-
+        const date = req.query.date;
         const [appointments] = await pool.execute(
-            'SELECT * FROM appointments WHERE date = ?',
+            'SELECT time FROM appointments WHERE date = ?',
             [date]
         );
         res.json(appointments);
     } catch (error) {
         console.error('Error fetching appointments:', error);
-        res.status(500).json({ 
-            success: false, 
-            error: 'Failed to fetch appointments' 
-        });
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
