@@ -17,7 +17,7 @@ class EmailService {
         const emailContent = {
             from: process.env.EMAIL_USER,
             to: process.env.SHOP_EMAIL,
-            subject: `Royal Barbershop - ${serviceName}`,
+            subject: `📅 Nova Rezervacija: Royal Barbershop - ${serviceName}`,
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #D4AF37; border-radius: 15px; overflow: hidden;">
                     <div style="background-color: #D4AF37; padding: 30px; text-align: center;">

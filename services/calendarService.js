@@ -11,20 +11,21 @@ class CalendarService {
 
     async addEvent({ startDateTime, endDateTime, summary, description, location, attendees }) {
         try {
+            // Ensure correct timezone handling
+            const start = new Date(startDateTime);
+            const end = new Date(endDateTime);
+            
             const event = this.calendar.createEvent({
-                start: startDateTime,
-                end: endDateTime,
-                summary: summary,
+                start: start,
+                end: end,
+                summary: `📅 Nova Rezervacija: Royal Barbershop - ${summary}`,
                 description: description,
                 location: location,
                 organizer: {
                     name: process.env.SHOP_NAME,
                     email: process.env.SHOP_EMAIL
                 },
-                attendees: attendees.map(attendee => ({
-                    email: attendee.email,
-                    name: attendee.name || '',
-                })),
+                attendees: [{ email: process.env.SHOP_EMAIL }],
                 status: 'CONFIRMED',
                 sequence: 0,
                 busyStatus: 'BUSY',
