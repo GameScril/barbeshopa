@@ -141,6 +141,47 @@ app.get('/', (req, res) => {
     res.send('Welcome to the application!');
 });
 
+// Add this new endpoint after your other routes
+app.get('/api/test-appointments', async (req, res) => {
+    try {
+        // Try to insert a test appointment
+        const testAppointment = {
+            service: 'kosa',
+            price: 10.00,
+            date: '2024-03-07',
+            time: '10:00',
+            name: 'Test User',
+            phone: '1234567890',
+            email: 'test@test.com'
+        };
+
+        const [result] = await pool.execute(
+            'INSERT INTO appointments (service, price, date, time, name, phone, email) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [
+                testAppointment.service,
+                testAppointment.price,
+                testAppointment.date,
+                testAppointment.time,
+                testAppointment.name,
+                testAppointment.phone,
+                testAppointment.email
+            ]
+        );
+
+        res.json({
+            success: true,
+            message: 'Test appointment created successfully',
+            appointmentId: result.insertId
+        });
+    } catch (error) {
+        console.error('Test appointment creation failed:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
 // Use PORT provided by Railway or default to 3000
 const port = process.env.PORT || 3000;
 
