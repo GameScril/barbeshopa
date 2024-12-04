@@ -18,30 +18,36 @@ initializeDatabase().catch(console.error);
 
 app.post('/api/appointments', validateAppointment, async (req, res) => {
     try {
-        // Check for existing appointment
-        const [existing] = await pool.execute(
-            'SELECT * FROM appointments WHERE date = ? AND time = ?',
-            [req.body.date, req.body.time]
-        );
+        // Check for existing appointment with transaction
+        const connection = await pool.getConnection();
+        await connection.beginTransaction();
 
-        if (existing.length > 0) {
-            return res.status(409).json({
-                success: false,
-                error: 'Ovaj termin je već rezervisan'
-            });
-        }
-
-        // Calculate start and end times
-        const [hours, minutes] = req.body.time.split(':');
-        const startDateTime = new Date(req.body.date);
-        startDateTime.setHours(parseInt(hours), parseInt(minutes), 0);
-        
-        const endDateTime = new Date(startDateTime);
-        endDateTime.setMinutes(endDateTime.getMinutes() + 30);
-
-        // Add to calendar only (no email from calendar service)
-        let calendarEventId = null;
         try {
+            // Check for existing appointment
+            const [existing] = await connection.execute(
+                'SELECT * FROM appointments WHERE date = ? AND time = ? FOR UPDATE',
+                [req.body.date, req.body.time]
+            );
+
+            if (existing.length > 0) {
+                await connection.rollback();
+                connection.release();
+                return res.status(409).json({
+                    success: false,
+                    error: 'Ovaj termin je već rezervisan'
+                });
+            }
+
+            // Calculate start and end times
+            const [hours, minutes] = req.body.time.split(':');
+            const startDateTime = new Date(req.body.date);
+            startDateTime.setHours(parseInt(hours), parseInt(minutes), 0);
+            
+            const endDateTime = new Date(startDateTime);
+            endDateTime.setMinutes(endDateTime.getMinutes() + 30);
+
+            // Add to calendar
+            let calendarEventId = null;
             const calendarResult = await calendarService.addEvent({
                 startDateTime,
                 endDateTime,
@@ -57,35 +63,41 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
             if (calendarResult && calendarResult.success) {
                 calendarEventId = calendarResult.eventId;
             }
-        } catch (calendarError) {
-            console.error('Calendar event creation failed:', calendarError);
+
+            // Save appointment to database
+            const [result] = await connection.execute(
+                'INSERT INTO appointments (service, price, date, time, name, phone, email, calendarEventId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                [
+                    req.body.service,
+                    req.body.price,
+                    req.body.date,
+                    req.body.time,
+                    req.body.name,
+                    req.body.phone,
+                    req.body.email,
+                    calendarEventId
+                ]
+            );
+
+            // Send single email notification
+            await emailService.sendOwnerNotification(req.body);
+
+            await connection.commit();
+            connection.release();
+
+            res.json({ 
+                success: true, 
+                appointment: {
+                    ...req.body,
+                    id: result.insertId
+                }
+            });
+
+        } catch (error) {
+            await connection.rollback();
+            connection.release();
+            throw error;
         }
-
-        // Save appointment to database
-        const [result] = await pool.execute(
-            'INSERT INTO appointments (service, price, date, time, name, phone, email, calendarEventId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-            [
-                req.body.service,
-                req.body.price,
-                req.body.date,
-                req.body.time,
-                req.body.name,
-                req.body.phone,
-                req.body.email,
-                calendarEventId
-            ]
-        );
-
-        // Send single email notification to owner
-        await emailService.sendOwnerNotification(req.body);
-
-        res.json({ 
-            success: true, 
-            appointment: {
-                ...req.body,
-                id: result.insertId
-            }
-        });
 
     } catch (error) {
         console.error('Appointment creation failed:', error);

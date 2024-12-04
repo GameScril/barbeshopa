@@ -4,7 +4,8 @@ class CalendarService {
     constructor() {
         this.calendar = ical({
             name: 'Royal Barbershop Appointments',
-            timezone: 'Europe/Belgrade'
+            timezone: 'Europe/Belgrade',
+            method: 'REQUEST'
         });
     }
 
@@ -16,11 +17,19 @@ class CalendarService {
                 summary: summary,
                 description: description,
                 location: location,
+                organizer: {
+                    name: process.env.SHOP_NAME,
+                    email: process.env.SHOP_EMAIL
+                },
                 attendees: attendees.map(attendee => ({
                     email: attendee.email,
                     name: attendee.name || '',
                 })),
-                alarms: [{ type: 'display', trigger: 1800 }]
+                status: 'CONFIRMED',
+                sequence: 0,
+                busyStatus: 'BUSY',
+                alarms: [{ type: 'display', trigger: 900 }],
+                method: 'REQUEST'
             });
 
             return {
