@@ -84,7 +84,7 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
                 ]
             );
 
-            // Send notification to owner
+            // Send only one notification to owner
             await emailService.sendOwnerNotification(req.body);
 
             // Create response with a safe fallback for id
