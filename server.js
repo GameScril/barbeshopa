@@ -18,7 +18,6 @@ initializeDatabase().catch(console.error);
 
 app.post('/api/appointments', validateAppointment, async (req, res) => {
     try {
-        // Check for existing appointment with transaction
         const connection = await pool.getConnection();
         await connection.beginTransaction();
 
@@ -47,19 +46,16 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
             endDateTime.setMinutes(endDateTime.getMinutes() + 30);
 
             // Add to calendar
-            let calendarEventId = null;
             const calendarResult = await calendarService.addEvent({
                 startDateTime,
                 endDateTime,
                 summary: `Royal Barbershop - ${getServiceName(req.body.service)}`,
                 description: `Client: ${req.body.name}\nPhone: ${req.body.phone}\nEmail: ${req.body.email}`,
                 location: process.env.SHOP_ADDRESS,
-                attendees: [
-                    { email: req.body.email, name: req.body.name },
-                    { email: process.env.SHOP_EMAIL, name: 'Royal Barbershop' }
-                ]
+                attendees: [{ email: process.env.SHOP_EMAIL, name: 'Royal Barbershop' }]
             });
             
+            let calendarEventId = null;
             if (calendarResult && calendarResult.success) {
                 calendarEventId = calendarResult.eventId;
             }
@@ -79,8 +75,11 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
                 ]
             );
 
-            // Send single email notification
-            await emailService.sendOwnerNotification(req.body);
+            // Send single email notification with calendar event info
+            await emailService.sendOwnerNotification({
+                ...req.body,
+                calendarEventId
+            });
 
             await connection.commit();
             connection.release();
@@ -89,7 +88,8 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
                 success: true, 
                 appointment: {
                     ...req.body,
-                    id: result.insertId
+                    id: result.insertId,
+                    calendarEventId
                 }
             });
 
