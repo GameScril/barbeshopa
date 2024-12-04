@@ -10,16 +10,17 @@ class CalendarService {
             });
             
             const event = calendar.createEvent({
-                start: new Date(startDateTime),
-                end: new Date(endDateTime),
-                summary: `📅 Nova Rezervacija: Royal Barbershop - ${summary}`,
+                start: startDateTime,
+                end: endDateTime,
+                summary: summary,
                 description: description,
                 location: location,
+                timezone: 'Europe/Belgrade',
                 organizer: {
                     name: process.env.SHOP_NAME,
                     email: process.env.SHOP_EMAIL
                 },
-                attendees: [{ email: process.env.SHOP_EMAIL }],
+                attendees: attendees,
                 status: 'CONFIRMED',
                 sequence: 0,
                 busyStatus: 'BUSY',
