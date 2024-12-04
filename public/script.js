@@ -1,6 +1,14 @@
 const API_BASE_URL = window.location.origin; // This will use the same domain as where the app is hosted
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Add this at the start to check if styles are loaded
+    const styles = getComputedStyle(document.body);
+    console.log('Styles loaded:', {
+        bodyBackground: styles.backgroundColor,
+        bodyFont: styles.fontFamily
+    });
+
+    // First, verify all elements exist
     const serviceCards = document.querySelectorAll('.service-card');
     const timeSlots = document.getElementById('time-slots');
     const bookButton = document.getElementById('book-appointment');
@@ -11,10 +19,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalMessage = document.getElementById('modal-message');
     const modalClose = document.querySelector('.modal-close');
 
+    // Debug log to verify elements are found
+    console.log('Elements found:', {
+        serviceCards: serviceCards.length,
+        timeSlots: !!timeSlots,
+        bookButton: !!bookButton,
+        dateDisplay: !!dateDisplay,
+        calendarContainer: !!calendarContainer,
+        modal: !!modal,
+        modalTitle: !!modalTitle,
+        modalMessage: !!modalMessage,
+        modalClose: !!modalClose
+    });
+
     let currentDate = new Date();
     let selectedDate = null;
 
     function createCalendar(date) {
+        if (!calendarContainer) {
+            console.error('Calendar container not found!');
+            return;
+        }
+
         const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
         const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
         const startingDay = (firstDay.getDay() + 6) % 7;
@@ -176,7 +202,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    createCalendar(currentDate);
+    // Initialize calendar at the end
+    if (calendarContainer) {
+        createCalendar(currentDate);
+    } else {
+        console.error('Failed to initialize calendar - container not found');
+    }
 
     // Booking submission
     bookButton.addEventListener('click', async () => {
