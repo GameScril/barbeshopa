@@ -29,7 +29,7 @@ class EmailService {
             endDateTime.setMinutes(endDateTime.getMinutes() + 30);
 
             // Format the date for email
-            const formattedDate = new Date(dateString).toLocaleDateString('sr-Latn-BA', {
+            const formattedDate = startDateTime.toLocaleDateString('sr-Latn-BA', {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
@@ -39,7 +39,7 @@ class EmailService {
 
             // Create calendar event
             const calendarResult = await calendarService.addEvent({
-                startDateTime: dateString,
+                startDateTime: startDateTime.toISOString(),
                 endDateTime: endDateTime.toISOString(),
                 summary: `Royal Barbershop - ${serviceName}`,
                 description: `Client: ${appointment.name}\nPhone: ${appointment.phone}\nEmail: ${appointment.email}`,

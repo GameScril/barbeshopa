@@ -339,7 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const installButton = document.getElementById('install-button');
 
     window.addEventListener('beforeinstallprompt', (e) => {
-        // Prevent Chrome 67 and earlier from automatically showing the prompt
+        // Prevent the mini-infobar from appearing on mobile
         e.preventDefault();
         // Stash the event so it can be triggered later
         deferredPrompt = e;
@@ -356,6 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
         deferredPrompt.prompt();
         // Wait for the user to respond to the prompt
         const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to the install prompt: ${outcome}`);
         // We've used the prompt, and can't use it again, discard it
         deferredPrompt = null;
         // Hide the install button
