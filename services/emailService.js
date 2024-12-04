@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const { calendarService } = require('./calendarService');
 
 class EmailService {
     constructor() {

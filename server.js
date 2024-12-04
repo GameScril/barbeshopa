@@ -4,7 +4,6 @@ const cors = require('cors');
 const path = require('path');
 const { pool, initializeDatabase } = require('./db');
 const { validateAppointment } = require('./middleware/validate');
-const { calendarService } = require('./src/calendar/CalendarService.js');
 const { emailService } = require('./services/emailService');
 
 const app = express();
@@ -37,39 +36,14 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
                 });
             }
 
-            // Calculate start and end times
-            const [hours, minutes] = req.body.time.split(':');
-            const startDateTime = new Date(req.body.date);
-            startDateTime.setHours(parseInt(hours), parseInt(minutes), 0);
+            // Send email with calendar attachment
+            const emailResult = await emailService.sendOwnerNotification(req.body);
             
-            const endDateTime = new Date(startDateTime);
-            endDateTime.setMinutes(endDateTime.getMinutes() + 30);
-
-            // Add to calendar
-            const calendarResult = await calendarService.addEvent({
-                startDateTime,
-                endDateTime,
-                summary: `Royal Barbershop - ${getServiceName(req.body.service)}`,
-                description: `Client: ${req.body.name}\nPhone: ${req.body.phone}\nEmail: ${req.body.email}`,
-                location: process.env.SHOP_ADDRESS,
-                attendees: [{ email: process.env.SHOP_EMAIL, name: 'Royal Barbershop' }]
-            });
-            
-            let calendarEventId = null;
-            if (calendarResult && calendarResult.success) {
-                calendarEventId = calendarResult.eventId;
-            }
-
-            // Send single email notification with calendar event info
-            const emailResult = await emailService.sendOwnerNotification({
-                ...req.body,
-            });
-
             if (!emailResult.success) {
                 throw new Error('Failed to send notification email');
             }
 
-            // Save appointment to database
+            // Save to database
             const [result] = await connection.execute(
                 'INSERT INTO appointments (service, price, date, time, name, phone, email, calendarEventId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
                 [
@@ -87,12 +61,12 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
             await connection.commit();
             connection.release();
 
-            res.json({ 
-                success: true, 
+            res.json({
+                success: true,
                 appointment: {
                     ...req.body,
                     id: result.insertId,
-                    calendarEventId
+                    calendarEventId: emailResult.calendarEventId
                 }
             });
 
@@ -101,7 +75,6 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
             connection.release();
             throw error;
         }
-
     } catch (error) {
         console.error('Appointment creation failed:', error);
         res.status(500).json({

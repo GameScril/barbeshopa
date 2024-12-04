@@ -1,23 +1,17 @@
-const ical = require('ical-generator');
+const ical = require('ical-generator').default;
 
 class CalendarService {
-    constructor() {
-        this.calendar = ical({
-            name: 'Royal Barbershop Appointments',
-            timezone: 'Europe/Belgrade',
-            method: 'REQUEST'
-        });
-    }
-
     async addEvent({ startDateTime, endDateTime, summary, description, location, attendees }) {
         try {
-            // Ensure correct timezone handling
-            const start = new Date(startDateTime);
-            const end = new Date(endDateTime);
+            const calendar = ical({
+                name: process.env.SHOP_NAME,
+                timezone: 'Europe/Belgrade',
+                method: 'REQUEST'
+            });
             
-            const event = this.calendar.createEvent({
-                start: start,
-                end: end,
+            const event = calendar.createEvent({
+                start: new Date(startDateTime),
+                end: new Date(endDateTime),
                 summary: `📅 Nova Rezervacija: Royal Barbershop - ${summary}`,
                 description: description,
                 location: location,
@@ -30,13 +24,14 @@ class CalendarService {
                 sequence: 0,
                 busyStatus: 'BUSY',
                 alarms: [{ type: 'display', trigger: 900 }],
-                method: 'REQUEST'
+                method: 'REQUEST',
+                uid: `${Date.now()}@${process.env.SHOP_NAME.replace(/\s+/g, '').toLowerCase()}.com`
             });
 
             return {
                 success: true,
                 eventId: event.uid(),
-                iCalString: this.calendar.toString()
+                iCalString: calendar.toString()
             };
         } catch (error) {
             console.error('Failed to create iCal event:', error);
