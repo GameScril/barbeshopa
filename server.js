@@ -137,8 +137,17 @@ app.get('/api/test-db', async (req, res) => {
     }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.get('/', (req, res) => {
+    res.send('Welcome to the application!');
+});
+
+// Use PORT provided by Railway or default to 3000
+const port = process.env.PORT || 3000;
+
+// Listen on the correct host and port
+app.listen(port, "0.0.0.0", () => {
+  console.log(`Server is running on port ${port}`);
+});
 
 function getServiceName(service) {
     const services = {
