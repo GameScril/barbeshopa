@@ -102,12 +102,12 @@ h2 {
 }
 
 .time-slot.booked {
-    background: rgba(128, 128, 128, 0.3);
-    color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 68, 68, 0.2) !important;
+    color: rgba(255, 255, 255, 0.5) !important;
     cursor: not-allowed !important;
-    border: 1px solid rgba(255, 0, 0, 0.2);
+    border: 2px solid rgba(255, 68, 68, 0.3) !important;
+    pointer-events: none !important;
     position: relative;
-    pointer-events: none;
 }
 
 .time-slot.booked::before,
@@ -116,10 +116,11 @@ h2 {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 140%;
-    height: 2px;
+    width: 130%;
+    height: 3px;
     background-color: rgba(255, 0, 0, 0.8);
     transform-origin: center;
+    z-index: 1;
 }
 
 .time-slot.booked::before {
@@ -434,8 +435,13 @@ body {
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     z-index: 1000;
-    transition: all 0.3s ease;
+    border: none;
     display: none;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.install-button.show {
+    display: block;
 }
 
 .install-button:hover {

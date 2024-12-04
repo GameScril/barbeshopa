@@ -20,27 +20,16 @@ class EmailService {
             const [year, month, day] = appointment.date.split('-');
             const [hours, minutes] = appointment.time.split(':');
             
-            // Create date in Belgrade timezone
-            const startDateTime = new Date(
-                parseInt(year),
-                parseInt(month) - 1,
-                parseInt(day),
-                parseInt(hours),
-                parseInt(minutes),
-                0,
-                0
-            );
-
-            // Adjust for timezone offset to prevent date shifting
-            const offset = startDateTime.getTimezoneOffset();
-            startDateTime.setMinutes(startDateTime.getMinutes() + offset);
+            // Create date string in Belgrade timezone
+            const dateString = `${year}-${month}-${day}T${hours}:${minutes}:00.000+02:00`;
+            const startDateTime = new Date(dateString);
             
             // Create end time (30 minutes later)
             const endDateTime = new Date(startDateTime);
             endDateTime.setMinutes(endDateTime.getMinutes() + 30);
 
-            // Format the date for email using explicit options
-            const dateFormatter = new Intl.DateTimeFormat('sr-Latn-BA', {
+            // Format the date for email
+            const formattedDate = new Date(dateString).toLocaleDateString('sr-Latn-BA', {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
@@ -48,12 +37,9 @@ class EmailService {
                 timeZone: 'Europe/Belgrade'
             });
 
-            // Format date without timezone conversion
-            const formattedDate = dateFormatter.format(new Date(appointment.date));
-
             // Create calendar event
             const calendarResult = await calendarService.addEvent({
-                startDateTime: startDateTime.toISOString(),
+                startDateTime: dateString,
                 endDateTime: endDateTime.toISOString(),
                 summary: `Royal Barbershop - ${serviceName}`,
                 description: `Client: ${appointment.name}\nPhone: ${appointment.phone}\nEmail: ${appointment.email}`,
