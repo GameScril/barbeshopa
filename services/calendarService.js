@@ -9,9 +9,13 @@ class CalendarService {
                 method: 'REQUEST'
             });
             
+            // Parse ISO strings to Date objects
+            const start = new Date(startDateTime);
+            const end = new Date(endDateTime);
+
             const event = calendar.createEvent({
-                start: startDateTime,
-                end: endDateTime,
+                start: start,
+                end: end,
                 summary: summary,
                 description: description,
                 location: location,
@@ -24,7 +28,10 @@ class CalendarService {
                 status: 'CONFIRMED',
                 sequence: 0,
                 busyStatus: 'BUSY',
-                alarms: [{ type: 'display', trigger: 900 }],
+                alarms: [{ 
+                    type: 'display', 
+                    trigger: 900 
+                }],
                 method: 'REQUEST',
                 uid: `${Date.now()}@${process.env.SHOP_NAME.replace(/\s+/g, '').toLowerCase()}.com`
             });

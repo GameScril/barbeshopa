@@ -20,42 +20,41 @@ class EmailService {
             const [year, month, day] = appointment.date.split('-');
             const [hours, minutes] = appointment.time.split(':');
             
-            // Create date in local timezone (Belgrade)
-            const startDateTime = new Date(
-                parseInt(year),
-                parseInt(month) - 1, // months are 0-based in JavaScript
-                parseInt(day),
-                parseInt(hours),
-                parseInt(minutes),
-                0,
-                0
-            );
-            
+            // Create date in Belgrade timezone
+            const startDateTime = new Date();
+            startDateTime.setFullYear(parseInt(year));
+            startDateTime.setMonth(parseInt(month) - 1);
+            startDateTime.setDate(parseInt(day));
+            startDateTime.setHours(parseInt(hours));
+            startDateTime.setMinutes(parseInt(minutes));
+            startDateTime.setSeconds(0);
+            startDateTime.setMilliseconds(0);
+
             // Create end time (30 minutes later)
             const endDateTime = new Date(startDateTime);
             endDateTime.setMinutes(endDateTime.getMinutes() + 30);
 
+            // Format the date for email using Intl.DateTimeFormat
+            const dateFormatter = new Intl.DateTimeFormat('sr-Latn-BA', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                timeZone: 'Europe/Belgrade'
+            });
+
+            const formattedDate = dateFormatter.format(startDateTime);
+
             // Create calendar event
             const calendarResult = await calendarService.addEvent({
-                startDateTime,
-                endDateTime,
+                startDateTime: startDateTime.toISOString(),
+                endDateTime: endDateTime.toISOString(),
                 summary: `Royal Barbershop - ${serviceName}`,
                 description: `Client: ${appointment.name}\nPhone: ${appointment.phone}\nEmail: ${appointment.email}`,
                 location: process.env.SHOP_ADDRESS,
                 attendees: [{ email: process.env.SHOP_EMAIL, name: process.env.SHOP_NAME }]
             });
             
-            // Format the date for email
-            const options = {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                timeZone: 'Europe/Belgrade'
-            };
-            
-            const formattedDate = startDateTime.toLocaleDateString('sr-Latn-BA', options);
-
             const emailContent = {
                 from: process.env.EMAIL_USER,
                 to: process.env.SHOP_EMAIL,
