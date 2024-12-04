@@ -11,8 +11,6 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'public/styles')));
-app.use(express.static(path.join(__dirname, 'public/scripts')));
 
 // Initialize database
 initializeDatabase().catch(console.error);
@@ -219,4 +217,6 @@ function getServiceName(service) {
 
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
-}); 
+});
+
+console.log('Public directory:', path.join(__dirname, 'public')); 
