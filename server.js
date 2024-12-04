@@ -5,6 +5,7 @@ const path = require('path');
 const { pool, initializeDatabase } = require('./db');
 const { validateAppointment } = require('./middleware/validate');
 const { calendarService } = require('./src/calendar/CalendarService.js');
+const { emailService } = require('./services/emailService');
 
 const app = express();
 
@@ -83,10 +84,13 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
                 ]
             );
 
+            // Send notification to owner
+            await emailService.sendOwnerNotification(req.body);
+
             // Create response with a safe fallback for id
             const appointmentData = {
                 ...req.body,
-                id: result && result.insertId ? result.insertId : Date.now() // Use timestamp as fallback ID
+                id: result && result.insertId ? result.insertId : Date.now()
             };
 
             res.json({ 
