@@ -175,11 +175,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         timeSlot.classList.add('booked');
                         timeSlot.title = 'Termin Zauzet';
                     } else {
-                        timeSlot.addEventListener('click', () => {
+                        // Only add click event listener to non-booked slots
+                        timeSlot.addEventListener('click', function(e) {
+                            // Prevent clicking if slot is booked
+                            if (this.classList.contains('booked')) {
+                                return;
+                            }
+                            
+                            // Remove selected class from all slots
                             document.querySelectorAll('.time-slot').forEach(slot => {
                                 slot.classList.remove('selected');
                             });
-                            timeSlot.classList.add('selected');
+                            
+                            // Add selected class to clicked slot
+                            this.classList.add('selected');
                         });
                     }
                     
@@ -250,6 +259,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const selectedService = document.querySelector('.service-card.selected');
         const selectedTime = document.querySelector('.time-slot.selected');
+        
+        // Add check for booked slot
+        if (selectedTime && selectedTime.classList.contains('booked')) {
+            showNotification('Upozorenje', 'Ovaj termin je već rezervisan');
+            return;
+        }
+
         const name = document.getElementById('name').value;
         const phone = document.getElementById('phone').value;
         const email = document.getElementById('email').value;
