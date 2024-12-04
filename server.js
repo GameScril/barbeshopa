@@ -11,6 +11,8 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public/styles')));
+app.use(express.static(path.join(__dirname, 'public/scripts')));
 
 // Initialize database
 initializeDatabase().catch(console.error);
@@ -154,7 +156,7 @@ app.get('/api/test-db', async (req, res) => {
 });
 
 app.get('/', (req, res) => {
-    res.send('Welcome to the application!');
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Add this new endpoint after your other routes
@@ -213,4 +215,8 @@ function getServiceName(service) {
         'bradaikosa': 'Brijanje i Šišanje'
     };
     return services[service] || service;
-} 
+}
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+}); 
