@@ -13,52 +13,57 @@ class EmailService {
 
     async sendOwnerNotification(appointment) {
         const serviceName = this.getServiceName(appointment.service);
-        const emoji = this.getServiceEmoji(appointment.service);
         
         const emailContent = {
             from: process.env.EMAIL_USER,
             to: process.env.SHOP_EMAIL,
-            subject: `✨ Nova Rezervacija - ${serviceName}`,
+            subject: `Nova Rezervacija`,
             html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
-                    <h2 style="color: #333; text-align: center; border-bottom: 2px solid #ddd; padding-bottom: 10px;">
-                        ${emoji} Nova Rezervacija ${emoji}
-                    </h2>
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #D4AF37; border-radius: 15px; overflow: hidden;">
+                    <div style="background-color: #D4AF37; padding: 30px; text-align: center;">
+                        <h1 style="margin: 0; color: #1a1a1a; font-size: 28px; text-transform: uppercase;">Nova Rezervacija</h1>
+                    </div>
                     
-                    <div style="background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                        <p style="font-size: 16px; margin: 10px 0;">
-                            <strong style="color: #555;">Usluga:</strong> 
-                            <span style="color: #333;">${serviceName}</span>
-                        </p>
-                        <p style="font-size: 16px; margin: 10px 0;">
-                            <strong style="color: #555;">📅 Datum:</strong> 
-                            <span style="color: #333;">${new Date(appointment.date).toLocaleDateString('sr-RS', { 
-                                weekday: 'long', 
-                                year: 'numeric', 
-                                month: 'long', 
-                                day: 'numeric' 
-                            })}</span>
-                        </p>
-                        <p style="font-size: 16px; margin: 10px 0;">
-                            <strong style="color: #555;">⏰ Vrijeme:</strong> 
-                            <span style="color: #333;">${appointment.time}</span>
-                        </p>
-                        <p style="font-size: 16px; margin: 10px 0;">
-                            <strong style="color: #555;">👤 Ime:</strong> 
-                            <span style="color: #333;">${appointment.name}</span>
-                        </p>
-                        <p style="font-size: 16px; margin: 10px 0;">
-                            <strong style="color: #555;">📱 Telefon:</strong> 
-                            <span style="color: #333;">${appointment.phone}</span>
-                        </p>
-                        <p style="font-size: 16px; margin: 10px 0;">
-                            <strong style="color: #555;">📧 Email:</strong> 
-                            <span style="color: #333;">${appointment.email}</span>
-                        </p>
-                        <p style="font-size: 16px; margin: 10px 0;">
-                            <strong style="color: #555;">💰 Cijena:</strong> 
-                            <span style="color: #333;">${appointment.price} KM</span>
-                        </p>
+                    <div style="background-color: #1a1a1a; padding: 30px;">
+                        <div style="background-color: #2c2c2c; border-radius: 10px; padding: 25px; margin-bottom: 20px; border-left: 4px solid #D4AF37;">
+                            <h2 style="color: #D4AF37; margin-top: 0; margin-bottom: 20px; font-size: 20px;">Detalji Rezervacije</h2>
+                            
+                            <p style="margin: 10px 0; color: #ffffff;">
+                                <strong style="color: #D4AF37;">Usluga:</strong> ${serviceName}
+                            </p>
+                            <p style="margin: 10px 0; color: #ffffff;">
+                                <strong style="color: #D4AF37;">Datum:</strong> ${new Date(appointment.date).toLocaleDateString('sr-RS', { 
+                                    weekday: 'long', 
+                                    year: 'numeric', 
+                                    month: 'long', 
+                                    day: 'numeric' 
+                                })}
+                            </p>
+                            <p style="margin: 10px 0; color: #ffffff;">
+                                <strong style="color: #D4AF37;">Vrijeme:</strong> ${appointment.time}
+                            </p>
+                            <p style="margin: 10px 0; color: #ffffff;">
+                                <strong style="color: #D4AF37;">Lokacija:</strong> ${process.env.SHOP_ADDRESS}
+                            </p>
+                        </div>
+
+                        <div style="background-color: #2c2c2c; border-radius: 10px; padding: 25px; border-left: 4px solid #D4AF37;">
+                            <h2 style="color: #D4AF37; margin-top: 0; margin-bottom: 20px; font-size: 20px;">Informacije o Klijentu</h2>
+                            
+                            <p style="margin: 10px 0; color: #ffffff;">
+                                <strong style="color: #D4AF37;">Ime:</strong> ${appointment.name}
+                            </p>
+                            <p style="margin: 10px 0; color: #ffffff;">
+                                <strong style="color: #D4AF37;">Telefon:</strong> ${appointment.phone}
+                            </p>
+                            <p style="margin: 10px 0; color: #ffffff;">
+                                <strong style="color: #D4AF37;">Email:</strong> ${appointment.email}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div style="background-color: #1a1a1a; color: #ffffff; text-align: center; padding: 15px; font-size: 12px;">
+                        <p style="margin: 0;">Kalendarski događaj je automatski dodat u vaš Apple Calendar.</p>
                     </div>
                 </div>
             `

@@ -114,7 +114,6 @@ h2 {
     color: rgba(255, 255, 255, 0.7);
     cursor: not-allowed;
     opacity: 0.7;
-    text-decoration: line-through;
     pointer-events: none;
     position: relative;
 }
@@ -125,8 +124,8 @@ h2 {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 80%;
-    height: 2px;
+    width: 100%;
+    height: 3px;
     background-color: #ff4444;
     transform-origin: center;
 }
@@ -142,7 +141,6 @@ h2 {
 .time-slot.booked:hover {
     transform: none;
     border-color: transparent;
-    background-color: rgba(255, 68, 68, 0.2);
 }
 
 .datetime-picker {
