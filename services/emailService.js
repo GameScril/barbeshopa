@@ -17,7 +17,7 @@ class EmailService {
         const emailContent = {
             from: process.env.EMAIL_USER,
             to: process.env.SHOP_EMAIL,
-            subject: `Nova Rezervacija`,
+            subject: `Royal Barbershop - ${serviceName}`,
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #D4AF37; border-radius: 15px; overflow: hidden;">
                     <div style="background-color: #D4AF37; padding: 30px; text-align: center;">
@@ -32,7 +32,7 @@ class EmailService {
                                 <strong style="color: #D4AF37;">Usluga:</strong> ${serviceName}
                             </p>
                             <p style="margin: 10px 0; color: #ffffff;">
-                                <strong style="color: #D4AF37;">Datum:</strong> ${new Date(appointment.date).toLocaleDateString('sr-RS', { 
+                                <strong style="color: #D4AF37;">Datum:</strong> ${new Date(appointment.date).toLocaleDateString('sr-Latn-BA', { 
                                     weekday: 'long', 
                                     year: 'numeric', 
                                     month: 'long', 
@@ -63,7 +63,7 @@ class EmailService {
                     </div>
                     
                     <div style="background-color: #1a1a1a; color: #ffffff; text-align: center; padding: 15px; font-size: 12px;">
-                        <p style="margin: 0;">Kalendarski događaj je automatski dodat u vaš Apple Calendar.</p>
+                        <p style="margin: 0;">Kalendarski dogadjaj je automatski dodat u vas Apple Calendar.</p>
                     </div>
                 </div>
             `
