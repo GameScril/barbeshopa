@@ -337,35 +337,49 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add to Home Screen functionality
     let deferredPrompt;
     const installButton = document.getElementById('install-button');
+    
+    // Initially hide the button
+    if (installButton) {
+        installButton.style.display = 'none';
+    }
 
+    // Check if the app can be installed
     window.addEventListener('beforeinstallprompt', (e) => {
-        // Prevent the mini-infobar from appearing on mobile
+        // Prevent Chrome 67 and earlier from automatically showing the prompt
         e.preventDefault();
         // Stash the event so it can be triggered later
         deferredPrompt = e;
+        
         // Show the install button
-        installButton.style.display = 'block';
-    });
-
-    installButton.addEventListener('click', async () => {
-        if (!deferredPrompt) {
-            // The deferred prompt isn't available
-            return;
+        if (installButton) {
+            installButton.classList.add('show');
+            
+            installButton.addEventListener('click', async () => {
+                if (!deferredPrompt) return;
+                
+                // Show the install prompt
+                deferredPrompt.prompt();
+                
+                // Wait for the user to respond to the prompt
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response to the install prompt: ${outcome}`);
+                
+                // Clear the deferredPrompt variable
+                deferredPrompt = null;
+                
+                // Hide the button
+                installButton.classList.remove('show');
+            });
         }
-        // Show the install prompt
-        deferredPrompt.prompt();
-        // Wait for the user to respond to the prompt
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log(`User response to the install prompt: ${outcome}`);
-        // We've used the prompt, and can't use it again, discard it
-        deferredPrompt = null;
-        // Hide the install button
-        installButton.style.display = 'none';
     });
 
-    // Hide install button when app is installed
-    window.addEventListener('appinstalled', () => {
-        installButton.style.display = 'none';
+    // Handle installed PWA
+    window.addEventListener('appinstalled', (evt) => {
+        console.log('App was installed');
+        // Hide the button after installation
+        if (installButton) {
+            installButton.classList.remove('show');
+        }
     });
 
     // Check if running as standalone PWA

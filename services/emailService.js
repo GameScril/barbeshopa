@@ -20,22 +20,29 @@ class EmailService {
             const [year, month, day] = appointment.date.split('-');
             const [hours, minutes] = appointment.time.split(':');
             
-            // Create date string in Belgrade timezone
-            const dateString = `${year}-${month}-${day}T${hours}:${minutes}:00.000+02:00`;
-            const startDateTime = new Date(dateString);
-            
+            // Create date in local timezone (Belgrade)
+            const startDateTime = new Date(
+                parseInt(year),
+                parseInt(month) - 1, // Month is 0-based in JavaScript
+                parseInt(day),
+                parseInt(hours),
+                parseInt(minutes)
+            );
+
             // Create end time (30 minutes later)
             const endDateTime = new Date(startDateTime);
             endDateTime.setMinutes(endDateTime.getMinutes() + 30);
 
-            // Format the date for email
-            const formattedDate = startDateTime.toLocaleDateString('sr-Latn-BA', {
+            // Format the date for email using Intl.DateTimeFormat
+            const dateFormatter = new Intl.DateTimeFormat('sr-Latn-BA', {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
                 timeZone: 'Europe/Belgrade'
             });
+
+            const formattedDate = dateFormatter.format(startDateTime);
 
             // Create calendar event
             const calendarResult = await calendarService.addEvent({
