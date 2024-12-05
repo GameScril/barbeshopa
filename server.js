@@ -314,6 +314,42 @@ app.get('/api/check-config', (req, res) => {
     });
 });
 
+// Add this route to test calendar integration
+app.get('/api/test-calendar', async (req, res) => {
+    try {
+        // Create a test event 30 minutes from now
+        const startTime = new Date();
+        startTime.setMinutes(startTime.getMinutes() + 30);
+        
+        const endTime = new Date(startTime);
+        endTime.setMinutes(endTime.getMinutes() + 30);
+
+        const result = await calendarService.addEvent({
+            startDateTime: startTime.toISOString(),
+            endDateTime: endTime.toISOString(),
+            summary: 'Test Appointment',
+            description: 'This is a test event',
+            location: process.env.SHOP_ADDRESS
+        });
+
+        if (result.success) {
+            res.json({
+                success: true,
+                message: 'Test event created successfully',
+                eventId: result.eventId
+            });
+        } else {
+            throw new Error(result.error || 'Failed to create test event');
+        }
+    } catch (error) {
+        console.error('Calendar test failed:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
 // Use PORT provided by Railway or default to 3000
 const port = process.env.PORT || 3000;
 
