@@ -46,8 +46,14 @@ class EmailService {
             const calendarResult = await calendarService.addEvent({
                 startDateTime: startDateTime.toISOString(),
                 endDateTime: endDateTime.toISOString(),
-                summary: `Royal Barbershop - ${serviceName}`,
-                description: `Client: ${appointment.name}\nPhone: ${appointment.phone}\nEmail: ${appointment.email}`,
+                summary: `${appointment.name} - ${serviceName}`,
+                description: `
+📱 ${appointment.phone}
+💈 ${serviceName}
+💰 ${appointment.price} KM
+
+Email: ${appointment.email}
+                `.trim(),
                 location: process.env.SHOP_ADDRESS
             });
 
@@ -69,7 +75,7 @@ class EmailService {
             // Send only one email to the owner
             const emailContent = {
                 from: process.env.EMAIL_USER,
-                to: process.env.SHOP_EMAIL, // Only sending to shop owner
+                to: process.env.SHOP_EMAIL, // This is where the notification is sent
                 subject: `📅 Nova Rezervacija: Royal Barbershop - ${serviceName}`,
                 html: `
                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #D4AF37; border-radius: 15px; overflow: hidden;">

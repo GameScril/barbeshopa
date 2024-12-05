@@ -58,7 +58,8 @@ class CalendarService {
                 reminders: {
                     useDefault: false,
                     overrides: [
-                        { method: 'popup', minutes: 30 }
+                        { method: 'popup', minutes: 30 },
+                        { method: 'popup', minutes: 10 }
                     ],
                 },
             };
