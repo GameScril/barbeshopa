@@ -117,13 +117,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function selectDate(date, cell) {
-        // Don't allow selecting past dates
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+    function selectDate(dateObj, dateCell) {
+        // Add validation for weekends and past dates
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         
-        if (date < today) {
+        if (dateObj < today) {
             showNotification('Upozorenje', 'Ne možete izabrati datum u prošlosti');
+            return;
+        }
+
+        const dayOfWeek = dateObj.getDay();
+        if (dayOfWeek === 0 || dayOfWeek === 6) {
+            showNotification('Upozorenje', 'Ne radimo vikendom');
             return;
         }
 
@@ -131,11 +137,11 @@ document.addEventListener('DOMContentLoaded', () => {
             div.classList.remove('selected');
         });
         
-        cell.classList.add('selected');
-        selectedDate = date;
+        dateCell.classList.add('selected');
+        selectedDate = dateObj;
         
         // Format date in Serbian
-        dateDisplay.textContent = date.toLocaleDateString('sr-Latn', { 
+        dateDisplay.textContent = dateObj.toLocaleDateString('sr-Latn', { 
             weekday: 'long', 
             year: 'numeric', 
             month: 'long', 
@@ -146,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dateDisplay.classList.add('visible');
         const timeSlotsContainer = document.getElementById('time-slots');
         timeSlotsContainer.style.display = 'grid'; // Ensure time slots are visible
-        generateTimeSlots(date);
+        generateTimeSlots(dateObj);
     }
 
     async function generateTimeSlots(date) {

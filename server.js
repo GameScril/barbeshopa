@@ -19,9 +19,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 initializeDatabase().catch(console.error);
 
 app.post('/api/appointments', validateAppointment, async (req, res) => {
+    let connection;
     try {
-        const connection = await pool.getConnection();
+        connection = await pool.getConnection();
         await connection.beginTransaction();
+
+        // Add validation for date not in past
+        const appointmentDate = new Date(`${req.body.date}T${req.body.time}`);
+        if (appointmentDate < new Date()) {
+            throw new Error('Cannot book appointments in the past');
+        }
 
         try {
             // Check for existing appointment
@@ -79,10 +86,14 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
             throw error;
         }
     } catch (error) {
+        if (connection) {
+            await connection.rollback();
+            connection.release();
+        }
         console.error('Appointment creation failed:', error);
         res.status(500).json({
             success: false,
-            error: 'Greška pri kreiranju rezervacije'
+            error: error.message || 'Greška pri kreiranju rezervacije'
         });
     }
 });

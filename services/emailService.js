@@ -16,11 +16,16 @@ class EmailService {
         const serviceName = this.getServiceName(appointment.service);
         
         try {
-            // Parse the date and time correctly
+            // Add validation for date and time format
+            if (!appointment.date.match(/^\d{4}-\d{2}-\d{2}$/) || 
+                !appointment.time.match(/^\d{2}:\d{2}$/)) {
+                throw new Error('Invalid date or time format');
+            }
+
             const [year, month, day] = appointment.date.split('-');
             const [hours, minutes] = appointment.time.split(':');
             
-            // Create date in local timezone (Belgrade)
+            // Validate date components
             const startDateTime = new Date(
                 parseInt(year),
                 parseInt(month) - 1,
@@ -28,6 +33,10 @@ class EmailService {
                 parseInt(hours),
                 parseInt(minutes)
             );
+
+            if (isNaN(startDateTime.getTime())) {
+                throw new Error('Invalid date or time values');
+            }
 
             // Create end time (30 minutes later)
             const endDateTime = new Date(startDateTime);
@@ -116,7 +125,7 @@ class EmailService {
                 calendarEventId: calendarResult.eventId
             };
         } catch (error) {
-            console.error('Failed to send owner notification email:', error);
+            console.error('Date/time validation failed:', error);
             return {
                 success: false,
                 error: error.message

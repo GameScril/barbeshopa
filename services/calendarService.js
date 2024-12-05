@@ -2,13 +2,20 @@ const { google } = require('googleapis');
 
 class CalendarService {
     constructor() {
+        if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET || !process.env.GOOGLE_REDIRECT_URI) {
+            console.error('Missing required Google Calendar credentials in environment variables');
+        }
+
         this.oauth2Client = new google.auth.OAuth2(
             process.env.GOOGLE_CLIENT_ID,
             process.env.GOOGLE_CLIENT_SECRET,
             process.env.GOOGLE_REDIRECT_URI
         );
 
-        // Set credentials (you'll need to implement token storage)
+        if (!process.env.GOOGLE_REFRESH_TOKEN) {
+            console.error('Missing Google Calendar refresh token');
+        }
+
         this.oauth2Client.setCredentials({
             refresh_token: process.env.GOOGLE_REFRESH_TOKEN
         });
