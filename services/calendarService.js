@@ -1,49 +1,61 @@
-const ical = require('ical-generator').default;
+const { google } = require('googleapis');
 
 class CalendarService {
-    async addEvent({ startDateTime, endDateTime, summary, description, location, attendees }) {
-        try {
-            const calendar = ical({
-                name: process.env.SHOP_NAME,
-                timezone: 'Europe/Belgrade',
-                method: 'REQUEST'
-            });
-            
-            // Parse ISO strings to Date objects
-            const start = new Date(startDateTime);
-            const end = new Date(endDateTime);
+    constructor() {
+        this.oauth2Client = new google.auth.OAuth2(
+            process.env.GOOGLE_CLIENT_ID,
+            process.env.GOOGLE_CLIENT_SECRET,
+            process.env.GOOGLE_REDIRECT_URI
+        );
 
-            const event = calendar.createEvent({
-                start: start,
-                end: end,
-                summary: summary,
-                description: description,
-                location: location,
-                timezone: 'Europe/Belgrade',
-                organizer: {
-                    name: process.env.SHOP_NAME,
-                    email: process.env.SHOP_EMAIL
+        // Set credentials (you'll need to implement token storage)
+        this.oauth2Client.setCredentials({
+            refresh_token: process.env.GOOGLE_REFRESH_TOKEN
+        });
+
+        this.calendar = google.calendar({ 
+            version: 'v3', 
+            auth: this.oauth2Client 
+        });
+    }
+
+    async addEvent({ startDateTime, endDateTime, summary, description, location }) {
+        try {
+            const event = {
+                summary,
+                location,
+                description,
+                start: {
+                    dateTime: startDateTime,
+                    timeZone: 'Europe/Belgrade',
                 },
-                attendees: attendees,
-                status: 'CONFIRMED',
-                sequence: 0,
-                busyStatus: 'BUSY',
-                alarms: [{ 
-                    type: 'display', 
-                    trigger: 900 
-                }],
-                method: 'REQUEST',
-                uid: `${Date.now()}@${process.env.SHOP_NAME.replace(/\s+/g, '').toLowerCase()}.com`
+                end: {
+                    dateTime: endDateTime,
+                    timeZone: 'Europe/Belgrade',
+                },
+                reminders: {
+                    useDefault: false,
+                    overrides: [
+                        { method: 'popup', minutes: 30 }
+                    ],
+                },
+            };
+
+            const response = await this.calendar.events.insert({
+                calendarId: 'primary',
+                resource: event,
             });
 
             return {
                 success: true,
-                eventId: event.uid(),
-                iCalString: calendar.toString()
+                eventId: response.data.id
             };
         } catch (error) {
-            console.error('Failed to create iCal event:', error);
-            return { success: false, eventId: null, error: error.message };
+            console.error('Error creating Google Calendar event:', error);
+            return {
+                success: false,
+                error: error.message
+            };
         }
     }
 }

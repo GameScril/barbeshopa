@@ -334,56 +334,37 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.classList.remove('show');
     });
 
-    // Add to Home Screen functionality
+    // Update the install button logic
     let deferredPrompt;
     const installButton = document.getElementById('install-button');
-    
-    // Initially hide the button
-    if (installButton) {
-        installButton.style.display = 'none';
-    }
 
-    // Check if the app can be installed
     window.addEventListener('beforeinstallprompt', (e) => {
-        // Prevent Chrome 67 and earlier from automatically showing the prompt
         e.preventDefault();
-        // Stash the event so it can be triggered later
         deferredPrompt = e;
         
-        // Show the install button
         if (installButton) {
+            installButton.style.display = 'block';
             installButton.classList.add('show');
+        }
+    });
+
+    if (installButton) {
+        installButton.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
             
-            installButton.addEventListener('click', async () => {
-                if (!deferredPrompt) return;
-                
-                // Show the install prompt
-                deferredPrompt.prompt();
-                
-                // Wait for the user to respond to the prompt
-                const { outcome } = await deferredPrompt.userChoice;
-                console.log(`User response to the install prompt: ${outcome}`);
-                
-                // Clear the deferredPrompt variable
-                deferredPrompt = null;
-                
-                // Hide the button
-                installButton.classList.remove('show');
-            });
-        }
-    });
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User response to the install prompt: ${outcome}`);
+            deferredPrompt = null;
+            installButton.style.display = 'none';
+        });
+    }
 
-    // Handle installed PWA
-    window.addEventListener('appinstalled', (evt) => {
-        console.log('App was installed');
-        // Hide the button after installation
+    // Hide install button if already installed
+    if (window.matchMedia('(display-mode: standalone)').matches || 
+        window.navigator.standalone === true) {
         if (installButton) {
-            installButton.classList.remove('show');
+            installButton.style.display = 'none';
         }
-    });
-
-    // Check if running as standalone PWA
-    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-        installButton.style.display = 'none';
     }
 }); 

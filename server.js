@@ -5,6 +5,7 @@ const path = require('path');
 const { pool, initializeDatabase } = require('./db');
 const { validateAppointment } = require('./middleware/validate');
 const { emailService } = require('./services/emailService');
+const { calendarService } = require('./services/calendarService');
 
 const app = express();
 
@@ -163,6 +164,31 @@ app.get('/api/test-appointments', async (req, res) => {
             success: false,
             error: error.message
         });
+    }
+});
+
+// Add these routes for OAuth
+app.get('/auth/google', (req, res) => {
+    const authUrl = calendarService.oauth2Client.generateAuthUrl({
+        access_type: 'offline',
+        scope: ['https://www.googleapis.com/auth/calendar']
+    });
+    res.redirect(authUrl);
+});
+
+app.get('/auth/callback', async (req, res) => {
+    const { code } = req.query;
+    try {
+        const { tokens } = await calendarService.oauth2Client.getToken(code);
+        calendarService.oauth2Client.setCredentials(tokens);
+        
+        // Store these tokens securely - especially the refresh_token
+        console.log('Store these tokens:', tokens);
+        
+        res.send('Calendar authorization successful! You can close this window.');
+    } catch (error) {
+        console.error('Error getting tokens:', error);
+        res.status(500).send('Authorization failed');
     }
 });
 

@@ -23,7 +23,7 @@ class EmailService {
             // Create date in local timezone (Belgrade)
             const startDateTime = new Date(
                 parseInt(year),
-                parseInt(month) - 1, // Month is 0-based in JavaScript
+                parseInt(month) - 1,
                 parseInt(day),
                 parseInt(hours),
                 parseInt(minutes)
@@ -33,7 +33,20 @@ class EmailService {
             const endDateTime = new Date(startDateTime);
             endDateTime.setMinutes(endDateTime.getMinutes() + 30);
 
-            // Format the date for email using Intl.DateTimeFormat
+            // Add event to Google Calendar first
+            const calendarResult = await calendarService.addEvent({
+                startDateTime: startDateTime.toISOString(),
+                endDateTime: endDateTime.toISOString(),
+                summary: `Royal Barbershop - ${serviceName}`,
+                description: `Client: ${appointment.name}\nPhone: ${appointment.phone}\nEmail: ${appointment.email}`,
+                location: process.env.SHOP_ADDRESS
+            });
+
+            if (!calendarResult.success) {
+                throw new Error('Failed to create calendar event');
+            }
+
+            // Format the date for email
             const dateFormatter = new Intl.DateTimeFormat('sr-Latn-BA', {
                 weekday: 'long',
                 year: 'numeric',
@@ -44,19 +57,10 @@ class EmailService {
 
             const formattedDate = dateFormatter.format(startDateTime);
 
-            // Create calendar event
-            const calendarResult = await calendarService.addEvent({
-                startDateTime: startDateTime.toISOString(),
-                endDateTime: endDateTime.toISOString(),
-                summary: `Royal Barbershop - ${serviceName}`,
-                description: `Client: ${appointment.name}\nPhone: ${appointment.phone}\nEmail: ${appointment.email}`,
-                location: process.env.SHOP_ADDRESS,
-                attendees: [{ email: process.env.SHOP_EMAIL, name: process.env.SHOP_NAME }]
-            });
-            
+            // Send only one email to the owner
             const emailContent = {
                 from: process.env.EMAIL_USER,
-                to: process.env.SHOP_EMAIL,
+                to: process.env.SHOP_EMAIL, // Only sending to shop owner
                 subject: `📅 Nova Rezervacija: Royal Barbershop - ${serviceName}`,
                 html: `
                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #D4AF37; border-radius: 15px; overflow: hidden;">
@@ -98,19 +102,15 @@ class EmailService {
                         </div>
                         
                         <div style="background-color: #1a1a1a; color: #ffffff; text-align: center; padding: 15px; font-size: 12px;">
-                            <p style="margin: 0;">Kalendarski dogadjaj je automatski dodat u vas Apple Calendar.</p>
+                            <p style="margin: 0;">Dogadjaj je automatski dodat u vas Google Calendar.</p>
                         </div>
                     </div>
-                `,
-                attachments: [{
-                    filename: 'appointment.ics',
-                    content: calendarResult.iCalString,
-                    contentType: 'text/calendar'
-                }]
+                `
             };
 
+            // Send single email to owner
             await this.transporter.sendMail(emailContent);
-            console.log('Owner notification email sent with calendar attachment');
+            
             return {
                 success: true,
                 calendarEventId: calendarResult.eventId
