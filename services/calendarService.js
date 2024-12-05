@@ -2,8 +2,16 @@ const { google } = require('googleapis');
 
 class CalendarService {
     constructor() {
-        if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET || !process.env.GOOGLE_REDIRECT_URI) {
-            console.error('Missing required Google Calendar credentials in environment variables');
+        // Validate environment variables
+        const requiredVars = [
+            'GOOGLE_CLIENT_ID',
+            'GOOGLE_CLIENT_SECRET',
+            'GOOGLE_REDIRECT_URI'
+        ];
+
+        const missingVars = requiredVars.filter(varName => !process.env[varName]);
+        if (missingVars.length > 0) {
+            throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
         }
 
         this.oauth2Client = new google.auth.OAuth2(
@@ -12,17 +20,24 @@ class CalendarService {
             process.env.GOOGLE_REDIRECT_URI
         );
 
-        if (!process.env.GOOGLE_REFRESH_TOKEN) {
-            console.error('Missing Google Calendar refresh token');
+        // Only set credentials if refresh token exists
+        if (process.env.GOOGLE_REFRESH_TOKEN) {
+            this.oauth2Client.setCredentials({
+                refresh_token: process.env.GOOGLE_REFRESH_TOKEN
+            });
         }
-
-        this.oauth2Client.setCredentials({
-            refresh_token: process.env.GOOGLE_REFRESH_TOKEN
-        });
 
         this.calendar = google.calendar({ 
             version: 'v3', 
             auth: this.oauth2Client 
+        });
+    }
+
+    getAuthUrl() {
+        return this.oauth2Client.generateAuthUrl({
+            access_type: 'offline',
+            scope: ['https://www.googleapis.com/auth/calendar'],
+            prompt: 'consent' // Force consent screen to get refresh token
         });
     }
 

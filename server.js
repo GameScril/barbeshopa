@@ -178,29 +178,120 @@ app.get('/api/test-appointments', async (req, res) => {
     }
 });
 
-// Add these routes for OAuth
+// Update the OAuth routes
 app.get('/auth/google', (req, res) => {
-    const authUrl = calendarService.oauth2Client.generateAuthUrl({
-        access_type: 'offline',
-        scope: ['https://www.googleapis.com/auth/calendar']
-    });
-    res.redirect(authUrl);
+    try {
+        const authUrl = calendarService.getAuthUrl();
+        console.log('Redirecting to auth URL:', authUrl); // Debug log
+        res.redirect(authUrl);
+    } catch (error) {
+        console.error('Error generating auth URL:', error);
+        res.status(500).send('Error setting up authentication');
+    }
 });
 
 app.get('/auth/callback', async (req, res) => {
-    const { code } = req.query;
+    const { code, error } = req.query;
+    
+    // Check for OAuth error response
+    if (error) {
+        console.error('OAuth error:', error);
+        return res.status(400).send(`OAuth error: ${error}`);
+    }
+
+    if (!code) {
+        console.error('No code received in callback');
+        return res.status(400).send('No authorization code received');
+    }
+
     try {
+        console.log('Attempting to exchange code for tokens...');
         const { tokens } = await calendarService.oauth2Client.getToken(code);
+        
+        console.log('Token exchange response:', {
+            has_refresh_token: !!tokens.refresh_token,
+            has_access_token: !!tokens.access_token,
+            expiry_date: tokens.expiry_date,
+            scope: tokens.scope
+        });
+
+        if (!tokens.access_token) {
+            throw new Error('No access token received');
+        }
+
         calendarService.oauth2Client.setCredentials(tokens);
         
-        // Store these tokens securely - especially the refresh_token
-        console.log('Store these tokens:', tokens);
-        
-        res.send('Calendar authorization successful! You can close this window.');
+        res.send(`
+            <html>
+                <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px;">
+                    <h1>Authorization Successful! 🎉</h1>
+                    ${tokens.refresh_token ? `
+                        <div style="background: #f0f0f0; padding: 20px; border-radius: 8px;">
+                            <h2>Your Refresh Token:</h2>
+                            <code style="word-break: break-all; background: #fff; padding: 10px; display: block;">
+                                ${tokens.refresh_token}
+                            </code>
+                            <p><strong>Important:</strong> Save this token in your .env file as GOOGLE_REFRESH_TOKEN</p>
+                        </div>
+                    ` : `
+                        <div style="background: #fff3f3; padding: 20px; border-radius: 8px; border: 1px solid #ffcdd2;">
+                            <h2 style="color: #d32f2f;">No Refresh Token Received</h2>
+                            <p>To get a refresh token:</p>
+                            <ol>
+                                <li>Go to <a href="https://myaccount.google.com/permissions">Google Account Permissions</a></li>
+                                <li>Remove access for "${process.env.SHOP_NAME}"</li>
+                                <li>Try authenticating again</li>
+                            </ol>
+                        </div>
+                    `}
+                    <div style="margin-top: 20px;">
+                        <p><strong>Debug Info:</strong></p>
+                        <pre style="background: #f5f5f5; padding: 10px; overflow-x: auto;">
+                            Scopes: ${tokens.scope}
+                            Expires: ${new Date(tokens.expiry_date).toLocaleString()}
+                        </pre>
+                    </div>
+                </body>
+            </html>
+        `);
     } catch (error) {
-        console.error('Error getting tokens:', error);
-        res.status(500).send('Authorization failed');
+        console.error('Token exchange error:', error);
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            response: error.response?.data
+        });
+        
+        res.status(500).send(`
+            <html>
+                <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px;">
+                    <h1 style="color: #d32f2f;">Authorization Failed</h1>
+                    <div style="background: #fff3f3; padding: 20px; border-radius: 8px; border: 1px solid #ffcdd2;">
+                        <h2>Error Details:</h2>
+                        <pre style="background: #fff; padding: 10px; overflow-x: auto;">
+                            ${error.message}
+                            ${error.response?.data ? JSON.stringify(error.response.data, null, 2) : ''}
+                        </pre>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <a href="/auth/google" style="background: #4285f4; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">
+                            Try Again
+                        </a>
+                    </div>
+                </body>
+            </html>
+        `);
     }
+});
+
+// Add this route to check your configuration
+app.get('/api/check-config', (req, res) => {
+    res.json({
+        redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+        client_id_length: process.env.GOOGLE_CLIENT_ID?.length || 0,
+        client_secret_length: process.env.GOOGLE_CLIENT_SECRET?.length || 0,
+        has_refresh_token: !!process.env.GOOGLE_REFRESH_TOKEN
+    });
 });
 
 // Use PORT provided by Railway or default to 3000
