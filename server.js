@@ -18,6 +18,26 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Initialize database
 initializeDatabase().catch(console.error);
 
+app.get('/debug-auth', (req, res) => {
+    const authUrl = calendarService.getAuthUrl();
+    res.send(`
+        <html>
+            <body style="font-family: Arial, sans-serif; padding: 20px;">
+                <h1>OAuth Debug Info</h1>
+                <pre>${JSON.stringify({
+                    redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+                    client_id_exists: !!process.env.GOOGLE_CLIENT_ID,
+                    client_secret_exists: !!process.env.GOOGLE_CLIENT_SECRET,
+                    auth_url: authUrl
+                }, null, 2)}</pre>
+                <a href="${authUrl}" style="display: inline-block; background: #4285f4; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin-top: 20px;">
+                    Try Auth Flow
+                </a>
+            </body>
+        </html>
+    `);
+});
+
 app.post('/api/appointments', validateAppointment, async (req, res) => {
     let connection;
     try {
