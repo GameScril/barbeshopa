@@ -36,25 +36,32 @@ class EmailService {
             
             const endTimeString = `${appointment.date}T${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}:00+01:00`;
 
+            // Create a date object with the correct timezone
+            const [year, month, day] = appointment.date.split('-');
+            const appointmentDate = new Date(
+                parseInt(year),
+                parseInt(month) - 1,
+                parseInt(day),
+                parseInt(hours),
+                parseInt(minutes)
+            );
+
+            // Format date for email using the original values
+            const formattedDate = `${appointmentDate.toLocaleDateString('sr-Latn-BA', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            })} ${appointment.time}`;
+
             console.log('Date Debug:', {
                 originalDate: appointment.date,
                 originalTime: appointment.time,
                 startTimeString,
                 endTimeString,
+                formattedDate,
                 timezone: 'Europe/Belgrade'
             });
-
-            // Format date for email
-            const formattedDate = new Intl.DateTimeFormat('sr-Latn-BA', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false,
-                timeZone: 'Europe/Belgrade'
-            }).format(new Date(`${appointment.date}T${appointment.time}`));
 
             // Add event to Google Calendar
             const calendarResult = await calendarService.addEvent({
@@ -75,10 +82,10 @@ Email: ${appointment.email}
                 throw new Error('Failed to create calendar event');
             }
 
-            // Send only one email to the owner
+            // Send email with the formatted date
             const emailContent = {
                 from: process.env.EMAIL_USER,
-                to: process.env.SHOP_EMAIL, // This is where the notification is sent
+                to: process.env.SHOP_EMAIL,
                 subject: `📅 Nova Rezervacija: Royal Barbershop - ${serviceName}`,
                 html: `
                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #D4AF37; border-radius: 15px; overflow: hidden;">
@@ -94,10 +101,7 @@ Email: ${appointment.email}
                                     <strong style="color: #D4AF37;">Usluga:</strong> ${serviceName}
                                 </p>
                                 <p style="margin: 10px 0; color: #ffffff;">
-                                    <strong style="color: #D4AF37;">Datum:</strong> ${formattedDate}
-                                </p>
-                                <p style="margin: 10px 0; color: #ffffff;">
-                                    <strong style="color: #D4AF37;">Vrijeme:</strong> ${appointment.time}
+                                    <strong style="color: #D4AF37;">Datum i vrijeme:</strong> ${formattedDate}
                                 </p>
                                 <p style="margin: 10px 0; color: #ffffff;">
                                     <strong style="color: #D4AF37;">Lokacija:</strong> ${process.env.SHOP_ADDRESS}
