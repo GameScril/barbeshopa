@@ -22,37 +22,38 @@ class EmailService {
                 throw new Error('Invalid date or time format');
             }
 
-            // Create date string in Belgrade timezone
+            // Create date in Belgrade timezone
             const dateTimeString = `${appointment.date}T${appointment.time}:00`;
             const startDateTime = new Date(dateTimeString);
 
-            // Adjust for timezone offset
-            const belgradeOffset = 1; // UTC+1
-            startDateTime.setHours(startDateTime.getHours() + belgradeOffset);
-
-            if (isNaN(startDateTime.getTime())) {
-                throw new Error('Invalid date or time values');
-            }
+            // Log date information for debugging
+            console.log('Date Debug:', {
+                originalDate: appointment.date,
+                originalTime: appointment.time,
+                dateTimeString,
+                startDateTime,
+                startDateTimeISO: startDateTime.toISOString(),
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            });
 
             // Create end time (30 minutes later)
-            const endDateTime = new Date(startDateTime);
-            endDateTime.setMinutes(endDateTime.getMinutes() + 30);
+            const endDateTime = new Date(startDateTime.getTime() + 30 * 60000);
 
-            // Format the date for email with explicit timezone
+            // Format the date for email
             const dateFormatter = new Intl.DateTimeFormat('sr-Latn-BA', {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
-                timeZone: 'Europe/Belgrade',
                 hour: '2-digit',
                 minute: '2-digit',
-                hour12: false
+                hour12: false,
+                timeZone: 'Europe/Belgrade'
             });
 
             const formattedDate = dateFormatter.format(startDateTime);
 
-            // Add event to Google Calendar
+            // Add event to Google Calendar with explicit timezone
             const calendarResult = await calendarService.addEvent({
                 startDateTime: startDateTime.toISOString(),
                 endDateTime: endDateTime.toISOString(),
