@@ -43,7 +43,6 @@ class CalendarService {
 
     async addEvent({ startDateTime, endDateTime, summary, description, location }) {
         try {
-            // Log calendar event creation for debugging
             console.log('Calendar Event Debug:', {
                 startDateTime,
                 endDateTime,
