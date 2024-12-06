@@ -22,16 +22,13 @@ class EmailService {
                 throw new Error('Invalid date or time format');
             }
 
+            // Fix timezone issue by explicitly setting the timezone
             const [year, month, day] = appointment.date.split('-');
             const [hours, minutes] = appointment.time.split(':');
             
-            // Validate date components
+            // Create date in local timezone
             const startDateTime = new Date(
-                parseInt(year),
-                parseInt(month) - 1,
-                parseInt(day),
-                parseInt(hours),
-                parseInt(minutes)
+                `${appointment.date}T${appointment.time}:00+01:00`  // Add timezone offset
             );
 
             if (isNaN(startDateTime.getTime())) {
