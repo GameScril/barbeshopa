@@ -22,14 +22,13 @@ class EmailService {
                 throw new Error('Invalid date or time format');
             }
 
-            // Fix timezone issue by explicitly setting the timezone
-            const [year, month, day] = appointment.date.split('-');
-            const [hours, minutes] = appointment.time.split(':');
-            
-            // Create date in local timezone
-            const startDateTime = new Date(
-                `${appointment.date}T${appointment.time}:00+01:00`  // Add timezone offset
-            );
+            // Create date string in Belgrade timezone
+            const dateTimeString = `${appointment.date}T${appointment.time}:00`;
+            const startDateTime = new Date(dateTimeString);
+
+            // Adjust for timezone offset
+            const belgradeOffset = 1; // UTC+1
+            startDateTime.setHours(startDateTime.getHours() + belgradeOffset);
 
             if (isNaN(startDateTime.getTime())) {
                 throw new Error('Invalid date or time values');
@@ -39,7 +38,21 @@ class EmailService {
             const endDateTime = new Date(startDateTime);
             endDateTime.setMinutes(endDateTime.getMinutes() + 30);
 
-            // Add event to Google Calendar first
+            // Format the date for email with explicit timezone
+            const dateFormatter = new Intl.DateTimeFormat('sr-Latn-BA', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                timeZone: 'Europe/Belgrade',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+
+            const formattedDate = dateFormatter.format(startDateTime);
+
+            // Add event to Google Calendar
             const calendarResult = await calendarService.addEvent({
                 startDateTime: startDateTime.toISOString(),
                 endDateTime: endDateTime.toISOString(),
@@ -57,17 +70,6 @@ Email: ${appointment.email}
             if (!calendarResult.success) {
                 throw new Error('Failed to create calendar event');
             }
-
-            // Format the date for email
-            const dateFormatter = new Intl.DateTimeFormat('sr-Latn-BA', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                timeZone: 'Europe/Belgrade'
-            });
-
-            const formattedDate = dateFormatter.format(startDateTime);
 
             // Send only one email to the owner
             const emailContent = {
