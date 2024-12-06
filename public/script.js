@@ -35,10 +35,46 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentDate = new Date();
     let selectedDate = null;
 
-    function createCalendar(date) {
+    // Add this CSS class for reserved dates
+    const calendarStyle = document.createElement('style');
+    calendarStyle.textContent = `
+        .calendar-dates div.has-reservations::after {
+            content: '×';
+            position: absolute;
+            color: #ff4444;
+            font-weight: bold;
+            font-size: 1.2em;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+        .calendar-dates div {
+            position: relative;
+        }
+    `;
+    document.head.appendChild(calendarStyle);
+
+    async function createCalendar(date) {
         if (!calendarContainer) {
             console.error('Calendar container not found!');
             return;
+        }
+
+        // Fetch all reservations for this month
+        const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+        const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+        
+        const formattedStart = startOfMonth.toISOString().split('T')[0];
+        const formattedEnd = endOfMonth.toISOString().split('T')[0];
+        
+        let reservedDates = new Set();
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/appointments/month?start=${formattedStart}&end=${formattedEnd}`);
+            const reservations = await response.json();
+            reservedDates = new Set(reservations.map(r => r.date));
+        } catch (error) {
+            console.error('Error fetching monthly reservations:', error);
         }
 
         const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
@@ -70,6 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let day = 1; day <= lastDay.getDate(); day++) {
             const dateCell = document.createElement('div');
             const dateObj = new Date(date.getFullYear(), date.getMonth(), day);
+            const formattedDate = dateObj.toISOString().split('T')[0];
+            
             dateCell.textContent = day;
 
             const dayOfWeek = dateObj.getDay();
@@ -77,18 +115,21 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const now = new Date();
             const isToday = dateObj.toDateString() === now.toDateString();
-            const isAfterBusinessHours = now.getHours() >= 16; // 4 PM
+            const isAfterBusinessHours = now.getHours() >= 16;
             const isPast = dateObj < now || (isToday && isAfterBusinessHours);
 
-            if (isWeekend || isPast) {
+            if (reservedDates.has(formattedDate)) {
+                dateCell.classList.add('has-reservations');
+            }
+
+            if (isPast || isWeekend) {
                 dateCell.classList.add('disabled');
             } else {
-                dateCell.classList.add('available');
                 dateCell.addEventListener('click', () => selectDate(dateObj, dateCell));
             }
 
-            if (selectedDate && dateObj.toDateString() === selectedDate.toDateString()) {
-                dateCell.classList.add('selected');
+            if (isToday) {
+                dateCell.classList.add('today');
             }
 
             datesContainer.appendChild(dateCell);
@@ -161,12 +202,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const endTime = 16; // 4 PM
 
         try {
-            // Format date to YYYY-MM-DD for API
             const formattedDate = date.toISOString().split('T')[0];
             const response = await fetch(`${API_BASE_URL}/api/appointments?date=${formattedDate}`);
             const bookedAppointments = await response.json();
             
-            // Create Set of booked times for efficient lookup
             const bookedTimes = new Set(bookedAppointments.map(apt => apt.time));
 
             for (let hour = startTime; hour < endTime; hour++) {
@@ -174,23 +213,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
                     const timeSlot = document.createElement('div');
                     timeSlot.className = 'time-slot';
-                    timeSlot.textContent = timeString;
-
+                    
                     if (bookedTimes.has(timeString)) {
                         timeSlot.classList.add('booked');
+                        timeSlot.innerHTML = `${timeString}<span class="booked-cross">×</span>`;
                         timeSlot.title = 'Termin je već rezervisan';
-                        timeSlot.setAttribute('aria-disabled', 'true');
-                        // Remove any existing click listeners
-                        timeSlot.replaceWith(timeSlot.cloneNode(true));
                     } else {
+                        timeSlot.textContent = timeString;
                         timeSlot.addEventListener('click', function() {
-                            if (!this.classList.contains('booked')) {
-                                const currentSelected = document.querySelector('.time-slot.selected');
-                                if (currentSelected) {
-                                    currentSelected.classList.remove('selected');
-                                }
-                                this.classList.add('selected');
-                            }
+                            document.querySelectorAll('.time-slot').forEach(ts => 
+                                ts.classList.remove('selected'));
+                            this.classList.add('selected');
                         });
                     }
                     

@@ -350,6 +350,26 @@ app.get('/api/test-calendar', async (req, res) => {
     }
 });
 
+// Add this new endpoint to get monthly reservations
+app.get('/api/appointments/month', async (req, res) => {
+    const { start, end } = req.query;
+    let connection;
+    
+    try {
+        connection = await pool.getConnection();
+        const [reservations] = await connection.execute(
+            'SELECT DISTINCT date FROM appointments WHERE date BETWEEN ? AND ?',
+            [start, end]
+        );
+        res.json(reservations);
+    } catch (error) {
+        console.error('Error fetching monthly reservations:', error);
+        res.status(500).json({ error: 'Failed to fetch reservations' });
+    } finally {
+        if (connection) connection.release();
+    }
+});
+
 // Use PORT provided by Railway or default to 3000
 const port = process.env.PORT || 3000;
 
