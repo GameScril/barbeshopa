@@ -279,7 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const appointment = {
             service: selectedService.dataset.service,
             price: parseInt(selectedService.dataset.price),
-            date: selectedDate.toISOString().split('T')[0],
+            date: `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`,
             time: selectedTime.textContent,
             name: name,
             phone: phone,
@@ -288,8 +288,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log('Client-side appointment:', {
             selectedDate: selectedDate,
-            isoString: selectedDate.toISOString(),
-            date: appointment.date,
+            localDate: selectedDate.toLocaleDateString(),
+            formattedDate: appointment.date,
             time: appointment.time
         });
 
