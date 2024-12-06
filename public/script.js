@@ -213,13 +213,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
                     const timeSlot = document.createElement('div');
                     timeSlot.className = 'time-slot';
+                    timeSlot.textContent = timeString;
                     
                     if (bookedTimes.has(timeString)) {
                         timeSlot.classList.add('booked');
-                        timeSlot.innerHTML = `${timeString}<span class="booked-cross">×</span>`;
-                        timeSlot.title = 'Termin je već rezervisan';
                     } else {
-                        timeSlot.textContent = timeString;
                         timeSlot.addEventListener('click', function() {
                             document.querySelectorAll('.time-slot').forEach(ts => 
                                 ts.classList.remove('selected'));
