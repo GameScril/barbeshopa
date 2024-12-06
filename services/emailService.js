@@ -36,23 +36,20 @@ class EmailService {
             
             const endTimeString = `${appointment.date}T${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}:00+01:00`;
 
-            // Create a date object with the correct timezone
+            // Format date for email using direct string manipulation
             const [year, month, day] = appointment.date.split('-');
-            const appointmentDate = new Date(
-                parseInt(year),
-                parseInt(month) - 1,
-                parseInt(day),
-                parseInt(hours),
-                parseInt(minutes)
-            );
-
-            // Format date for email using the original values
-            const formattedDate = `${appointmentDate.toLocaleDateString('sr-Latn-BA', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            })} ${appointment.time}`;
+            const date = new Date(year, month - 1, day); // month - 1 because months are 0-based
+            
+            // Get day name in Serbian
+            const dayNames = ['nedelja', 'ponedeljak', 'utorak', 'sreda', 'četvrtak', 'petak', 'subota'];
+            const dayName = dayNames[date.getDay()];
+            
+            // Get month name in Serbian
+            const monthNames = ['januar', 'februar', 'mart', 'april', 'maj', 'jun', 'jul', 'avgust', 'septembar', 'oktobar', 'novembar', 'decembar'];
+            const monthName = monthNames[date.getMonth()];
+            
+            // Construct the formatted date string manually
+            const formattedDate = `${dayName}, ${day}. ${monthName} ${year}. ${appointment.time}`;
 
             console.log('Date Debug:', {
                 originalDate: appointment.date,
@@ -60,7 +57,8 @@ class EmailService {
                 startTimeString,
                 endTimeString,
                 formattedDate,
-                timezone: 'Europe/Belgrade'
+                timezone: 'Europe/Belgrade',
+                dateComponents: { year, month, day, dayName, monthName }
             });
 
             // Add event to Google Calendar
