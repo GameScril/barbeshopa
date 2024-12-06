@@ -14,6 +14,11 @@ class EmailService {
 
     async sendOwnerNotification(appointment) {
         const serviceName = this.getServiceName(appointment.service);
+        const serviceDuration = {
+            'brada': 10,
+            'kosa': 20,
+            'bradaikosa': 30
+        }[appointment.service];
         
         try {
             console.log('Received appointment:', appointment);
@@ -75,6 +80,7 @@ class EmailService {
 💰 ${appointment.price} KM
 
 Email: ${appointment.email}
+⏱️ Trajanje: ${serviceDuration} minuta
             `.trim(),
                 location: process.env.SHOP_ADDRESS
             });

@@ -447,28 +447,9 @@ body {
 }
 
 .calendar-dates div.has-reservations {
-    background: #1a1a1a !important;
+    background: rgba(255, 68, 68, 0.2) !important;
     color: rgba(255, 255, 255, 0.5) !important;
     cursor: not-allowed !important;
-    border: 2px solid #333 !important;
     pointer-events: none !important;
-    position: relative;
-}
-
-.calendar-dates div.has-reservations::before {
-    content: '×';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #ff0000;
-    font-size: 2em;
-    font-weight: bold;
-    z-index: 1;
-    text-shadow: 0 0 2px rgba(0,0,0,0.5);
-}
-
-.calendar-dates div.has-reservations::after {
-    display: none;
 }
  

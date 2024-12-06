@@ -206,16 +206,50 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`${API_BASE_URL}/api/appointments?date=${formattedDate}`);
             const bookedAppointments = await response.json();
             
-            const bookedTimes = new Set(bookedAppointments.map(apt => apt.time));
+            // Create a map of all blocked time slots
+            const blockedTimes = new Set();
+            bookedAppointments.forEach(apt => {
+                const startTime = new Date(`${apt.date}T${apt.time}`);
+                const duration = apt.duration || 30; // fallback to 30 if not set
+                
+                // Block all slots within the appointment duration
+                for (let i = 0; i < duration; i += 10) {
+                    const slotTime = new Date(startTime.getTime() + i * 60000);
+                    blockedTimes.add(slotTime.toTimeString().slice(0, 5));
+                }
+            });
 
+            // Get currently selected service
+            const selectedService = document.querySelector('.service-card.selected');
+            const serviceDurations = {
+                'brada': 10,    // Brijanje - 10 minutes
+                'kosa': 20,     // Šišanje - 20 minutes
+                'bradaikosa': 30 // Both - 30 minutes
+            };
+
+            // Generate time slots based on service duration
             for (let hour = startTime; hour < endTime; hour++) {
-                for (let minute = 0; minute < 60; minute += 30) {
+                for (let minute = 0; minute < 60; minute += 10) {
                     const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
                     const timeSlot = document.createElement('div');
                     timeSlot.className = 'time-slot';
                     timeSlot.textContent = timeString;
+
+                    // Check if this slot would overlap with any booked appointments
+                    let isBlocked = false;
+                    const slotStartTime = new Date(`${formattedDate}T${timeString}`);
+                    const duration = selectedService ? serviceDurations[selectedService.dataset.service] : 30;
                     
-                    if (bookedTimes.has(timeString)) {
+                    for (let i = 0; i < duration; i += 10) {
+                        const checkTime = new Date(slotStartTime.getTime() + i * 60000);
+                        const checkTimeString = checkTime.toTimeString().slice(0, 5);
+                        if (blockedTimes.has(checkTimeString)) {
+                            isBlocked = true;
+                            break;
+                        }
+                    }
+
+                    if (isBlocked) {
                         timeSlot.classList.add('booked');
                     } else {
                         timeSlot.addEventListener('click', function() {
@@ -273,6 +307,9 @@ document.addEventListener('DOMContentLoaded', () => {
         card.addEventListener('click', () => {
             serviceCards.forEach(c => c.classList.remove('selected'));
             card.classList.add('selected');
+            if (selectedDate) {
+                generateTimeSlots(selectedDate); // Regenerate time slots when service changes
+            }
         });
     });
 

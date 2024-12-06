@@ -44,77 +44,50 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
         connection = await pool.getConnection();
         await connection.beginTransaction();
 
-        // Add validation for date not in past
         const appointmentDate = new Date(`${req.body.date}T${req.body.time}`);
-        if (appointmentDate < new Date()) {
-            throw new Error('Cannot book appointments in the past');
-        }
+        const endTime = new Date(appointmentDate.getTime() + req.serviceDuration * 60000);
+        const endTimeString = endTime.toTimeString().slice(0, 5);
 
-        try {
-            // Check for existing appointment
-            const [existing] = await connection.execute(
-                'SELECT * FROM appointments WHERE date = ? AND time = ? FOR UPDATE',
-                [req.body.date, req.body.time]
-            );
+        // Check for overlapping appointments
+        const [overlapping] = await connection.execute(
+            `SELECT * FROM appointments 
+             WHERE date = ? 
+             AND ((time <= ? AND ADDTIME(time, SEC_TO_TIME(duration * 60)) > ?) 
+                  OR (time < ? AND ADDTIME(time, SEC_TO_TIME(duration * 60)) >= ?))
+             FOR UPDATE`,
+            [req.body.date, req.body.time, req.body.time, endTimeString, endTimeString]
+        );
 
-            if (existing.length > 0) {
-                await connection.rollback();
-                connection.release();
-                return res.status(409).json({
-                    success: false,
-                    error: 'Ovaj termin je već rezervisan'
-                });
-            }
-
-            // Send email with calendar attachment
-            const emailResult = await emailService.sendOwnerNotification(req.body);
-            
-            if (!emailResult.success) {
-                throw new Error('Failed to send notification email');
-            }
-
-            // Save to database
-            const [result] = await connection.execute(
-                'INSERT INTO appointments (service, price, date, time, name, phone, email, calendarEventId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                [
-                    req.body.service,
-                    req.body.price,
-                    req.body.date,
-                    req.body.time,
-                    req.body.name,
-                    req.body.phone,
-                    req.body.email,
-                    emailResult.calendarEventId
-                ]
-            );
-
-            await connection.commit();
-            connection.release();
-
-            res.json({
-                success: true,
-                appointment: {
-                    ...req.body,
-                    id: result.insertId,
-                    calendarEventId: emailResult.calendarEventId
-                }
+        if (overlapping.length > 0) {
+            await connection.rollback();
+            return res.status(409).json({
+                success: false,
+                error: 'Ovaj termin se preklapa sa postojećom rezervacijom'
             });
+        }
 
-        } catch (error) {
-            await connection.rollback();
-            connection.release();
-            throw error;
-        }
-    } catch (error) {
-        if (connection) {
-            await connection.rollback();
-            connection.release();
-        }
-        console.error('Appointment creation failed:', error);
-        res.status(500).json({
-            success: false,
-            error: error.message || 'Greška pri kreiranju rezervacije'
+        // Save to database with duration
+        const [result] = await connection.execute(
+            'INSERT INTO appointments (service, price, date, time, duration, name, phone, email, calendarEventId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [req.body.service, req.body.price, req.body.date, req.body.time, req.serviceDuration, req.body.name, req.body.phone, req.body.email, null]
+        );
+
+        await connection.commit();
+        connection.release();
+
+        res.json({
+            success: true,
+            appointment: {
+                ...req.body,
+                id: result.insertId,
+                calendarEventId: null
+            }
         });
+
+    } catch (error) {
+        await connection.rollback();
+        connection.release();
+        throw error;
     }
 });
 

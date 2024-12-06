@@ -1,6 +1,15 @@
+const serviceDurations = {
+    'brada': 10,    // Brijanje - 10 minutes
+    'kosa': 20,     // Šišanje - 20 minutes
+    'bradaikosa': 30 // Both - 30 minutes
+};
+
 const validateAppointment = (req, res, next) => {
     const { service, price, date, time, name, phone, email } = req.body;
 
+    // Add duration to the request object for later use
+    req.serviceDuration = serviceDurations[service];
+    
     // Validate service type with Serbian names
     const validServices = ['brada', 'kosa', 'bradaikosa'];
     if (!validServices.includes(service)) {

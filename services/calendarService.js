@@ -41,14 +41,10 @@ class CalendarService {
         });
     }
 
-    async addEvent({ startDateTime, endDateTime, summary, description, location }) {
+    async addEvent({ startDateTime, endDateTime, summary, description, location, duration }) {
         try {
-            console.log('Calendar Event Debug:', {
-                startDateTime,
-                endDateTime,
-                timeZone: 'Europe/Belgrade'
-            });
-
+            const endTime = new Date(new Date(startDateTime).getTime() + duration * 60000);
+            
             const event = {
                 summary,
                 location,
@@ -58,13 +54,12 @@ class CalendarService {
                     timeZone: 'Europe/Belgrade',
                 },
                 end: {
-                    dateTime: endDateTime,
+                    dateTime: endTime.toISOString(),
                     timeZone: 'Europe/Belgrade',
                 },
                 reminders: {
                     useDefault: false,
                     overrides: [
-                        { method: 'popup', minutes: 30 },
                         { method: 'popup', minutes: 10 }
                     ],
                 },
