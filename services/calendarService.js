@@ -70,6 +70,8 @@ class CalendarService {
                 },
             };
 
+            console.log('Calendar Event Object:', JSON.stringify(event, null, 2));
+
             const response = await this.calendar.events.insert({
                 calendarId: 'primary',
                 resource: event,
@@ -80,7 +82,7 @@ class CalendarService {
                 eventId: response.data.id
             };
         } catch (error) {
-            console.error('Error creating Google Calendar event:', error);
+            console.error('Calendar Event Error:', error.response?.data || error);
             return {
                 success: false,
                 error: error.message

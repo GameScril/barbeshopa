@@ -21,22 +21,30 @@ class EmailService {
                 throw new Error('Invalid date or time format');
             }
 
-            // Create date with explicit timezone offset for Belgrade (UTC+1)
-            const dateTimeString = `${appointment.date}T${appointment.time}:00+01:00`;
-            const startDateTime = new Date(dateTimeString);
+            // Create start time string with timezone
+            const startTimeString = `${appointment.date}T${appointment.time}:00+01:00`;
+            
+            // Create end time string (30 minutes later)
+            const [hours, minutes] = appointment.time.split(':');
+            let endHours = parseInt(hours);
+            let endMinutes = parseInt(minutes) + 30;
+            
+            if (endMinutes >= 60) {
+                endHours += 1;
+                endMinutes -= 60;
+            }
+            
+            const endTimeString = `${appointment.date}T${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}:00+01:00`;
 
             console.log('Date Debug:', {
                 originalDate: appointment.date,
                 originalTime: appointment.time,
-                dateTimeString,
-                startDateTime,
-                startDateTimeISO: startDateTime.toISOString(),
+                startTimeString,
+                endTimeString,
                 timezone: 'Europe/Belgrade'
             });
 
-            const endDateTime = new Date(startDateTime.getTime() + 30 * 60000);
-
-            // Format date for email using the actual appointment date/time
+            // Format date for email
             const formattedDate = new Intl.DateTimeFormat('sr-Latn-BA', {
                 weekday: 'long',
                 year: 'numeric',
@@ -48,10 +56,10 @@ class EmailService {
                 timeZone: 'Europe/Belgrade'
             }).format(new Date(`${appointment.date}T${appointment.time}`));
 
-            // Add event to Google Calendar with explicit timezone
+            // Add event to Google Calendar
             const calendarResult = await calendarService.addEvent({
-                startDateTime: dateTimeString, // Use the string with timezone offset
-                endDateTime: endDateTime.toISOString().replace('Z', '+01:00'), // Add Belgrade offset
+                startDateTime: startTimeString,
+                endDateTime: endTimeString,
                 summary: `${appointment.name} - ${serviceName}`,
                 description: `
 📱 ${appointment.phone}
@@ -59,7 +67,7 @@ class EmailService {
 💰 ${appointment.price} KM
 
 Email: ${appointment.email}
-                `.trim(),
+            `.trim(),
                 location: process.env.SHOP_ADDRESS
             });
 
