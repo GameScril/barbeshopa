@@ -286,6 +286,13 @@ document.addEventListener('DOMContentLoaded', () => {
             email: email
         };
 
+        console.log('Client-side appointment:', {
+            selectedDate: selectedDate,
+            isoString: selectedDate.toISOString(),
+            date: appointment.date,
+            time: appointment.time
+        });
+
         try {
             const response = await fetch(`${API_BASE_URL}/api/appointments`, {
                 method: 'POST',

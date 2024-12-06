@@ -16,49 +16,52 @@ class EmailService {
         const serviceName = this.getServiceName(appointment.service);
         
         try {
+            console.log('Received appointment:', appointment);
+
             if (!appointment.date.match(/^\d{4}-\d{2}-\d{2}$/) || 
                 !appointment.time.match(/^\d{2}:\d{2}$/)) {
                 throw new Error('Invalid date or time format');
             }
 
-            // Create start time string with timezone
-            const startTimeString = `${appointment.date}T${appointment.time}:00+01:00`;
+            // Parse the date without timezone conversion
+            const [year, month, day] = appointment.date.split('-').map(Number);
             
-            // Create end time string (30 minutes later)
-            const [hours, minutes] = appointment.time.split(':');
-            let endHours = parseInt(hours);
-            let endMinutes = parseInt(minutes) + 30;
+            // Create date object for the selected date
+            const date = new Date(Date.UTC(year, month - 1, day));
+            
+            // Get day name in Serbian
+            const dayNames = ['nedelja', 'ponedeljak', 'utorak', 'sreda', 'četvrtak', 'petak', 'subota'];
+            const dayName = dayNames[date.getUTCDay()];
+            
+            // Get month name in Serbian
+            const monthNames = ['januar', 'februar', 'mart', 'april', 'maj', 'jun', 'jul', 'avgust', 'septembar', 'oktobar', 'novembar', 'decembar'];
+            const monthName = monthNames[date.getUTCMonth()];
+            
+            // Create the time strings with explicit timezone
+            const startTimeString = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${appointment.time}:00+01:00`;
+            
+            // Calculate end time
+            const [hours, minutes] = appointment.time.split(':').map(Number);
+            let endHours = hours;
+            let endMinutes = minutes + 30;
             
             if (endMinutes >= 60) {
                 endHours += 1;
                 endMinutes -= 60;
             }
             
-            const endTimeString = `${appointment.date}T${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}:00+01:00`;
-
-            // Format date for email using direct string manipulation
-            const [year, month, day] = appointment.date.split('-');
-            const date = new Date(year, month - 1, day); // month - 1 because months are 0-based
+            const endTimeString = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}:00+01:00`;
             
-            // Get day name in Serbian
-            const dayNames = ['nedelja', 'ponedeljak', 'utorak', 'sreda', 'četvrtak', 'petak', 'subota'];
-            const dayName = dayNames[date.getDay()];
-            
-            // Get month name in Serbian
-            const monthNames = ['januar', 'februar', 'mart', 'april', 'maj', 'jun', 'jul', 'avgust', 'septembar', 'oktobar', 'novembar', 'decembar'];
-            const monthName = monthNames[date.getMonth()];
-            
-            // Construct the formatted date string manually
+            // Construct the formatted date string
             const formattedDate = `${dayName}, ${day}. ${monthName} ${year}. ${appointment.time}`;
 
-            console.log('Date Debug:', {
-                originalDate: appointment.date,
-                originalTime: appointment.time,
-                startTimeString,
-                endTimeString,
+            console.log('Date Processing:', {
+                receivedDate: appointment.date,
+                parsedComponents: { year, month, day },
+                utcDate: date.toISOString(),
                 formattedDate,
-                timezone: 'Europe/Belgrade',
-                dateComponents: { year, month, day, dayName, monthName }
+                startTimeString,
+                endTimeString
             });
 
             // Add event to Google Calendar
