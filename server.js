@@ -94,10 +94,21 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
 app.get('/api/appointments', async (req, res) => {
     try {
         const date = req.query.date;
+        console.log('Received date query:', date);
+        
+        // Validate date format
+        if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+            return res.status(400).json({ 
+                error: 'Invalid date format. Expected YYYY-MM-DD' 
+            });
+        }
+
         const [appointments] = await pool.execute(
-            'SELECT time FROM appointments WHERE date = ?',
+            'SELECT time, duration FROM appointments WHERE date = ?',
             [date]
         );
+        
+        console.log('Found appointments:', appointments);
         res.json(appointments);
     } catch (error) {
         console.error('Error fetching appointments:', error);

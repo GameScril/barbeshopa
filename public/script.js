@@ -203,8 +203,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const formattedDate = date.toISOString().split('T')[0];
+            console.log('Requesting appointments for date:', formattedDate);
+            
             const response = await fetch(`${API_BASE_URL}/api/appointments?date=${formattedDate}`);
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Server responded with ${response.status}: ${errorText}`);
+            }
+            
             const bookedAppointments = await response.json();
+            console.log('Received appointments:', bookedAppointments);
             
             // Create a map of all blocked time slots
             const blockedTimes = new Set();
