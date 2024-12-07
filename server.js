@@ -75,19 +75,37 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
         await connection.commit();
         connection.release();
 
+        // Send email and create calendar event
+        const emailResult = await emailService.sendOwnerNotification({
+            ...req.body,
+            id: result.insertId,
+            duration: req.serviceDuration
+        });
+
+        if (!emailResult.success) {
+            console.error('Failed to send email notification:', emailResult.error);
+            // Don't return error to client, but log it
+        }
+
         res.json({
             success: true,
             appointment: {
                 ...req.body,
                 id: result.insertId,
-                calendarEventId: null
+                calendarEventId: emailResult.success ? emailResult.calendarEventId : null
             }
         });
 
     } catch (error) {
-        await connection.rollback();
-        connection.release();
-        throw error;
+        console.error('Appointment creation error:', error);
+        if (connection) {
+            await connection.rollback();
+            connection.release();
+        }
+        res.status(500).json({
+            success: false,
+            error: 'Došlo je do greške prilikom kreiranja rezervacije'
+        });
     }
 });
 
@@ -352,6 +370,17 @@ app.get('/api/appointments/month', async (req, res) => {
     } finally {
         if (connection) connection.release();
     }
+});
+
+// Add this route near your other debug routes
+app.get('/api/debug-env', (req, res) => {
+    res.json({
+        email_configured: !!process.env.EMAIL_USER && !!process.env.SHOP_EMAIL,
+        calendar_configured: !!process.env.GOOGLE_CLIENT_ID && 
+                           !!process.env.GOOGLE_CLIENT_SECRET && 
+                           !!process.env.GOOGLE_REFRESH_TOKEN,
+        shop_info_configured: !!process.env.SHOP_ADDRESS && !!process.env.SHOP_NAME
+    });
 });
 
 // Use PORT provided by Railway or default to 3000
