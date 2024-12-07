@@ -43,19 +43,27 @@ class CalendarService {
 
     async addEvent({ startDateTime, endDateTime, summary, description, location, duration }) {
         try {
-            const endTime = new Date(new Date(startDateTime).getTime() + duration * 60000);
+            // Parse the date and time properly
+            const startDate = new Date(startDateTime);
+            // Calculate end time based on duration
+            const endDate = new Date(startDate.getTime() + (duration * 60 * 1000));
             
+            // Format dates in ISO string with timezone offset
+            const timeZone = 'Europe/Belgrade';
+            const startTimeFormatted = startDate.toLocaleString('en-US', { timeZone });
+            const endTimeFormatted = endDate.toLocaleString('en-US', { timeZone });
+
             const event = {
                 summary,
                 location,
                 description,
                 start: {
-                    dateTime: startDateTime,
-                    timeZone: 'Europe/Belgrade',
+                    dateTime: new Date(startTimeFormatted).toISOString(),
+                    timeZone: timeZone,
                 },
                 end: {
-                    dateTime: endTime.toISOString(),
-                    timeZone: 'Europe/Belgrade',
+                    dateTime: new Date(endTimeFormatted).toISOString(),
+                    timeZone: timeZone,
                 },
                 reminders: {
                     useDefault: false,
@@ -65,7 +73,11 @@ class CalendarService {
                 },
             };
 
-            console.log('Calendar Event Object:', JSON.stringify(event, null, 2));
+            console.log('Creating calendar event:', {
+                startTime: event.start.dateTime,
+                endTime: event.end.dateTime,
+                timeZone: event.start.timeZone
+            });
 
             const response = await this.calendar.events.insert({
                 calendarId: 'primary',
@@ -77,7 +89,15 @@ class CalendarService {
                 eventId: response.data.id
             };
         } catch (error) {
-            console.error('Calendar Event Error:', error.response?.data || error);
+            console.error('Calendar Event Creation Error:', {
+                error: error.message,
+                stack: error.stack,
+                input: {
+                    startDateTime,
+                    endDateTime,
+                    duration
+                }
+            });
             return {
                 success: false,
                 error: error.message
