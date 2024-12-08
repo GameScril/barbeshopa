@@ -67,9 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const calendarHTML = `
             <div class="calendar-header">
-                <button class="calendar-nav prev">&lt;</button>
+                <button id="prev-month" class="calendar-nav prev">&lt;</button>
                 <h3>${capitalizedMonth} ${date.getFullYear()}</h3>
-                <button class="calendar-nav next">&gt;</button>
+                <button id="next-month" class="calendar-nav next">&gt;</button>
             </div>
             <div class="calendar-days">
                 <div>Pon</div>
@@ -84,6 +84,29 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         calendarContainer.innerHTML = calendarHTML;
+
+        // Move the event listeners here, after the elements are created
+        document.getElementById('prev-month')?.addEventListener('click', () => {
+            const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1);
+            if (newDate.getMonth() >= new Date().getMonth() || 
+                newDate.getFullYear() > new Date().getFullYear()) {
+                currentDate = newDate;
+                handleMonthChange();
+                createCalendar(currentDate);
+            }
+        });
+
+        document.getElementById('next-month')?.addEventListener('click', () => {
+            const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1);
+            const threeMonthsFromNow = new Date();
+            threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
+            
+            if (newDate <= threeMonthsFromNow) {
+                currentDate = newDate;
+                handleMonthChange();
+                createCalendar(currentDate);
+            }
+        });
 
         // Fetch all reservations for this month
         const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
@@ -145,28 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             datesContainer.appendChild(dateCell);
         }
-
-        document.getElementById('prev-month').addEventListener('click', () => {
-            const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1);
-            if (newDate.getMonth() >= new Date().getMonth() || 
-                newDate.getFullYear() > new Date().getFullYear()) {
-                currentDate = newDate;
-                handleMonthChange();
-                createCalendar(currentDate);
-            }
-        });
-
-        document.getElementById('next-month').addEventListener('click', () => {
-            const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1);
-            const threeMonthsFromNow = new Date();
-            threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
-            
-            if (newDate <= threeMonthsFromNow) {
-                currentDate = newDate;
-                handleMonthChange();
-                createCalendar(currentDate);
-            }
-        });
     }
 
     function selectDate(dateObj, dateCell) {
@@ -220,6 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function generateTimeSlots(dateObj) {
         const timeSlotsContainer = document.getElementById('time-slots');
         timeSlotsContainer.innerHTML = '';
+        timeSlotsContainer.classList.add('visible');
         
         const selectedService = document.querySelector('.service-card.selected');
         if (!selectedService) return;
@@ -249,6 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const select = document.createElement('select');
             select.id = 'time-select';
             select.className = 'time-select';
+            select.style.display = 'block';
 
             // Add default option
             const defaultOption = document.createElement('option');
