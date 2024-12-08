@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
-const { pool, initializeDatabase } = require('./db');
+const { pool, initializeDatabase, testConnection } = require('./db');
 const { validateAppointment } = require('./middleware/validate');
 const { emailService } = require('./services/emailService');
 const { calendarService } = require('./services/calendarService');
@@ -60,6 +60,37 @@ app.get('/api/test-db', async (req, res) => {
             error: error.message,
             mysqlHost: process.env.MYSQLHOST,
             database: process.env.MYSQLDATABASE
+        });
+    }
+});
+
+app.get('/api/test-db-connection', async (req, res) => {
+    try {
+        const isConnected = await testConnection();
+        if (isConnected) {
+            res.json({
+                success: true,
+                message: 'Database connection successful',
+                config: {
+                    host: process.env.MYSQLHOST,
+                    user: process.env.MYSQLUSER,
+                    database: process.env.MYSQLDATABASE,
+                    port: process.env.MYSQLPORT
+                }
+            });
+        } else {
+            throw new Error('Connection test failed');
+        }
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message,
+            config: {
+                host: process.env.MYSQLHOST,
+                user: process.env.MYSQLUSER,
+                database: process.env.MYSQLDATABASE,
+                port: process.env.MYSQLPORT
+            }
         });
     }
 });

@@ -1,10 +1,13 @@
 const mysql = require('mysql2/promise');
+require('dotenv').config();
 
+// Update the pool configuration to use Railway's environment variables
 const pool = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
+    host: process.env.MYSQLHOST || 'localhost',
+    user: process.env.MYSQLUSER || 'root',
+    password: process.env.MYSQLPASSWORD || '',
+    database: process.env.MYSQLDATABASE || 'appointments',
+    port: process.env.MYSQLPORT || 3306,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
@@ -13,8 +16,12 @@ const pool = mysql.createPool({
 const initializeDatabase = async () => {
     try {
         const connection = await pool.getConnection();
-        // Test the connection
-        console.log('Database connected successfully');
+        console.log('Database connection info:', {
+            host: process.env.MYSQLHOST,
+            user: process.env.MYSQLUSER,
+            database: process.env.MYSQLDATABASE,
+            port: process.env.MYSQLPORT
+        });
         
         // Create appointments table if it doesn't exist
         await connection.execute(`
@@ -33,26 +40,34 @@ const initializeDatabase = async () => {
             )
         `);
 
-        // Add duration column if it doesn't exist
-        try {
-            await connection.execute(`
-                ALTER TABLE appointments 
-                ADD COLUMN duration INT NOT NULL DEFAULT 30
-            `);
-            console.log('Added duration column');
-        } catch (error) {
-            // Column might already exist, which is fine
-            if (!error.message.includes('Duplicate column name')) {
-                throw error;
-            }
-        }
-        
-        connection.release();
         console.log('Database initialized successfully');
+        connection.release();
+        return true;
     } catch (error) {
-        console.error('Database initialization error:', error);
+        console.error('Database initialization error details:', {
+            message: error.message,
+            code: error.code,
+            errno: error.errno,
+            sqlState: error.sqlState,
+            host: process.env.MYSQLHOST,
+            user: process.env.MYSQLUSER,
+            database: process.env.MYSQLDATABASE
+        });
         throw error;
     }
 };
 
-module.exports = { pool, initializeDatabase }; 
+// Add a function to test the database connection
+const testConnection = async () => {
+    try {
+        const connection = await pool.getConnection();
+        await connection.ping();
+        connection.release();
+        return true;
+    } catch (error) {
+        console.error('Database connection test failed:', error);
+        return false;
+    }
+};
+
+module.exports = { pool, initializeDatabase, testConnection }; 
