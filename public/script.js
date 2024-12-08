@@ -197,81 +197,91 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function generateTimeSlots(date) {
-        timeSlots.innerHTML = '';
-        const startTime = 8; // 8 AM
-        const endTime = 16; // 4 PM
+        const timeSlotsContainer = document.getElementById('time-slots');
+        timeSlotsContainer.innerHTML = '';
+        
+        const selectedService = document.querySelector('.service-card.selected');
+        if (!selectedService) return;
 
+        const formattedDate = date.toISOString().split('T')[0];
+        
         try {
-            const formattedDate = date.toISOString().split('T')[0];
-            console.log('Requesting appointments for date:', formattedDate);
-            
             const response = await fetch(`${API_BASE_URL}/api/appointments?date=${formattedDate}`);
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Server responded with ${response.status}: ${errorText}`);
-            }
+            if (!response.ok) throw new Error('Failed to fetch appointments');
             
             const bookedAppointments = await response.json();
-            console.log('Received appointments:', bookedAppointments);
             
-            // Create a map of all blocked time slots
+            // Create select element
+            const select = document.createElement('select');
+            select.id = 'time-select';
+            select.className = 'time-select';
+
+            // Add default option
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Izaberite vrijeme';
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            select.appendChild(defaultOption);
+
+            const startTime = 8 * 60;  // 8:00 AM in minutes
+            const endTime = 16 * 60;   // 4:00 PM in minutes
+            const interval = 10; // 10-minute intervals
+            
+            const serviceDuration = getServiceDuration(selectedService.dataset.service);
+
+            // Create a set of blocked times
             const blockedTimes = new Set();
             bookedAppointments.forEach(apt => {
-                const startTime = new Date(`${apt.date}T${apt.time}`);
-                const duration = apt.duration || 30; // fallback to 30 if not set
+                const startMinutes = convertTimeToMinutes(apt.time);
+                const duration = apt.duration || serviceDuration;
                 
-                // Block all slots within the appointment duration
-                for (let i = 0; i < duration; i += 10) {
-                    const slotTime = new Date(startTime.getTime() + i * 60000);
-                    blockedTimes.add(slotTime.toTimeString().slice(0, 5));
+                for (let i = 0; i < duration; i += interval) {
+                    const blocked = startMinutes + i;
+                    blockedTimes.add(blocked);
                 }
             });
 
-            // Get currently selected service
-            const selectedService = document.querySelector('.service-card.selected');
-            const serviceDurations = {
-                'brada': 10,    // Brijanje - 10 minutes
-                'kosa': 20,     // Šišanje - 20 minutes
-                'bradaikosa': 30 // Both - 30 minutes
-            };
+            // Generate available time slots
+            for (let time = startTime; time < endTime; time += interval) {
+                // Skip if this would create an appointment ending after business hours
+                if (time + serviceDuration > endTime) continue;
 
-            // Generate time slots based on service duration
-            for (let hour = startTime; hour < endTime; hour++) {
-                for (let minute = 0; minute < 60; minute += 10) {
-                    const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-                    const timeSlot = document.createElement('div');
-                    timeSlot.className = 'time-slot';
-                    timeSlot.textContent = timeString;
-
-                    // Check if this slot would overlap with any booked appointments
-                    let isBlocked = false;
-                    const slotStartTime = new Date(`${formattedDate}T${timeString}`);
-                    const duration = selectedService ? serviceDurations[selectedService.dataset.service] : 30;
-                    
-                    for (let i = 0; i < duration; i += 10) {
-                        const checkTime = new Date(slotStartTime.getTime() + i * 60000);
-                        const checkTimeString = checkTime.toTimeString().slice(0, 5);
-                        if (blockedTimes.has(checkTimeString)) {
-                            isBlocked = true;
-                            break;
-                        }
+                // Check if any minute in the service duration is blocked
+                let isBlocked = false;
+                for (let i = 0; i < serviceDuration; i += interval) {
+                    if (blockedTimes.has(time + i)) {
+                        isBlocked = true;
+                        break;
                     }
+                }
 
-                    if (isBlocked) {
-                        timeSlot.classList.add('booked');
-                    } else {
-                        timeSlot.addEventListener('click', function() {
-                            document.querySelectorAll('.time-slot').forEach(ts => 
-                                ts.classList.remove('selected'));
-                            this.classList.add('selected');
-                        });
-                    }
+                if (!isBlocked) {
+                    const hours = Math.floor(time / 60);
+                    const minutes = time % 60;
+                    const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
                     
-                    timeSlots.appendChild(timeSlot);
+                    const option = document.createElement('option');
+                    option.value = timeString;
+                    option.textContent = timeString;
+                    select.appendChild(option);
                 }
             }
+
+            timeSlotsContainer.appendChild(select);
+
+            // Add change event listener
+            select.addEventListener('change', function() {
+                // Remove selected class from any previously selected time slots
+                const prevSelected = document.querySelector('.time-slot.selected');
+                if (prevSelected) prevSelected.classList.remove('selected');
+                
+                // Add selected class to the select element
+                this.classList.add('selected');
+            });
+
         } catch (error) {
-            console.error('Error fetching booked appointments:', error);
+            console.error('Error generating time slots:', error);
             showNotification('Greška', 'Greška pri učitavanju termina');
         }
     }
@@ -330,10 +340,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Booking submission
     bookButton.addEventListener('click', async () => {
-        const selectedTime = document.querySelector('.time-slot.selected');
+        const selectedTime = document.querySelector('#time-select');
         
-        if (!selectedTime || selectedTime.classList.contains('booked')) {
-            showNotification('Upozorenje', 'Molimo izaberite slobodan termin');
+        if (!selectedTime || !selectedTime.value) {
+            showNotification('Upozorenje', 'Molimo izaberite vrijeme');
             return;
         }
 
@@ -356,7 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
             service: selectedService.dataset.service,
             price: parseInt(selectedService.dataset.price),
             date: `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`,
-            time: selectedTime.textContent,
+            time: selectedTime.value,
             name: name,
             phone: phone,
             email: email

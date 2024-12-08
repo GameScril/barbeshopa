@@ -463,6 +463,15 @@ body {
     font-size: 16px;
     cursor: pointer;
     transition: all 0.3s ease;
+    margin-top: 1rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23D4AF37' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+    padding-right: 2.5rem;
 }
 
 .time-select:hover {
@@ -478,11 +487,16 @@ body {
 .time-select option {
     background-color: #2c2c2c;
     color: #ffffff;
-    padding: 12px;
+    padding: 8px;
 }
 
 .time-select option:checked {
     background-color: var(--gold);
     color: #1a1a1a;
+}
+
+.time-select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
  
