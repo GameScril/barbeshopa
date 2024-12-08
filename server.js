@@ -79,14 +79,21 @@ app.get('/api/appointments/month', async (req, res) => {
 
     try {
         connection = await pool.getConnection();
+        console.log('Fetching appointments between:', start, 'and', end);
+        
         const [rows] = await connection.execute(
-            'SELECT DISTINCT DATE_FORMAT(date, "%Y-%m-%d") as date FROM appointments WHERE date BETWEEN ? AND ?',
+            'SELECT DISTINCT DATE(date) as date FROM appointments WHERE date BETWEEN ? AND ?',
             [start, end]
         );
 
+        const formattedDates = rows.map(row => {
+            const date = new Date(row.date);
+            return date.toISOString().split('T')[0];
+        });
+
         res.json({
             success: true,
-            data: rows
+            data: formattedDates
         });
 
     } catch (error) {
@@ -161,7 +168,7 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
             await connection.rollback();
             return res.status(409).json({
                 success: false,
-                error: 'Ovaj termin se preklapa sa postoje��om rezervacijom'
+                error: 'Ovaj termin se preklapa sa postojećom rezervacijom'
             });
         }
 
