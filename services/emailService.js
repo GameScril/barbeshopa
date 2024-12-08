@@ -15,8 +15,31 @@ class EmailService {
     async sendOwnerNotification(appointment) {
         try {
             // Format the date and time for calendar
-            const appointmentDate = new Date(`${appointment.date}T${appointment.time}`);
+            const [year, month, day] = appointment.date.split('-');
+            const [hours, minutes] = appointment.time.split(':');
+            
+            // Create date in local timezone
+            const appointmentDate = new Date(
+                parseInt(year),
+                parseInt(month) - 1, // Month is 0-based
+                parseInt(day),
+                parseInt(hours),
+                parseInt(minutes)
+            );
+
+            // Set timezone to Belgrade
             const timeZone = 'Europe/Belgrade';
+            const formatter = new Intl.DateTimeFormat('sr-Latn', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZone: timeZone
+            });
+
+            const formattedDateTime = formatter.format(appointmentDate);
             
             // Get service name
             const serviceName = this.getServiceName(appointment.service);
@@ -33,7 +56,8 @@ class EmailService {
                     Usluga: ${serviceName}
                     Cijena: ${appointment.price} KM
                 `,
-                location: process.env.SHOP_ADDRESS
+                location: process.env.SHOP_ADDRESS,
+                timeZone: timeZone
             });
 
             if (!calendarResult.success) {
@@ -59,13 +83,7 @@ class EmailService {
                                     <strong style="color: #D4AF37;">Usluga:</strong> ${serviceName}
                                 </p>
                                 <p style="margin: 10px 0; color: #ffffff;">
-                                    <strong style="color: #D4AF37;">Datum i vrijeme:</strong> ${appointmentDate.toLocaleDateString('sr-Latn', { 
-                                        weekday: 'long',
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric',
-                                        timeZone: 'Europe/Belgrade'
-                                    })} ${appointment.time}
+                                    <strong style="color: #D4AF37;">Datum i vrijeme:</strong> ${formattedDateTime}
                                 </p>
                                 <p style="margin: 10px 0; color: #ffffff;">
                                     <strong style="color: #D4AF37;">Lokacija:</strong> ${process.env.SHOP_ADDRESS}
@@ -86,30 +104,20 @@ class EmailService {
                                 </p>
                             </div>
                         </div>
-                        
-                        <div style="background-color: #1a1a1a; color: #ffffff; text-align: center; padding: 15px; font-size: 12px;">
-                            <p style="margin: 0;">Dogadjaj je automatski dodat u vas Google Calendar.</p>
-                        </div>
                     </div>
                 `
             };
 
-            // Send single email to owner
+            // Send the email
             await this.transporter.sendMail(emailContent);
-            
+
             return {
                 success: true,
                 calendarEventId: calendarResult.eventId
             };
+
         } catch (error) {
-            console.error('Email/Calendar Error:', {
-                error: error.message,
-                appointment: {
-                    date: appointment.date,
-                    time: appointment.time,
-                    duration: appointment.duration
-                }
-            });
+            console.error('Email service error:', error);
             return {
                 success: false,
                 error: error.message

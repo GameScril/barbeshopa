@@ -258,8 +258,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const serviceDuration = selectedService ? getServiceDuration(selectedService.dataset.service) : 30;
 
             // Create array of all minutes between 8:00 and 16:00
-            const startMinutes = 8 * 60;
-            const endMinutes = 16 * 60;
+            const startMinutes = 8 * 60; // 8:00
+            const endMinutes = 16 * 60;  // 16:00
             
             // Create array of booked time ranges
             const bookedRanges = result.bookedSlots.map(slot => {
@@ -271,29 +271,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
             });
 
-            // Generate all possible time slots
-            for (let minutes = startMinutes; minutes < endMinutes; minutes++) {
-                const hour = Math.floor(minutes / 60);
-                const minute = minutes % 60;
-                const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-                
-                // Check if this time slot would overlap with any booked slot
-                const slotEnd = minutes + serviceDuration;
+            // Find all available time slots
+            let currentMinute = startMinutes;
+            while (currentMinute + serviceDuration <= endMinutes) {
+                // Check if this time slot overlaps with any booking
+                const slotEnd = currentMinute + serviceDuration;
                 const isAvailable = !bookedRanges.some(range => 
-                    (minutes < range.end && slotEnd > range.start)
+                    (currentMinute < range.end && slotEnd > range.start)
                 );
 
-                // Create option for all times, but disable booked ones
-                const option = document.createElement('option');
-                option.value = timeString;
-                option.textContent = timeString;
-                
-                if (!isAvailable) {
-                    option.disabled = true;
-                    option.textContent += ' (Zauzeto)';
+                if (isAvailable) {
+                    const hour = Math.floor(currentMinute / 60);
+                    const minute = currentMinute % 60;
+                    const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                    
+                    const option = document.createElement('option');
+                    option.value = timeString;
+                    option.textContent = timeString;
+                    select.appendChild(option);
+
+                    // Move to the next minute after this service would end
+                    currentMinute = slotEnd;
+                } else {
+                    // Find the next available start time
+                    const nextAvailableTime = bookedRanges
+                        .filter(range => range.start >= currentMinute)
+                        .sort((a, b) => a.start - b.start)[0];
+
+                    if (nextAvailableTime) {
+                        currentMinute = nextAvailableTime.end;
+                    } else {
+                        // No more bookings today, move to next minute
+                        currentMinute++;
+                    }
                 }
-                
-                select.appendChild(option);
             }
 
             timeSlotsContainer.appendChild(select);
