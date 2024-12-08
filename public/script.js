@@ -217,11 +217,22 @@ document.addEventListener('DOMContentLoaded', () => {
         
         try {
             const response = await fetch(`${API_BASE_URL}/api/appointments/booked?date=${formattedDate}`);
+            const contentType = response.headers.get('content-type');
+            
+            // Debug logging
+            console.log('Response content type:', contentType);
+            
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Server returned non-JSON response');
+            }
+
             if (!response.ok) {
-                throw new Error('Failed to fetch appointments');
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
             
             const data = await response.json();
+            console.log('Server response:', data); // Debug logging
+            
             if (!data.success) {
                 throw new Error(data.error || 'Failed to fetch appointments');
             }
@@ -290,7 +301,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error('Error generating time slots:', error);
-            showNotification('Greška', 'Greška pri učitavanju termina');
+            showNotification('Greška', 'Greška pri učitavanju termina: ' + error.message);
+            
+            // Add a basic select element even if there's an error
+            const select = document.createElement('select');
+            select.id = 'time-select';
+            select.className = 'time-select';
+            select.disabled = true;
+            
+            const errorOption = document.createElement('option');
+            errorOption.value = '';
+            errorOption.textContent = 'Greška pri učitavanju termina';
+            select.appendChild(errorOption);
+            
+            timeSlotsContainer.appendChild(select);
         }
     }
 

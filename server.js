@@ -400,12 +400,6 @@ function getServiceName(service) {
     return services[service] || service;
 }
 
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-console.log('Public directory:', path.join(__dirname, 'public'));
-
 app.get('/api/debug-date', (req, res) => {
     const testDate = new Date();
     res.json({
@@ -421,9 +415,27 @@ app.get('/api/debug-date', (req, res) => {
     });
 });
 
-// Add this new endpoint to get booked slots
+// Move the catch-all route to the bottom
+app.get('*', (req, res) => {
+    // Only serve index.html for non-API routes
+    if (!req.path.startsWith('/api/')) {
+        res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    } else {
+        res.status(404).json({ success: false, error: 'API endpoint not found' });
+    }
+});
+
+// Move the booked slots endpoint BEFORE the catch-all route
 app.get('/api/appointments/booked', async (req, res) => {
     const { date } = req.query;
+    if (!date) {
+        return res.status(400).json({ 
+            success: false, 
+            error: 'Date parameter is required',
+            bookedSlots: [] 
+        });
+    }
+
     const connection = await pool.getConnection();
     
     try {
@@ -432,11 +444,10 @@ app.get('/api/appointments/booked', async (req, res) => {
             [date]
         );
         
-        // Make sure we're sending a properly formatted response
         res.json({ 
             success: true,
             bookedSlots: rows.map(row => ({
-                time: row.time.slice(0, 5), // Format time as HH:mm
+                time: row.time.slice(0, 5),
                 duration: row.duration
             }))
         });
