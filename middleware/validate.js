@@ -18,11 +18,11 @@ const validateAppointment = async (req, res, next) => {
     
     // Get service duration
     const durations = {
-        'brada': 20,
-        'kosa': 30,
-        'bradaikosa': 45
+        'brada': 10,
+        'kosa': 20,
+        'bradaikosa': 30
     };
-    const duration = durations[service] || 30;
+    const duration = durations[service] || 20;
     
     // Check if appointment starts and ends within business hours
     if (requestedTimeInMinutes < startTime || 

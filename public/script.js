@@ -241,6 +241,14 @@ document.addEventListener('DOMContentLoaded', () => {
         select.appendChild(defaultOption);
 
         try {
+            // Get selected service duration
+            const selectedService = document.querySelector('.service-card.selected');
+            if (!selectedService) {
+                showNotification('Upozorenje', 'Molimo izaberite uslugu prvo');
+                return;
+            }
+            const serviceDuration = getServiceDuration(selectedService.dataset.service);
+
             const formattedDate = dateObj.toISOString().split('T')[0];
             const response = await fetch(`/api/appointments/slots/${formattedDate}`);
             
@@ -253,13 +261,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(result.error || 'Failed to fetch booked slots');
             }
 
-            // Get selected service duration
-            const selectedService = document.querySelector('.service-card.selected');
-            const serviceDuration = selectedService ? getServiceDuration(selectedService.dataset.service) : 30;
-
             // Create array of all minutes between 8:00 and 16:00
             const startMinutes = 8 * 60; // 8:00
-            const endMinutes = 16 * 60;  // 16:00
+            const endMinutes = 16 * 60; // 16:00
+            const lastPossibleStartTime = endMinutes - serviceDuration; // Last time that allows service to finish by 16:00
             
             // Create array of booked time ranges
             const bookedRanges = result.bookedSlots.map(slot => {
@@ -269,18 +274,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     start: startTime,
                     end: startTime + slot.duration
                 };
-            });
+            }).sort((a, b) => a.start - b.start); // Sort by start time
 
-            // Find all available time slots
             let currentMinute = startMinutes;
-            while (currentMinute + serviceDuration <= endMinutes) {
-                // Check if this time slot overlaps with any booking
+            while (currentMinute <= lastPossibleStartTime) {
                 const slotEnd = currentMinute + serviceDuration;
-                const isAvailable = !bookedRanges.some(range => 
+                
+                // Find any overlapping booking
+                const overlappingBooking = bookedRanges.find(range => 
                     (currentMinute < range.end && slotEnd > range.start)
                 );
 
-                if (isAvailable) {
+                if (!overlappingBooking) {
+                    // This minute is available
                     const hour = Math.floor(currentMinute / 60);
                     const minute = currentMinute % 60;
                     const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
@@ -289,22 +295,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     option.value = timeString;
                     option.textContent = timeString;
                     select.appendChild(option);
-
-                    // Move to the next minute after this service would end
-                    currentMinute = slotEnd;
+                    currentMinute++; // Check next minute
                 } else {
-                    // Find the next available start time
-                    const nextAvailableTime = bookedRanges
-                        .filter(range => range.start >= currentMinute)
-                        .sort((a, b) => a.start - b.start)[0];
-
-                    if (nextAvailableTime) {
-                        currentMinute = nextAvailableTime.end;
-                    } else {
-                        // No more bookings today, move to next minute
-                        currentMinute++;
-                    }
+                    // Skip to the end of the overlapping booking
+                    currentMinute = overlappingBooking.end;
                 }
+            }
+
+            if (select.children.length <= 1) { // Only has the default option
+                const noTimesOption = document.createElement('option');
+                noTimesOption.value = '';
+                noTimesOption.disabled = true;
+                noTimesOption.textContent = 'Nema dostupnih termina za izabranu uslugu';
+                select.appendChild(noTimesOption);
             }
 
             timeSlotsContainer.appendChild(select);
@@ -512,10 +515,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Helper function to get service duration
     function getServiceDuration(service) {
         const durations = {
-            'brada': 20,
-            'kosa': 30,
-            'bradaikosa': 45
+            'brada': 10,
+            'kosa': 20,
+            'bradaikosa': 30
         };
-        return durations[service] || 30;
+        return durations[service] || 20;
     }
 }); 
