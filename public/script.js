@@ -124,20 +124,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Add cells for each day of the month
-            for (let day = 1; day <= lastDay.getDate(); day++) {
+            for (let i = 1; i <= lastDay.getDate(); i++) {
+                const dateObj = new Date(date.getFullYear(), date.getMonth(), i);
                 const dateCell = document.createElement('div');
-                const dateObj = new Date(date.getFullYear(), date.getMonth(), day);
+                dateCell.textContent = i;
+                
                 const formattedDate = dateObj.toISOString().split('T')[0];
-                
-                dateCell.textContent = day;
-
-                const dayOfWeek = dateObj.getDay();
-                const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-                
+                const isWeekend = dateObj.getDay() === 0 || dateObj.getDay() === 6;
                 const now = new Date();
                 const isToday = dateObj.toDateString() === now.toDateString();
-                const isAfterBusinessHours = now.getHours() >= 16;
-                const isPast = dateObj < now || (isToday && isAfterBusinessHours);
+                const isPast = dateObj < now;
 
                 if (reservedDates.has(formattedDate)) {
                     dateCell.classList.add('has-reservations');
@@ -236,77 +232,62 @@ document.addEventListener('DOMContentLoaded', () => {
     async function generateTimeSlots(dateObj) {
         const timeSlotsContainer = document.getElementById('time-slots');
         timeSlotsContainer.innerHTML = '';
-        timeSlotsContainer.classList.add('visible');
         
-        const selectedService = document.querySelector('.service-card.selected');
-        if (!selectedService) return;
+        const select = document.createElement('select');
+        select.id = 'time-select';
+        select.classList.add('time-select');
+        
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = 'Izaberite vrijeme';
+        defaultOption.selected = true;
+        defaultOption.disabled = true;
+        select.appendChild(defaultOption);
 
-        // Format date as YYYY-MM-DD
-        const formattedDate = dateObj.toISOString().split('T')[0];
-        console.log('Requesting slots for date:', formattedDate); // Debug log
-        
         try {
-            const response = await fetch(`/api/appointments/booked?date=${formattedDate}`);
-            console.log('Response status:', response.status); // Debug log
+            const formattedDate = dateObj.toISOString().split('T')[0];
+            const response = await fetch(`/api/appointments/slots/${formattedDate}`);
             
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error('Failed to fetch booked slots');
             }
             
-            const data = await response.json();
-            console.log('Server response:', data); // Debug log
-            
-            if (!data.success) {
-                throw new Error(data.error || 'Failed to fetch appointments');
+            const result = await response.json();
+            if (!result.success) {
+                throw new Error(result.error || 'Failed to fetch booked slots');
             }
 
-            const bookedSlots = data.bookedSlots || [];
-            
-            // Create select element
-            const select = document.createElement('select');
-            select.id = 'time-select';
-            select.className = 'time-select';
-            select.style.display = 'block';
+            // Get selected service duration
+            const selectedService = document.querySelector('.service-card.selected');
+            const serviceDuration = selectedService ? getServiceDuration(selectedService.dataset.service) : 30;
 
-            // Add default option
-            const defaultOption = document.createElement('option');
-            defaultOption.value = '';
-            defaultOption.textContent = 'Izaberite vrijeme';
-            defaultOption.disabled = true;
-            defaultOption.selected = true;
-            select.appendChild(defaultOption);
-
-            const startTime = 8 * 60;  // 8:00 AM in minutes
-            const endTime = 16 * 60;   // 4:00 PM in minutes
-            const interval = 10; // 10-minute intervals
+            // Create array of all minutes between 8:00 and 16:00
+            const startMinutes = 8 * 60;
+            const endMinutes = 16 * 60;
             
-            const serviceDuration = getServiceDuration(selectedService.dataset.service);
+            // Create array of booked time ranges
+            const bookedRanges = result.bookedSlots.map(slot => {
+                const [hours, minutes] = slot.time.split(':').map(Number);
+                const startTime = hours * 60 + minutes;
+                return {
+                    start: startTime,
+                    end: startTime + slot.duration
+                };
+            });
 
             // Generate available time slots
-            for (let time = startTime; time < endTime; time += interval) {
-                // Skip if this would create an appointment ending after business hours
-                if (time + serviceDuration > endTime) continue;
-
-                // Check if this time slot overlaps with any booked appointments
-                let isBlocked = false;
-                const currentTimeString = `${Math.floor(time/60).toString().padStart(2, '0')}:${(time%60).toString().padStart(2, '0')}`;
+            for (let minutes = startMinutes; minutes < endMinutes; minutes++) {
+                const hour = Math.floor(minutes / 60);
+                const minute = minutes % 60;
+                const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
                 
-                for (const booking of bookedSlots) {
-                    const bookingStart = convertTimeToMinutes(booking.time);
-                    const bookingEnd = bookingStart + booking.duration;
-                    
-                    if (time >= bookingStart && time < bookingEnd || 
-                        (time + serviceDuration) > bookingStart && time < bookingEnd) {
-                        isBlocked = true;
-                        break;
-                    }
-                }
+                // Check if this time slot would overlap with any booked slot
+                const slotEnd = minutes + serviceDuration;
+                const isAvailable = !bookedRanges.some(range => 
+                    (minutes < range.end && slotEnd > range.start)
+                );
 
-                if (!isBlocked) {
-                    const hours = Math.floor(time / 60);
-                    const minutes = time % 60;
-                    const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-                    
+                if (isAvailable && slotEnd <= endMinutes) {
                     const option = document.createElement('option');
                     option.value = timeString;
                     option.textContent = timeString;
@@ -315,29 +296,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             timeSlotsContainer.appendChild(select);
-
-            // Add change event listener
-            select.addEventListener('change', function() {
-                const prevSelected = document.querySelector('.time-slot.selected');
-                if (prevSelected) prevSelected.classList.remove('selected');
-                this.classList.add('selected');
-            });
+            timeSlotsContainer.classList.add('visible');
 
         } catch (error) {
             console.error('Error generating time slots:', error);
-            showNotification('Greška', 'Greška pri učitavanju termina: ' + error.message);
-            
-            // Add a basic select element even if there's an error
-            const select = document.createElement('select');
-            select.id = 'time-select';
-            select.className = 'time-select';
             select.disabled = true;
-            
             const errorOption = document.createElement('option');
             errorOption.value = '';
             errorOption.textContent = 'Greška pri učitavanju termina';
             select.appendChild(errorOption);
-            
             timeSlotsContainer.appendChild(select);
         }
     }
