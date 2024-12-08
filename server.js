@@ -44,8 +44,12 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
         connection = await pool.getConnection();
         await connection.beginTransaction();
 
-        // Log the incoming request
-        console.log('Creating appointment:', req.body);
+        // Enhanced logging
+        console.log('Creating appointment:', {
+            body: req.body,
+            serviceDuration: req.serviceDuration,
+            connection: !!connection
+        });
 
         const appointmentDate = new Date(`${req.body.date}T${req.body.time}`);
         const endTime = new Date(appointmentDate.getTime() + req.serviceDuration * 60000);
@@ -111,7 +115,13 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Appointment creation error:', error);
+        console.error('Appointment creation error details:', {
+            message: error.message,
+            stack: error.stack,
+            code: error.code,
+            sqlMessage: error.sqlMessage
+        });
+        
         if (connection) {
             try {
                 await connection.rollback();
@@ -119,9 +129,11 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
                 console.error('Rollback error:', rollbackError);
             }
         }
+        
         res.status(500).json({
             success: false,
-            error: 'Došlo je do greške prilikom kreiranja rezervacije'
+            error: 'Došlo je do greške prilikom kreiranja rezervacije',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     } finally {
         if (connection) {
