@@ -345,18 +345,6 @@ input:focus {
     background-color: transparent;
 }
 
-.calendar-dates div.has-reservations::after {
-    content: '';
-    position: absolute;
-    bottom: 2px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 4px;
-    height: 4px;
-    background-color: var(--gold);
-    border-radius: 50%;
-}
-
 .modal {
     display: none;
     position: fixed;
@@ -466,13 +454,6 @@ body {
     box-shadow: 0 6px 16px rgba(0,0,0,0.4);
 }
 
-.calendar-dates div.has-reservations {
-    background: rgba(255, 68, 68, 0.2) !important;
-    color: rgba(255, 255, 255, 0.5) !important;
-    cursor: not-allowed !important;
-    pointer-events: none !important;
-}
-
 .time-select {
     width: 100%;
     padding: 12px;
@@ -513,5 +494,10 @@ body {
 .time-select:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+.time-select option:disabled {
+    color: #666;
+    font-style: italic;
 }
  

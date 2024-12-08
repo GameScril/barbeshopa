@@ -135,10 +135,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const isToday = dateObj.toDateString() === now.toDateString();
                 const isPast = dateObj < now;
 
-                if (reservedDates.has(formattedDate)) {
-                    dateCell.classList.add('has-reservations');
-                }
-
                 if (isPast || isWeekend) {
                     dateCell.classList.add('disabled');
                 } else {
@@ -275,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
             });
 
-            // Generate available time slots
+            // Generate all possible time slots
             for (let minutes = startMinutes; minutes < endMinutes; minutes++) {
                 const hour = Math.floor(minutes / 60);
                 const minute = minutes % 60;
@@ -287,12 +283,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     (minutes < range.end && slotEnd > range.start)
                 );
 
-                if (isAvailable && slotEnd <= endMinutes) {
-                    const option = document.createElement('option');
-                    option.value = timeString;
-                    option.textContent = timeString;
-                    select.appendChild(option);
+                // Create option for all times, but disable booked ones
+                const option = document.createElement('option');
+                option.value = timeString;
+                option.textContent = timeString;
+                
+                if (!isAvailable) {
+                    option.disabled = true;
+                    option.textContent += ' (Zauzeto)';
                 }
+                
+                select.appendChild(option);
             }
 
             timeSlotsContainer.appendChild(select);
