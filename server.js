@@ -150,6 +150,8 @@ app.get('/api/appointments/slots/:date', async (req, res) => {
             [date]
         );
         
+        console.log('Found appointments for date:', date, rows); // Debug log
+        
         res.json({ 
             success: true,
             bookedSlots: rows.map(row => ({
