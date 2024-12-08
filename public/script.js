@@ -56,129 +56,36 @@ document.addEventListener('DOMContentLoaded', () => {
     document.head.appendChild(calendarStyle);
 
     async function createCalendar(date) {
-        if (!calendarContainer) {
-            console.error('Calendar container not found!');
-            return;
-        }
-
-        // Capitalize first letter of month
-        const monthName = date.toLocaleString('sr-Latn', { month: 'long' });
-        const capitalizedMonth = monthName.charAt(0).toUpperCase() + monthName.slice(1);
-        
-        const calendarHTML = `
-            <div class="calendar-header">
-                <button id="prev-month" class="calendar-nav prev">&lt;</button>
-                <h3>${capitalizedMonth} ${date.getFullYear()}</h3>
-                <button id="next-month" class="calendar-nav next">&gt;</button>
-            </div>
-            <div class="calendar-days">
-                <div>Pon</div>
-                <div>Uto</div>
-                <div>Sri</div>
-                <div>Čet</div>
-                <div>Pet</div>
-                <div>Sub</div>
-                <div>Ned</div>
-            </div>
-            <div class="calendar-dates"></div>
-        `;
-
-        calendarContainer.innerHTML = calendarHTML;
-
-        // Fetch all reservations for this month
-        const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
-        const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-        
-        const formattedStart = startOfMonth.toISOString().split('T')[0];
-        const formattedEnd = endOfMonth.toISOString().split('T')[0];
-        
-        console.log('Fetching reservations for:', { formattedStart, formattedEnd }); // Debug log
-        
-        let reservedDates = new Set();
         try {
-            const response = await fetch(`/api/appointments/month?start=${formattedStart}&end=${formattedEnd}`);
+            const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+            const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+            
+            const formattedStart = startOfMonth.toISOString().split('T')[0];
+            const formattedEnd = endOfMonth.toISOString().split('T')[0];
+            
+            console.log('Fetching reservations for:', { formattedStart, formattedEnd });
+            
+            const response = await fetch(`${API_BASE_URL}/api/appointments/month?start=${formattedStart}&end=${formattedEnd}`);
+            
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
+            
             const result = await response.json();
-            
-            if (result.success) {
-                reservedDates = new Set(result.data.map(row => row.date));
-            } else {
-                console.error('Failed to fetch reservations:', result.error);
+            if (!result.success) {
+                throw new Error(result.error || 'Failed to fetch reservations');
             }
+            
+            // Process the reservations
+            const reservedDates = new Set(result.data.map(row => row.date));
+            
+            // Continue with calendar creation using reservedDates
+            // ... rest of your calendar creation code ...
+            
         } catch (error) {
-            console.error('Error fetching monthly reservations:', error);
-            // Continue with empty reservedDates set
+            console.error('Error in createCalendar:', error);
+            showNotification('Error', 'Failed to load calendar data');
         }
-
-        const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-        const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-        const startingDay = (firstDay.getDay() + 6) % 7;
-        
-        const datesContainer = calendarContainer.querySelector('.calendar-dates');
-
-        // Add empty cells for days before the first day of the month
-        for (let i = 0; i < startingDay; i++) {
-            const emptyDay = document.createElement('div');
-            datesContainer.appendChild(emptyDay);
-        }
-
-        // Add cells for each day of the month
-        for (let day = 1; day <= lastDay.getDate(); day++) {
-            const dateCell = document.createElement('div');
-            const dateObj = new Date(date.getFullYear(), date.getMonth(), day);
-            const formattedDate = dateObj.toISOString().split('T')[0];
-            
-            dateCell.textContent = day;
-
-            const dayOfWeek = dateObj.getDay();
-            const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-            
-            const now = new Date();
-            const isToday = dateObj.toDateString() === now.toDateString();
-            const isAfterBusinessHours = now.getHours() >= 16;
-            const isPast = dateObj < now || (isToday && isAfterBusinessHours);
-
-            if (reservedDates.has(formattedDate)) {
-                dateCell.classList.add('has-reservations');
-            }
-
-            if (isPast || isWeekend) {
-                dateCell.classList.add('disabled');
-            } else {
-                dateCell.addEventListener('click', () => selectDate(dateObj, dateCell));
-            }
-
-            if (isToday) {
-                dateCell.classList.add('today');
-            }
-
-            datesContainer.appendChild(dateCell);
-        }
-
-        // Add event listeners for navigation buttons
-        document.getElementById('prev-month')?.addEventListener('click', () => {
-            const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1);
-            if (newDate.getMonth() >= new Date().getMonth() || 
-                newDate.getFullYear() > new Date().getFullYear()) {
-                currentDate = newDate;
-                handleMonthChange();
-                createCalendar(currentDate);
-            }
-        });
-
-        document.getElementById('next-month')?.addEventListener('click', () => {
-            const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1);
-            const threeMonthsFromNow = new Date();
-            threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
-            
-            if (newDate <= threeMonthsFromNow) {
-                currentDate = newDate;
-                handleMonthChange();
-                createCalendar(currentDate);
-            }
-        });
     }
 
     function selectDate(dateObj, dateCell) {

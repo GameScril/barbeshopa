@@ -97,23 +97,14 @@ app.get('/api/appointments/month', async (req, res) => {
             data: []
         });
     } finally {
-        if (connection) {
-            connection.release();
-        }
+        if (connection) connection.release();
     }
 });
 
-app.get('/api/appointments/booked', async (req, res) => {
-    const { date } = req.query;
-    if (!date) {
-        return res.status(400).json({ 
-            success: false, 
-            error: 'Date parameter is required',
-            bookedSlots: [] 
-        });
-    }
-
+app.get('/api/appointments/slots/:date', async (req, res) => {
+    const { date } = req.params;
     let connection;
+
     try {
         connection = await pool.getConnection();
         const [rows] = await connection.execute(
@@ -136,9 +127,7 @@ app.get('/api/appointments/booked', async (req, res) => {
             bookedSlots: [] 
         });
     } finally {
-        if (connection) {
-            connection.release();
-        }
+        if (connection) connection.release();
     }
 });
 
@@ -172,7 +161,7 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
             await connection.rollback();
             return res.status(409).json({
                 success: false,
-                error: 'Ovaj termin se preklapa sa postojećom rezervacijom'
+                error: 'Ovaj termin se preklapa sa postoje��om rezervacijom'
             });
         }
 
