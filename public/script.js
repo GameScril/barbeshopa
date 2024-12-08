@@ -217,8 +217,16 @@ document.addEventListener('DOMContentLoaded', () => {
         
         try {
             const response = await fetch(`${API_BASE_URL}/api/appointments/booked?date=${formattedDate}`);
-            if (!response.ok) throw new Error('Failed to fetch appointments');
-            const { bookedSlots } = await response.json();
+            if (!response.ok) {
+                throw new Error('Failed to fetch appointments');
+            }
+            
+            const data = await response.json();
+            if (!data.success) {
+                throw new Error(data.error || 'Failed to fetch appointments');
+            }
+
+            const bookedSlots = data.bookedSlots || [];
             
             // Create select element
             const select = document.createElement('select');

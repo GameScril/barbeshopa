@@ -432,15 +432,21 @@ app.get('/api/appointments/booked', async (req, res) => {
             [date]
         );
         
-        const bookedSlots = rows.map(row => ({
-            time: row.time,
-            duration: row.duration
-        }));
-        
-        res.json({ bookedSlots });
+        // Make sure we're sending a properly formatted response
+        res.json({ 
+            success: true,
+            bookedSlots: rows.map(row => ({
+                time: row.time.slice(0, 5), // Format time as HH:mm
+                duration: row.duration
+            }))
+        });
     } catch (error) {
         console.error('Error fetching booked slots:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ 
+            success: false, 
+            error: 'Internal server error',
+            bookedSlots: [] 
+        });
     } finally {
         connection.release();
     }
