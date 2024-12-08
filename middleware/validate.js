@@ -1,3 +1,5 @@
+const { pool } = require('../db');
+
 const serviceDurations = {
     'brada': 10,    // Brijanje - 10 minutes
     'kosa': 20,     // Šišanje - 20 minutes
