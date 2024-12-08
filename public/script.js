@@ -92,15 +92,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const formattedStart = startOfMonth.toISOString().split('T')[0];
         const formattedEnd = endOfMonth.toISOString().split('T')[0];
         
+        console.log('Fetching reservations for:', { formattedStart, formattedEnd }); // Debug log
+        
         let reservedDates = new Set();
         try {
             const response = await fetch(`/api/appointments/month?start=${formattedStart}&end=${formattedEnd}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            const data = await response.json();
-            // Make sure we're handling the response data correctly
-            reservedDates = new Set(data.map(appointment => appointment.date));
+            const result = await response.json();
+            
+            if (result.success) {
+                reservedDates = new Set(result.data.map(row => row.date));
+            } else {
+                console.error('Failed to fetch reservations:', result.error);
+            }
         } catch (error) {
             console.error('Error fetching monthly reservations:', error);
             // Continue with empty reservedDates set

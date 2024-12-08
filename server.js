@@ -390,25 +390,32 @@ app.get('/api/appointments/month', async (req, res) => {
     const { start, end } = req.query;
     let connection;
     
+    if (!start || !end) {
+        return res.status(400).json({
+            success: false,
+            error: 'Start and end dates are required',
+            data: []
+        });
+    }
+
     try {
         connection = await pool.getConnection();
-        const [reservations] = await connection.execute(
-            'SELECT DISTINCT date FROM appointments WHERE date BETWEEN ? AND ?',
+        const [rows] = await connection.execute(
+            'SELECT DISTINCT DATE_FORMAT(date, "%Y-%m-%d") as date FROM appointments WHERE date BETWEEN ? AND ?',
             [start, end]
         );
 
-        // Format the dates before sending
-        const formattedReservations = reservations.map(row => ({
-            date: row.date.toISOString().split('T')[0]
-        }));
+        res.json({
+            success: true,
+            data: rows
+        });
 
-        res.json(formattedReservations);
     } catch (error) {
         console.error('Error fetching monthly reservations:', error);
-        res.status(500).json({ 
-            success: false, 
+        res.status(500).json({
+            success: false,
             error: 'Failed to fetch reservations',
-            reservations: []
+            data: []
         });
     } finally {
         if (connection) {
