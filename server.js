@@ -415,17 +415,7 @@ app.get('/api/debug-date', (req, res) => {
     });
 });
 
-// Move the catch-all route to the bottom
-app.get('*', (req, res) => {
-    // Only serve index.html for non-API routes
-    if (!req.path.startsWith('/api/')) {
-        res.sendFile(path.join(__dirname, 'public', 'index.html'));
-    } else {
-        res.status(404).json({ success: false, error: 'API endpoint not found' });
-    }
-});
-
-// Move the booked slots endpoint BEFORE the catch-all route
+// Move these routes BEFORE the catch-all route and after the initial middleware setup
 app.get('/api/appointments/booked', async (req, res) => {
     const { date } = req.query;
     if (!date) {
@@ -460,5 +450,14 @@ app.get('/api/appointments/booked', async (req, res) => {
         });
     } finally {
         connection.release();
+    }
+});
+
+// Move catch-all route to the very end of all routes
+app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api/')) {
+        res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    } else {
+        res.status(404).json({ success: false, error: 'API endpoint not found' });
     }
 }); 

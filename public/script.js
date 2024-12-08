@@ -213,25 +213,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedService = document.querySelector('.service-card.selected');
         if (!selectedService) return;
 
+        // Format date as YYYY-MM-DD
         const formattedDate = dateObj.toISOString().split('T')[0];
+        console.log('Requesting slots for date:', formattedDate); // Debug log
         
         try {
-            const response = await fetch(`${API_BASE_URL}/api/appointments/booked?date=${formattedDate}`);
-            const contentType = response.headers.get('content-type');
+            const response = await fetch(`/api/appointments/booked?date=${formattedDate}`);
+            console.log('Response status:', response.status); // Debug log
             
-            // Debug logging
-            console.log('Response content type:', contentType);
-            
-            if (!contentType || !contentType.includes('application/json')) {
-                throw new Error('Server returned non-JSON response');
-            }
-
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
             const data = await response.json();
-            console.log('Server response:', data); // Debug logging
+            console.log('Server response:', data); // Debug log
             
             if (!data.success) {
                 throw new Error(data.error || 'Failed to fetch appointments');
