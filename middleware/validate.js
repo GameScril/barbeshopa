@@ -4,92 +4,78 @@ const serviceDurations = {
     'bradaikosa': 30 // Both - 30 minutes
 };
 
-const validateAppointment = (req, res, next) => {
-    const { service, price, date, time, name, phone, email } = req.body;
-
-    // Add duration to the request object for later use
-    req.serviceDuration = serviceDurations[service];
+const validateAppointment = async (req, res, next) => {
+    const { service, date, time } = req.body;
     
-    // Validate service type with Serbian names
-    const validServices = ['brada', 'kosa', 'bradaikosa'];
-    if (!validServices.includes(service)) {
-        return res.status(400).json({ 
-            success: false, 
-            error: 'Nevalidna usluga' 
-        });
-    }
-
-    // Validate price with Serbian service names
-    const validPrices = {
-        'brada': 4,
-        'kosa': 8,
-        'bradaikosa': 12
+    // Validate business hours
+    const [hours, minutes] = time.split(':').map(Number);
+    const requestedTimeInMinutes = hours * 60 + minutes;
+    
+    const startTime = 8 * 60;  // 8:00 AM in minutes
+    const endTime = 16 * 60;   // 4:00 PM in minutes
+    
+    // Get service duration
+    const durations = {
+        'brada': 20,
+        'kosa': 30,
+        'bradaikosa': 45
     };
-    if (price != validPrices[service]) {
-        return res.status(400).json({ 
-            success: false, 
-            error: 'Nevalidna cijena za izabranu uslugu' 
+    const duration = durations[service] || 30;
+    
+    // Check if appointment starts and ends within business hours
+    if (requestedTimeInMinutes < startTime || 
+        requestedTimeInMinutes + duration > endTime) {
+        return res.status(400).json({
+            success: false,
+            error: 'Termin mora biti između 08:00 i 16:00'
         });
     }
-
-    // Validate date
-    const appointmentDate = new Date(date);
-    const today = new Date();
-    if (appointmentDate < today) {
-        return res.status(400).json({ 
-            success: false, 
-            error: 'Ne možete rezervisati termin u prošlosti' 
+    
+    // Add duration to the request object
+    req.serviceDuration = duration;
+    
+    // Check if the time slot is available
+    const connection = await pool.getConnection();
+    try {
+        const [existingBookings] = await connection.execute(
+            'SELECT time, duration FROM appointments WHERE date = ?',
+            [date]
+        );
+        
+        // Convert requested time to minutes for comparison
+        const requestedTimeInMinutes = convertTimeToMinutes(time);
+        const requestedEndTime = requestedTimeInMinutes + duration;
+        
+        // Check for conflicts with existing bookings
+        const hasConflict = existingBookings.some(booking => {
+            const bookingStart = convertTimeToMinutes(booking.time);
+            const bookingEnd = bookingStart + booking.duration;
+            
+            return (requestedTimeInMinutes < bookingEnd && requestedEndTime > bookingStart);
         });
-    }
-
-    // Validate time format and business hours
-    const [hours, minutes] = time.split(':');
-    const numHours = parseInt(hours);
-    const numMinutes = parseInt(minutes);
-
-    // Check if time is within business hours (8:00 - 16:00)
-    if (numHours < 8 || numHours > 15 || (numHours === 15 && numMinutes > 30)) {
-        return res.status(400).json({ 
-            success: false, 
-            error: 'Van radnog vremena (08:00 - 16:00)' 
+        
+        if (hasConflict) {
+            return res.status(400).json({
+                success: false,
+                error: 'Izabrani termin nije dostupan'
+            });
+        }
+        
+        next();
+    } catch (error) {
+        console.error('Validation error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Došlo je do greške prilikom validacije termina'
         });
+    } finally {
+        connection.release();
     }
-
-    // Check if minutes are either 00 or 30
-    if (numMinutes !== 0 && numMinutes !== 30) {
-        return res.status(400).json({ 
-            success: false, 
-            error: 'Termini su dostupni svakih 30 minuta' 
-        });
-    }
-
-    // Validate name
-    if (!name || name.length < 2) {
-        return res.status(400).json({ 
-            success: false, 
-            error: 'Ime je obavezno i mora imati najmanje 2 karaktera' 
-        });
-    }
-
-    // Validate phone number
-    const phoneRegex = /^[0-9]{9,12}$/;
-    if (!phoneRegex.test(phone)) {
-        return res.status(400).json({ 
-            success: false, 
-            error: 'Neispravan format broja telefona' 
-        });
-    }
-
-    // Validate email
-    const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    if (!email || !emailRegex.test(email)) {
-        return res.status(400).json({ 
-            success: false, 
-            error: 'Neispravna email adresa' 
-        });
-    }
-
-    next();
 };
+
+function convertTimeToMinutes(timeString) {
+    const [hours, minutes] = timeString.split(':').map(Number);
+    return hours * 60 + minutes;
+}
 
 module.exports = { validateAppointment }; 

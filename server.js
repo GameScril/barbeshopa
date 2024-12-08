@@ -404,4 +404,44 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-console.log('Public directory:', path.join(__dirname, 'public')); 
+console.log('Public directory:', path.join(__dirname, 'public'));
+
+app.get('/api/debug-date', (req, res) => {
+    const testDate = new Date();
+    res.json({
+        current: {
+            iso: testDate.toISOString(),
+            locale: testDate.toLocaleString('sr-Latn', { timeZone: 'Europe/Belgrade' }),
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        },
+        env: {
+            TZ: process.env.TZ,
+            NODE_TZ: process.env.NODE_TZ
+        }
+    });
+});
+
+// Add this new endpoint to get booked slots
+app.get('/api/appointments/booked', async (req, res) => {
+    const { date } = req.query;
+    const connection = await pool.getConnection();
+    
+    try {
+        const [rows] = await connection.execute(
+            'SELECT time, duration FROM appointments WHERE date = ?',
+            [date]
+        );
+        
+        const bookedSlots = rows.map(row => ({
+            time: row.time,
+            duration: row.duration
+        }));
+        
+        res.json({ bookedSlots });
+    } catch (error) {
+        console.error('Error fetching booked slots:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    } finally {
+        connection.release();
+    }
+}); 

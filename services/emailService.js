@@ -31,7 +31,7 @@ class EmailService {
                     Telefon: ${appointment.phone}
                     Email: ${appointment.email}
                     Usluga: ${serviceName}
-                    Cijena: ${appointment.price}€
+                    Cijena: ${appointment.price} KM
                 `,
                 location: process.env.SHOP_ADDRESS
             });
@@ -59,7 +59,13 @@ class EmailService {
                                     <strong style="color: #D4AF37;">Usluga:</strong> ${serviceName}
                                 </p>
                                 <p style="margin: 10px 0; color: #ffffff;">
-                                    <strong style="color: #D4AF37;">Datum i vrijeme:</strong> ${appointment.date} ${appointment.time}
+                                    <strong style="color: #D4AF37;">Datum i vrijeme:</strong> ${appointmentDate.toLocaleDateString('sr-Latn', { 
+                                        weekday: 'long',
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric',
+                                        timeZone: 'Europe/Belgrade'
+                                    })} ${appointment.time}
                                 </p>
                                 <p style="margin: 10px 0; color: #ffffff;">
                                     <strong style="color: #D4AF37;">Lokacija:</strong> ${process.env.SHOP_ADDRESS}
