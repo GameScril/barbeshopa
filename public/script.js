@@ -154,6 +154,27 @@ document.addEventListener('DOMContentLoaded', () => {
         // Add event listeners for navigation buttons
         document.getElementById('prev-month')?.addEventListener('click', () => {
             const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1);
+            if (newDate.getMonth() >= new Date().getMonth() || 
+                newDate.getFullYear() > new Date().getFullYear()) {
+                currentDate = newDate;
+                handleMonthChange();
+                createCalendar(currentDate);
+            }
+        });
+
+        document.getElementById('next-month')?.addEventListener('click', () => {
+            const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1);
+            const threeMonthsFromNow = new Date();
+            threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
+            
+            if (newDate <= threeMonthsFromNow) {
+                currentDate = newDate;
+                handleMonthChange();
+                createCalendar(currentDate);
+            }
+        });
+    }
+
     function selectDate(dateObj, dateCell) {
         // Add validation for weekends and past dates
         const now = new Date();
