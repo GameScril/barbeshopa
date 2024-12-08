@@ -272,14 +272,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const bookedRanges = result.bookedSlots.map(slot => {
                 const [hours, minutes] = slot.time.split(':').map(Number);
                 const startTime = hours * 60 + minutes;
+                const duration = parseInt(slot.duration);
+                // Add a small buffer before and after each booking
                 return {
-                    start: startTime,
-                    end: startTime + parseInt(slot.duration),
-                    duration: parseInt(slot.duration)
+                    start: startTime - 5, // 5-minute buffer before
+                    end: startTime + duration + 5, // 5-minute buffer after
+                    duration: duration
                 };
             });
 
-            console.log('Booked ranges:', bookedRanges); // Debug log
+            console.log('Booked ranges with buffers:', bookedRanges);
 
             // Generate time slots in 5-minute increments
             for (let currentMinute = startMinutes; currentMinute <= lastPossibleStartTime; currentMinute += 5) {
@@ -287,14 +289,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Check if this slot overlaps with any booking
                 const isOverlapping = bookedRanges.some(booking => {
-                    const hasOverlap = (
-                        (currentMinute >= booking.start && currentMinute < booking.end) || // Slot starts during a booking
-                        (slotEnd > booking.start && slotEnd <= booking.end) || // Slot ends during a booking
-                        (currentMinute <= booking.start && slotEnd >= booking.end) // Slot encompasses a booking
-                    );
+                    // A slot overlaps if it starts before a booking ends AND ends after a booking starts
+                    const hasOverlap = !(currentMinute >= booking.end || slotEnd <= booking.start);
                     
                     if (hasOverlap) {
-                        console.log(`Slot ${currentMinute}-${slotEnd} overlaps with booking ${booking.start}-${booking.end}`);
+                        console.log(`Blocking slot ${formatMinutes(currentMinute)}-${formatMinutes(slotEnd)} due to booking ${formatMinutes(booking.start)}-${formatMinutes(booking.end)}`);
                     }
                     
                     return hasOverlap;
@@ -530,5 +529,12 @@ document.addEventListener('DOMContentLoaded', () => {
             'bradaikosa': 30
         };
         return durations[service] || 20;
+    }
+
+    // Helper function to format minutes into HH:MM
+    function formatMinutes(minutes) {
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
     }
 }); 

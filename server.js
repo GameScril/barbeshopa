@@ -145,8 +145,9 @@ app.get('/api/appointments/slots/:date', async (req, res) => {
 
     try {
         connection = await pool.getConnection();
+        // Get all appointments for the specified date
         const [rows] = await connection.execute(
-            'SELECT time, duration FROM appointments WHERE date = ?',
+            'SELECT TIME_FORMAT(time, "%H:%i") as time, duration FROM appointments WHERE date = ? ORDER BY time',
             [date]
         );
         
@@ -155,8 +156,8 @@ app.get('/api/appointments/slots/:date', async (req, res) => {
         res.json({ 
             success: true,
             bookedSlots: rows.map(row => ({
-                time: row.time.slice(0, 5),
-                duration: row.duration
+                time: row.time,
+                duration: parseInt(row.duration)
             }))
         });
     } catch (error) {

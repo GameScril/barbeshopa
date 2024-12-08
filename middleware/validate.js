@@ -9,13 +9,6 @@ const serviceDurations = {
 const validateAppointment = async (req, res, next) => {
     const { service, date, time } = req.body;
     
-    // Validate business hours
-    const [hours, minutes] = time.split(':').map(Number);
-    const requestedTimeInMinutes = hours * 60 + minutes;
-    
-    const startTime = 8 * 60;  // 8:00 AM in minutes
-    const endTime = 16 * 60;   // 4:00 PM in minutes
-    
     // Get service duration
     const durations = {
         'brada': 10,
@@ -24,36 +17,31 @@ const validateAppointment = async (req, res, next) => {
     };
     const duration = durations[service] || 20;
     
-    // Check if appointment starts and ends within business hours
-    if (requestedTimeInMinutes < startTime || 
-        requestedTimeInMinutes + duration > endTime) {
-        return res.status(400).json({
-            success: false,
-            error: 'Termin mora biti između 08:00 i 16:00'
-        });
-    }
-    
-    // Add duration to the request object
-    req.serviceDuration = duration;
+    // Convert requested time to minutes for comparison
+    const [hours, minutes] = time.split(':').map(Number);
+    const requestedTimeInMinutes = hours * 60 + minutes;
+    const requestedEndTime = requestedTimeInMinutes + duration;
     
     // Check if the time slot is available
     const connection = await pool.getConnection();
     try {
         const [existingBookings] = await connection.execute(
-            'SELECT time, duration FROM appointments WHERE date = ?',
+            'SELECT TIME_FORMAT(time, "%H:%i") as time, duration FROM appointments WHERE date = ?',
             [date]
         );
         
-        // Convert requested time to minutes for comparison
-        const requestedTimeInMinutes = convertTimeToMinutes(time);
-        const requestedEndTime = requestedTimeInMinutes + duration;
-        
         // Check for conflicts with existing bookings
         const hasConflict = existingBookings.some(booking => {
-            const bookingStart = convertTimeToMinutes(booking.time);
-            const bookingEnd = bookingStart + booking.duration;
+            const [bookingHours, bookingMinutes] = booking.time.split(':').map(Number);
+            const bookingStart = bookingHours * 60 + bookingMinutes;
+            const bookingEnd = bookingStart + parseInt(booking.duration);
             
-            return (requestedTimeInMinutes < bookingEnd && requestedEndTime > bookingStart);
+            // Add 5-minute buffer before and after
+            const bookingStartWithBuffer = bookingStart - 5;
+            const bookingEndWithBuffer = bookingEnd + 5;
+            
+            return !(requestedTimeInMinutes >= bookingEndWithBuffer || 
+                    requestedEndTime <= bookingStartWithBuffer);
         });
         
         if (hasConflict) {
@@ -63,6 +51,8 @@ const validateAppointment = async (req, res, next) => {
             });
         }
         
+        // Add duration to the request object
+        req.serviceDuration = duration;
         next();
     } catch (error) {
         console.error('Validation error:', error);
