@@ -261,29 +261,44 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(result.error || 'Failed to fetch booked slots');
             }
 
+            console.log('Booked slots:', result.bookedSlots); // Debug log
+
             // Create array of all possible time slots
             const startMinutes = 8 * 60; // 8:00
             const endMinutes = 16 * 60; // 16:00
             const lastPossibleStartTime = endMinutes - serviceDuration;
 
-            // Create array of booked time ranges
+            // Create array of booked time ranges with buffer
             const bookedRanges = result.bookedSlots.map(slot => {
                 const [hours, minutes] = slot.time.split(':').map(Number);
                 const startTime = hours * 60 + minutes;
                 return {
                     start: startTime,
-                    end: startTime + slot.duration
+                    end: startTime + parseInt(slot.duration),
+                    duration: parseInt(slot.duration)
                 };
             });
+
+            console.log('Booked ranges:', bookedRanges); // Debug log
 
             // Generate time slots in 5-minute increments
             for (let currentMinute = startMinutes; currentMinute <= lastPossibleStartTime; currentMinute += 5) {
                 const slotEnd = currentMinute + serviceDuration;
                 
                 // Check if this slot overlaps with any booking
-                const isOverlapping = bookedRanges.some(booking => 
-                    (currentMinute < booking.end && slotEnd > booking.start)
-                );
+                const isOverlapping = bookedRanges.some(booking => {
+                    const hasOverlap = (
+                        (currentMinute >= booking.start && currentMinute < booking.end) || // Slot starts during a booking
+                        (slotEnd > booking.start && slotEnd <= booking.end) || // Slot ends during a booking
+                        (currentMinute <= booking.start && slotEnd >= booking.end) // Slot encompasses a booking
+                    );
+                    
+                    if (hasOverlap) {
+                        console.log(`Slot ${currentMinute}-${slotEnd} overlaps with booking ${booking.start}-${booking.end}`);
+                    }
+                    
+                    return hasOverlap;
+                });
 
                 if (!isOverlapping) {
                     const hour = Math.floor(currentMinute / 60);
