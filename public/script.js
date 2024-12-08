@@ -85,29 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         calendarContainer.innerHTML = calendarHTML;
 
-        // Move the event listeners here, after the elements are created
-        document.getElementById('prev-month')?.addEventListener('click', () => {
-            const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1);
-            if (newDate.getMonth() >= new Date().getMonth() || 
-                newDate.getFullYear() > new Date().getFullYear()) {
-                currentDate = newDate;
-                handleMonthChange();
-                createCalendar(currentDate);
-            }
-        });
-
-        document.getElementById('next-month')?.addEventListener('click', () => {
-            const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1);
-            const threeMonthsFromNow = new Date();
-            threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
-            
-            if (newDate <= threeMonthsFromNow) {
-                currentDate = newDate;
-                handleMonthChange();
-                createCalendar(currentDate);
-            }
-        });
-
         // Fetch all reservations for this month
         const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
         const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
@@ -117,11 +94,16 @@ document.addEventListener('DOMContentLoaded', () => {
         
         let reservedDates = new Set();
         try {
-            const response = await fetch(`${API_BASE_URL}/api/appointments/month?start=${formattedStart}&end=${formattedEnd}`);
-            const reservations = await response.json();
-            reservedDates = new Set(reservations.map(r => r.date));
+            const response = await fetch(`/api/appointments/month?start=${formattedStart}&end=${formattedEnd}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            // Make sure we're handling the response data correctly
+            reservedDates = new Set(data.map(appointment => appointment.date));
         } catch (error) {
             console.error('Error fetching monthly reservations:', error);
+            // Continue with empty reservedDates set
         }
 
         const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
@@ -129,14 +111,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const startingDay = (firstDay.getDay() + 6) % 7;
         
         const datesContainer = calendarContainer.querySelector('.calendar-dates');
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
 
+        // Add empty cells for days before the first day of the month
         for (let i = 0; i < startingDay; i++) {
             const emptyDay = document.createElement('div');
             datesContainer.appendChild(emptyDay);
         }
 
+        // Add cells for each day of the month
         for (let day = 1; day <= lastDay.getDate(); day++) {
             const dateCell = document.createElement('div');
             const dateObj = new Date(date.getFullYear(), date.getMonth(), day);
@@ -168,8 +150,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             datesContainer.appendChild(dateCell);
         }
-    }
 
+        // Add event listeners for navigation buttons
+        document.getElementById('prev-month')?.addEventListener('click', () => {
+            const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1);
     function selectDate(dateObj, dateCell) {
         // Add validation for weekends and past dates
         const now = new Date();

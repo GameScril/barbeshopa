@@ -385,7 +385,7 @@ app.get('/api/test-calendar', async (req, res) => {
     }
 });
 
-// Add this new endpoint to get monthly reservations
+// Update the monthly appointments endpoint
 app.get('/api/appointments/month', async (req, res) => {
     const { start, end } = req.query;
     let connection;
@@ -396,12 +396,24 @@ app.get('/api/appointments/month', async (req, res) => {
             'SELECT DISTINCT date FROM appointments WHERE date BETWEEN ? AND ?',
             [start, end]
         );
-        res.json(reservations);
+
+        // Format the dates before sending
+        const formattedReservations = reservations.map(row => ({
+            date: row.date.toISOString().split('T')[0]
+        }));
+
+        res.json(formattedReservations);
     } catch (error) {
         console.error('Error fetching monthly reservations:', error);
-        res.status(500).json({ error: 'Failed to fetch reservations' });
+        res.status(500).json({ 
+            success: false, 
+            error: 'Failed to fetch reservations',
+            reservations: []
+        });
     } finally {
-        if (connection) connection.release();
+        if (connection) {
+            connection.release();
+        }
     }
 });
 
