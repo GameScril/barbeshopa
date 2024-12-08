@@ -7,7 +7,15 @@ const serviceDurations = {
 };
 
 const validateAppointment = async (req, res, next) => {
-    const { service, date, time } = req.body;
+    const { service, date, time, name, phone } = req.body;
+    
+    // Basic validation
+    if (!service || !date || !time || !name || !phone) {
+        return res.status(400).json({
+            success: false,
+            error: 'Sva polja su obavezna'
+        });
+    }
     
     // Get service duration
     const durations = {

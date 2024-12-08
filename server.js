@@ -207,7 +207,7 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
         }
 
         const [result] = await connection.execute(
-            'INSERT INTO appointments (service, price, date, time, duration, name, phone, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            'INSERT INTO appointments (service, price, date, time, duration, name, phone) VALUES (?, ?, ?, ?, ?, ?, ?)',
             [
                 req.body.service,
                 req.body.price,
@@ -215,8 +215,7 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
                 req.body.time,
                 req.serviceDuration,
                 req.body.name,
-                req.body.phone,
-                req.body.email
+                req.body.phone
             ]
         );
 

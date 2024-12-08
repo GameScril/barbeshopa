@@ -395,7 +395,10 @@ document.addEventListener('DOMContentLoaded', () => {
     bookButton.addEventListener('click', async () => {
         try {
             const selectedTime = document.querySelector('#time-select');
-            
+            const selectedService = document.querySelector('.service-card.selected');
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+
             if (!selectedTime || !selectedTime.value) {
                 showNotification('Upozorenje', 'Molimo izaberite vrijeme');
                 return;
@@ -406,12 +409,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const selectedService = document.querySelector('.service-card.selected');
-            const name = document.getElementById('name').value;
-            const phone = document.getElementById('phone').value;
-            const email = document.getElementById('email').value;
-
-            if (!selectedService || !name || !phone || !email) {
+            if (!selectedService || !name || !phone) {
                 showNotification('Upozorenje', 'Molimo popunite sva polja');
                 return;
             }
@@ -422,8 +420,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 date: `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`,
                 time: selectedTime.value,
                 name: name,
-                phone: phone,
-                email: email
+                phone: phone
             };
 
             console.log('Sending appointment request:', appointment);
@@ -448,7 +445,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Clear form
                 document.getElementById('name').value = '';
                 document.getElementById('phone').value = '';
-                document.getElementById('email').value = '';
                 selectedDate = null;
                 dateDisplay.textContent = '';
                 dateDisplay.classList.remove('visible');
