@@ -264,29 +264,35 @@ document.addEventListener('DOMContentLoaded', () => {
             // Create array of all minutes between 8:00 and 16:00
             const startMinutes = 8 * 60; // 8:00
             const endMinutes = 16 * 60; // 16:00
-            const lastPossibleStartTime = endMinutes - serviceDuration; // Last time that allows service to finish by 16:00
-            
-            // Create array of booked time ranges
+            const lastPossibleStartTime = endMinutes - serviceDuration;
+
+            // Create array of booked time ranges with buffer for service duration
             const bookedRanges = result.bookedSlots.map(slot => {
                 const [hours, minutes] = slot.time.split(':').map(Number);
                 const startTime = hours * 60 + minutes;
                 return {
                     start: startTime,
-                    end: startTime + slot.duration
+                    end: startTime + slot.duration,
+                    duration: slot.duration
                 };
-            }).sort((a, b) => a.start - b.start); // Sort by start time
+            }).sort((a, b) => a.start - b.start);
 
             let currentMinute = startMinutes;
             while (currentMinute <= lastPossibleStartTime) {
                 const slotEnd = currentMinute + serviceDuration;
                 
-                // Find any overlapping booking
-                const overlappingBooking = bookedRanges.find(range => 
-                    (currentMinute < range.end && slotEnd > range.start)
-                );
+                // Check if this slot overlaps with any booking
+                const isOverlapping = bookedRanges.some(booking => {
+                    // Check if either the start or end of our slot falls within a booking
+                    const startsInBooking = currentMinute >= booking.start && currentMinute < booking.end;
+                    const endsInBooking = slotEnd > booking.start && slotEnd <= booking.end;
+                    // Check if our slot completely encompasses a booking
+                    const encompassesBooking = currentMinute <= booking.start && slotEnd >= booking.end;
+                    
+                    return startsInBooking || endsInBooking || encompassesBooking;
+                });
 
-                if (!overlappingBooking) {
-                    // This minute is available
+                if (!isOverlapping) {
                     const hour = Math.floor(currentMinute / 60);
                     const minute = currentMinute % 60;
                     const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
@@ -295,10 +301,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     option.value = timeString;
                     option.textContent = timeString;
                     select.appendChild(option);
-                    currentMinute++; // Check next minute
+                    currentMinute++;
                 } else {
-                    // Skip to the end of the overlapping booking
-                    currentMinute = overlappingBooking.end;
+                    // Find the next safe time to check
+                    const nextSafeTime = bookedRanges
+                        .filter(booking => booking.start >= currentMinute)
+                        .sort((a, b) => a.start - b.start)[0];
+                    
+                    if (nextSafeTime) {
+                        currentMinute = nextSafeTime.end;
+                    } else {
+                        currentMinute++;
+                    }
                 }
             }
 
