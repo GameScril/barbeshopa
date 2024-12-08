@@ -181,35 +181,44 @@ document.addEventListener('DOMContentLoaded', () => {
         dateCell.classList.add('selected');
         selectedDate = dateObj;
         
-        // Format date in Serbian
-        dateDisplay.textContent = dateObj.toLocaleDateString('sr-Latn', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric',
-            timeZone: 'Europe/Belgrade'
-        });
+        // Format date in Bosnian
+        const bosnianDays = {
+            'Monday': 'Ponedjeljak',
+            'Tuesday': 'Utorak',
+            'Wednesday': 'Srijeda',
+            'Thursday': 'Četvrtak',
+            'Friday': 'Petak',
+            'Saturday': 'Subota',
+            'Sunday': 'Nedjelja'
+        };
+
+        const englishDay = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
+        const bosnianDay = bosnianDays[englishDay];
+        
+        const monthName = dateObj.toLocaleString('sr-Latn', { month: 'long' })
+            .replace(/^\w/, c => c.toUpperCase());
+        
+        dateDisplay.textContent = `${bosnianDay}, ${dateObj.getDate()}. ${monthName} ${dateObj.getFullYear()}.`;
         
         dateDisplay.classList.add('visible');
         const timeSlotsContainer = document.getElementById('time-slots');
-        timeSlotsContainer.style.display = 'grid'; // Ensure time slots are visible
+        timeSlotsContainer.style.display = 'grid';
         generateTimeSlots(dateObj);
     }
 
-    async function generateTimeSlots(date) {
+    async function generateTimeSlots(dateObj) {
         const timeSlotsContainer = document.getElementById('time-slots');
         timeSlotsContainer.innerHTML = '';
         
         const selectedService = document.querySelector('.service-card.selected');
         if (!selectedService) return;
 
-        const formattedDate = date.toISOString().split('T')[0];
+        const formattedDate = dateObj.toISOString().split('T')[0];
         
         try {
-            const response = await fetch(`${API_BASE_URL}/api/appointments?date=${formattedDate}`);
+            const response = await fetch(`${API_BASE_URL}/api/appointments/booked?date=${formattedDate}`);
             if (!response.ok) throw new Error('Failed to fetch appointments');
-            
-            const bookedAppointments = await response.json();
+            const { bookedSlots } = await response.json();
             
             // Create select element
             const select = document.createElement('select');
@@ -230,27 +239,21 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const serviceDuration = getServiceDuration(selectedService.dataset.service);
 
-            // Create a set of blocked times
-            const blockedTimes = new Set();
-            bookedAppointments.forEach(apt => {
-                const startMinutes = convertTimeToMinutes(apt.time);
-                const duration = apt.duration || serviceDuration;
-                
-                for (let i = 0; i < duration; i += interval) {
-                    const blocked = startMinutes + i;
-                    blockedTimes.add(blocked);
-                }
-            });
-
             // Generate available time slots
             for (let time = startTime; time < endTime; time += interval) {
                 // Skip if this would create an appointment ending after business hours
                 if (time + serviceDuration > endTime) continue;
 
-                // Check if any minute in the service duration is blocked
+                // Check if this time slot overlaps with any booked appointments
                 let isBlocked = false;
-                for (let i = 0; i < serviceDuration; i += interval) {
-                    if (blockedTimes.has(time + i)) {
+                const currentTimeString = `${Math.floor(time/60).toString().padStart(2, '0')}:${(time%60).toString().padStart(2, '0')}`;
+                
+                for (const booking of bookedSlots) {
+                    const bookingStart = convertTimeToMinutes(booking.time);
+                    const bookingEnd = bookingStart + booking.duration;
+                    
+                    if (time >= bookingStart && time < bookingEnd || 
+                        (time + serviceDuration) > bookingStart && time < bookingEnd) {
                         isBlocked = true;
                         break;
                     }
@@ -272,11 +275,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Add change event listener
             select.addEventListener('change', function() {
-                // Remove selected class from any previously selected time slots
                 const prevSelected = document.querySelector('.time-slot.selected');
                 if (prevSelected) prevSelected.classList.remove('selected');
-                
-                // Add selected class to the select element
                 this.classList.add('selected');
             });
 
@@ -284,6 +284,12 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error generating time slots:', error);
             showNotification('Greška', 'Greška pri učitavanju termina');
         }
+    }
+
+    // Helper function to convert time string to minutes
+    function convertTimeToMinutes(timeString) {
+        const [hours, minutes] = timeString.split(':').map(Number);
+        return hours * 60 + minutes;
     }
 
     // Add this function to update time slots after booking
@@ -464,84 +470,6 @@ document.addEventListener('DOMContentLoaded', () => {
         window.navigator.standalone === true) {
         if (installButton) {
             installButton.style.display = 'none';
-        }
-    }
-
-    // Add this function to generate time slots based on duration
-    function generateTimeSlots(bookedSlots, serviceDuration) {
-        const select = document.createElement('select');
-        select.id = 'time-select';
-        select.className = 'time-select';
-
-        const startTime = 8 * 60;  // 8:00 AM in minutes
-        const endTime = 16 * 60;   // 4:00 PM (16:00) in minutes
-        const interval = 5; // 5-minute intervals
-
-        for (let time = startTime; time < endTime; time += interval) {
-            const hours = Math.floor(time / 60);
-            const minutes = time % 60;
-            
-            // Don't create slots that would end after business hours
-            if (time + serviceDuration > endTime) continue;
-            
-            const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-            
-            // Check if this time slot is available
-            const isAvailable = !bookedSlots.some(booking => {
-                const bookingStart = convertTimeToMinutes(booking.time);
-                const bookingEnd = bookingStart + booking.duration;
-                return time >= bookingStart && time < bookingEnd;
-            });
-
-            if (isAvailable) {
-                const option = document.createElement('option');
-                option.value = timeString;
-                option.textContent = timeString;
-                select.appendChild(option);
-            }
-        }
-
-        return select;
-    }
-
-    // Helper function to convert time string to minutes
-    function convertTimeToMinutes(timeString) {
-        const [hours, minutes] = timeString.split(':').map(Number);
-        return hours * 60 + minutes;
-    }
-
-    // Update the time slots when a date or service is selected
-    async function updateTimeSlots() {
-        const selectedService = document.querySelector('.service-card.selected');
-        if (!selectedDate || !selectedService) return;
-
-        const formattedDate = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
-        
-        try {
-            const response = await fetch(`/api/appointments/booked?date=${formattedDate}`);
-            const { bookedSlots } = await response.json();
-            
-            const timeSlotsContainer = document.getElementById('time-slots');
-            timeSlotsContainer.innerHTML = '';
-            
-            // Get service duration
-            const serviceDuration = getServiceDuration(selectedService.dataset.service);
-            
-            // Generate and append the time select dropdown
-            const timeSelect = generateTimeSlots(bookedSlots, serviceDuration);
-            timeSlotsContainer.appendChild(timeSelect);
-            
-            // Add change event listener
-            timeSelect.addEventListener('change', (e) => {
-                // Remove selected class from all time slots
-                const prevSelected = document.querySelector('.time-slot.selected');
-                if (prevSelected) prevSelected.classList.remove('selected');
-                
-                // Add selected class to the selected option
-                e.target.classList.add('selected');
-            });
-        } catch (error) {
-            console.error('Error fetching booked slots:', error);
         }
     }
 
