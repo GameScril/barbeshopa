@@ -61,6 +61,30 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Capitalize first letter of month
+        const monthName = date.toLocaleString('sr-Latn', { month: 'long' });
+        const capitalizedMonth = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+        
+        const calendarHTML = `
+            <div class="calendar-header">
+                <button class="calendar-nav prev">&lt;</button>
+                <h3>${capitalizedMonth} ${date.getFullYear()}</h3>
+                <button class="calendar-nav next">&gt;</button>
+            </div>
+            <div class="calendar-days">
+                <div>Pon</div>
+                <div>Uto</div>
+                <div>Sri</div>
+                <div>Čet</div>
+                <div>Pet</div>
+                <div>Sub</div>
+                <div>Ned</div>
+            </div>
+            <div class="calendar-dates"></div>
+        `;
+
+        calendarContainer.innerHTML = calendarHTML;
+
         // Fetch all reservations for this month
         const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
         const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
@@ -81,19 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
         const startingDay = (firstDay.getDay() + 6) % 7;
         
-        calendarContainer.innerHTML = `
-            <div class="calendar-header">
-                <button id="prev-month">&lt;</button>
-                <h3>${date.toLocaleDateString('sr-Latn', { month: 'long', year: 'numeric' })}</h3>
-                <button id="next-month">&gt;</button>
-            </div>
-            <div class="calendar-days">
-                <div>Pon</div><div>Uto</div><div>Sri</div><div>Čet</div>
-                <div>Pet</div><div>Sub</div><div>Ned</div>
-            </div>
-            <div class="calendar-dates"></div>
-        `;
-
         const datesContainer = calendarContainer.querySelector('.calendar-dates');
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -373,53 +384,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Booking submission
     bookButton.addEventListener('click', async () => {
-        const selectedTime = document.querySelector('#time-select');
-        
-        if (!selectedTime || !selectedTime.value) {
-            showNotification('Upozorenje', 'Molimo izaberite vrijeme');
-            return;
-        }
-
-        if (!selectedDate) {
-            showNotification('Upozorenje', 'Molimo izaberite datum');
-            return;
-        }
-
-        const selectedService = document.querySelector('.service-card.selected');
-        const name = document.getElementById('name').value;
-        const phone = document.getElementById('phone').value;
-        const email = document.getElementById('email').value;
-
-        if (!selectedService || !name || !phone || !email) {
-            showNotification('Upozorenje', 'Molimo popunite sva polja');
-            return;
-        }
-
-        const appointment = {
-            service: selectedService.dataset.service,
-            price: parseInt(selectedService.dataset.price),
-            date: `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`,
-            time: selectedTime.value,
-            name: name,
-            phone: phone,
-            email: email
-        };
-
-        console.log('Client-side appointment:', {
-            selectedDate: selectedDate,
-            localDate: selectedDate.toLocaleDateString(),
-            formattedDate: appointment.date,
-            time: appointment.time
-        });
-
         try {
-            const response = await fetch(`${API_BASE_URL}/api/appointments`, {
+            const selectedTime = document.querySelector('#time-select');
+            
+            if (!selectedTime || !selectedTime.value) {
+                showNotification('Upozorenje', 'Molimo izaberite vrijeme');
+                return;
+            }
+
+            if (!selectedDate) {
+                showNotification('Upozorenje', 'Molimo izaberite datum');
+                return;
+            }
+
+            const selectedService = document.querySelector('.service-card.selected');
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+
+            if (!selectedService || !name || !phone || !email) {
+                showNotification('Upozorenje', 'Molimo popunite sva polja');
+                return;
+            }
+
+            const appointment = {
+                service: selectedService.dataset.service,
+                price: parseInt(selectedService.dataset.price),
+                date: `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`,
+                time: selectedTime.value,
+                name: name,
+                phone: phone,
+                email: email
+            };
+
+            console.log('Sending appointment request:', appointment);
+
+            const response = await fetch('/api/appointments', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(appointment)
             });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to create appointment');
+            }
 
             const result = await response.json();
             
@@ -440,9 +451,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Reset calendar
                 createCalendar(currentDate);
             } else {
-                showNotification('Greška', result.error);
+                showNotification('Greška', result.error || 'Greška pri rezervaciji');
             }
         } catch (error) {
+            console.error('Booking error:', error);
             showNotification('Greška', 'Greška pri rezervaciji: ' + error.message);
         }
     });

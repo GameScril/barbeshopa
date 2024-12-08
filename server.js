@@ -44,6 +44,9 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
         connection = await pool.getConnection();
         await connection.beginTransaction();
 
+        // Log the incoming request
+        console.log('Creating appointment:', req.body);
+
         const appointmentDate = new Date(`${req.body.date}T${req.body.time}`);
         const endTime = new Date(appointmentDate.getTime() + req.serviceDuration * 60000);
         const endTimeString = endTime.toTimeString().slice(0, 5);
@@ -68,44 +71,62 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
 
         // Save to database with duration
         const [result] = await connection.execute(
-            'INSERT INTO appointments (service, price, date, time, duration, name, phone, email, calendarEventId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [req.body.service, req.body.price, req.body.date, req.body.time, req.serviceDuration, req.body.name, req.body.phone, req.body.email, null]
+            'INSERT INTO appointments (service, price, date, time, duration, name, phone, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [
+                req.body.service,
+                req.body.price,
+                req.body.date,
+                req.body.time,
+                req.serviceDuration,
+                req.body.name,
+                req.body.phone,
+                req.body.email
+            ]
         );
 
         await connection.commit();
-        connection.release();
 
         // Send email and create calendar event
-        const emailResult = await emailService.sendOwnerNotification({
-            ...req.body,
-            id: result.insertId,
-            duration: req.serviceDuration
-        });
+        try {
+            const emailResult = await emailService.sendOwnerNotification({
+                ...req.body,
+                id: result.insertId,
+                duration: req.serviceDuration
+            });
 
-        if (!emailResult.success) {
-            console.error('Failed to send email notification:', emailResult.error);
-            // Don't return error to client, but log it
+            if (!emailResult.success) {
+                console.error('Failed to send email notification:', emailResult.error);
+            }
+        } catch (emailError) {
+            console.error('Email/Calendar error:', emailError);
+            // Don't fail the appointment creation if email/calendar fails
         }
 
         res.json({
             success: true,
             appointment: {
                 ...req.body,
-                id: result.insertId,
-                calendarEventId: emailResult.success ? emailResult.calendarEventId : null
+                id: result.insertId
             }
         });
 
     } catch (error) {
         console.error('Appointment creation error:', error);
         if (connection) {
-            await connection.rollback();
-            connection.release();
+            try {
+                await connection.rollback();
+            } catch (rollbackError) {
+                console.error('Rollback error:', rollbackError);
+            }
         }
         res.status(500).json({
             success: false,
             error: 'Došlo je do greške prilikom kreiranja rezervacije'
         });
+    } finally {
+        if (connection) {
+            connection.release();
+        }
     }
 });
 
