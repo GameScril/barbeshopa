@@ -16,16 +16,21 @@ const pool = mysql.createPool({
 const initializeDatabase = async () => {
     try {
         const connection = await pool.getConnection();
-        console.log('Database connection info:', {
-            host: process.env.MYSQLHOST,
-            user: process.env.MYSQLUSER,
-            database: process.env.MYSQLDATABASE,
-            port: process.env.MYSQLPORT
-        });
         
-        // Create appointments table if it doesn't exist
+        // First, check if the table exists
+        const [tables] = await connection.execute(
+            "SHOW TABLES LIKE 'appointments'"
+        );
+        
+        if (tables.length > 0) {
+            // If table exists, drop it
+            await connection.execute('DROP TABLE appointments');
+            console.log('Dropped existing appointments table');
+        }
+        
+        // Create fresh appointments table without email field
         await connection.execute(`
-            CREATE TABLE IF NOT EXISTS appointments (
+            CREATE TABLE appointments (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 service VARCHAR(255) NOT NULL,
                 price DECIMAL(10,2) NOT NULL,
@@ -35,22 +40,14 @@ const initializeDatabase = async () => {
                 name VARCHAR(255) NOT NULL,
                 phone VARCHAR(255) NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         `);
 
-        console.log('Database initialized successfully');
+        console.log('Database initialized successfully with new table structure');
         connection.release();
         return true;
     } catch (error) {
-        console.error('Database initialization error details:', {
-            message: error.message,
-            code: error.code,
-            errno: error.errno,
-            sqlState: error.sqlState,
-            host: process.env.MYSQLHOST,
-            user: process.env.MYSQLUSER,
-            database: process.env.MYSQLDATABASE
-        });
+        console.error('Database initialization error:', error);
         throw error;
     }
 };
