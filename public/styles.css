@@ -525,6 +525,7 @@ body {
     margin: 1rem 0;
     padding: 0;
     box-sizing: border-box;
+    position: relative;
 }
 
 .time-select {
@@ -637,11 +638,18 @@ body {
 
     .time-select {
         width: 100%;
+        border-radius: 0;
         border-left: none;
         border-right: none;
-        border-radius: 0;
         height: 65px;
         font-size: 20px;
+    }
+
+    .time-select option {
+        padding: 20px;
+        font-size: 18px;
+        text-align: center;
+        background-color: var(--black);
     }
 }
 
@@ -802,8 +810,8 @@ select.time-select {
 /* Time slots wrapper and dropdown styles */
 .time-slots-wrapper {
     width: 100%;
-    margin: 1.5rem -2rem;
-    padding: 0 2rem;
+    margin: 1rem 0;
+    padding: 0;
     box-sizing: border-box;
     position: relative;
 }
@@ -829,27 +837,28 @@ select.time-select {
 @media (max-width: 768px) {
     .booking-form {
         padding: 1rem;
-        width: 100%;
-        box-sizing: border-box;
+    }
+
+    .calendar-wrapper {
+        padding: 1rem;
     }
 
     .time-slots-wrapper {
-        width: calc(100% + 3rem);
-        margin-left: -1.5rem;
-        margin-right: -1.5rem;
-        padding: 0 1.5rem;
+        width: calc(100% + 2rem);
+        margin-left: -1rem;
+        margin-right: -1rem;
+        padding: 0;
     }
 
     .time-select {
         width: 100%;
-        border-left: 2px solid var(--gold);
-        border-right: 2px solid var(--gold);
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
         height: 65px;
         font-size: 20px;
-        background-position: calc(100% - 20px) center;
     }
 
-    /* Make dropdown options full width */
     .time-select option {
         padding: 20px;
         font-size: 18px;
@@ -865,20 +874,18 @@ select.time-select {
     }
 
     .time-slots-wrapper {
-        width: calc(100% + 2rem);
-        margin-left: -1rem;
-        margin-right: -1rem;
-        padding: 0 1rem;
+        width: calc(100% + 1rem);
+        margin-left: -0.5rem;
+        margin-right: -0.5rem;
     }
 
     .time-select {
         height: 60px;
         font-size: 18px;
-        border-radius: 0;
     }
 
     .time-select option {
-        padding: 18px;
+        padding: 15px;
         font-size: 16px;
     }
 }
