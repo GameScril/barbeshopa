@@ -236,11 +236,13 @@ document.addEventListener('DOMContentLoaded', () => {
     async function generateTimeSlots(dateObj) {
         console.log('=== Starting generateTimeSlots ===');
         
-        // Ensure we're working with the correct date
-        const localDate = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
-        console.log('Local date:', localDate);
-        console.log('ISO string:', localDate.toISOString());
-        console.log('Formatted date:', localDate.toISOString().split('T')[0]);
+        // Fix timezone issue by using date parts directly
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        const formattedDate = `${year}-${month}-${day}`;
+        
+        console.log('Using formatted date:', formattedDate);
         
         const timeSlotsContainer = document.getElementById('time-slots');
         timeSlotsContainer.innerHTML = '';
@@ -264,10 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const serviceDuration = getServiceDuration(selectedService.dataset.service);
 
-            // Format date in YYYY-MM-DD format
-            const formattedDate = dateObj.toISOString().split('T')[0];
             console.log('Fetching slots for date:', formattedDate);
-            
             const response = await fetch(`/api/appointments/slots/${formattedDate}`);
             
             if (!response.ok) {
