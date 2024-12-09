@@ -151,8 +151,8 @@ h2 {
     background: var(--black);
     padding: 1.5rem;
     border-radius: 12px;
-    margin-bottom: 1.5rem;
-    max-width: 100%;
+    margin: 0 auto 1.5rem auto;
+    max-width: 350px;
     overflow: hidden;
 }
 
@@ -315,18 +315,22 @@ input:focus {
 .calendar-dates {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 0.5rem;
+    gap: 4px;
     text-align: center;
+    margin: 0 auto;
+    max-width: 320px;
 }
 
 .calendar-dates div {
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
+    margin: 0 auto;
+    font-size: 14px;
     border-radius: 50%;
+    cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
 }
@@ -460,8 +464,8 @@ body {
 
 .time-select {
     width: 100%;
-    padding: 12px;
-    font-size: 16px;
+    padding: 15px;
+    font-size: 18px;
     border: 2px solid var(--gold);
     border-radius: 8px;
     background-color: var(--black);
@@ -470,6 +474,8 @@ body {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
+    margin: 0 auto;
+    height: 50px;
 }
 
 .time-select:hover {
@@ -485,10 +491,10 @@ body {
 }
 
 .time-select option {
-    background-color: #2c2c2c;
-    color: #ffffff;
-    padding: 12px;
+    padding: 15px;
     font-size: 16px;
+    background-color: var(--black);
+    color: white;
 }
 
 .time-select option:checked {
@@ -510,16 +516,14 @@ body {
 .time-slots {
     position: relative;
     width: 100%;
-    max-width: 400px;
-    margin: 0 auto;
 }
 
 .time-slots::after {
     content: '▼';
-    font-size: 12px;
+    font-size: 16px;
     color: var(--gold);
     position: absolute;
-    right: 12px;
+    right: 15px;
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
@@ -528,54 +532,36 @@ body {
 @media (max-width: 768px) {
     .calendar-wrapper {
         padding: 1rem;
-        margin: 0 -1rem;
-        border-radius: 0;
+        max-width: 320px;
     }
 
     .time-select {
-        padding: 15px;
-        font-size: 18px;
-    }
-
-    .time-slots::after {
-        right: 15px;
-        font-size: 14px;
+        font-size: 16px;
+        height: 45px;
     }
 
     .calendar-dates div {
-        padding: 10px;
-        font-size: 16px;
-    }
-
-    .time-select option {
-        padding: 12px;
-        font-size: 16px;
-    }
-}
-
-@media (max-height: 800px) {
-    .time-select {
-        max-height: 300px;
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
     }
 }
 
 @media (max-width: 480px) {
     .calendar-wrapper {
-        margin: 0 -0.5rem;
-    }
-
-    .calendar-dates {
-        gap: 0.25rem;
+        max-width: 300px;
+        padding: 0.8rem;
     }
 
     .calendar-dates div {
-        padding: 8px;
-        font-size: 14px;
+        width: 28px;
+        height: 28px;
+        font-size: 13px;
     }
 
     .time-select {
-        margin: 0 auto;
-        width: 90%;
+        font-size: 15px;
+        height: 40px;
     }
 }
 
