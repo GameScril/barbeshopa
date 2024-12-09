@@ -756,4 +756,98 @@ body {
     padding: 5px;
     font-size: 14px;
 }
+
+/* Time select container */
+.time-slots-wrapper {
+    max-width: 320px;
+    margin: 1rem auto;
+    position: relative;
+}
+
+/* Time select dropdown */
+.time-select {
+    width: 100%;
+    padding: 12px 35px 12px 15px; /* Increased right padding for arrow */
+    font-size: 18px;
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    background-color: var(--black);
+    color: white;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    height: 50px;
+}
+
+/* Dropdown options */
+.time-select option {
+    padding: 12px 15px;
+    font-size: 16px;
+    background-color: var(--black);
+    color: white;
+    min-width: 200px; /* Ensure minimum width */
+    text-align: left;
+}
+
+/* Custom dropdown arrow */
+.time-slots::after {
+    content: '▼';
+    font-size: 16px;
+    color: var(--gold);
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .time-select {
+        font-size: 16px;
+        padding: 10px 35px 10px 15px;
+    }
+
+    .time-select option {
+        padding: 12px 15px;
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .time-select {
+        font-size: 15px;
+        padding: 8px 35px 8px 15px;
+    }
+}
+
+/* Fix for dropdown width in different browsers */
+@-moz-document url-prefix() {
+    .time-select {
+        text-indent: 0;
+        text-overflow: ellipsis;
+        padding-right: 35px;
+    }
+    
+    .time-select option {
+        padding: 12px 15px;
+    }
+}
+
+/* Webkit browsers specific styles */
+.time-select::-webkit-scrollbar {
+    width: 12px;
+}
+
+.time-select::-webkit-scrollbar-track {
+    background: var(--black);
+}
+
+.time-select::-webkit-scrollbar-thumb {
+    background-color: var(--gold);
+    border-radius: 6px;
+    border: 3px solid var(--black);
+}
  
