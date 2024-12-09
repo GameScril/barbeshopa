@@ -178,6 +178,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function selectDate(dateObj, dateCell) {
+        console.log('Selected date object:', dateObj);
+        
         // Add validation for weekends and past dates
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -193,12 +195,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Clear previous selections
         document.querySelectorAll('.calendar-dates div').forEach(div => {
             div.classList.remove('selected');
         });
         
         dateCell.classList.add('selected');
-        selectedDate = dateObj;
+        
+        // Create a new date object to avoid timezone issues
+        selectedDate = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
         
         // Format date in Bosnian
         const bosnianDays = {
@@ -211,23 +216,31 @@ document.addEventListener('DOMContentLoaded', () => {
             'Sunday': 'Nedjelja'
         };
 
-        const englishDay = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
+        const englishDay = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
         const bosnianDay = bosnianDays[englishDay];
         
-        const monthName = dateObj.toLocaleString('sr-Latn', { month: 'long' })
+        const monthName = selectedDate.toLocaleString('sr-Latn', { month: 'long' })
             .replace(/^\w/, c => c.toUpperCase());
         
-        dateDisplay.textContent = `${bosnianDay}, ${dateObj.getDate()}. ${monthName} ${dateObj.getFullYear()}.`;
-        
+        dateDisplay.textContent = `${bosnianDay}, ${selectedDate.getDate()}. ${monthName} ${selectedDate.getFullYear()}.`;
         dateDisplay.classList.add('visible');
+
         const timeSlotsContainer = document.getElementById('time-slots');
         timeSlotsContainer.style.display = 'grid';
-        generateTimeSlots(dateObj);
+
+        // Pass the correct date to generateTimeSlots
+        console.log('Passing date to generateTimeSlots:', selectedDate);
+        generateTimeSlots(selectedDate);
     }
 
     async function generateTimeSlots(dateObj) {
         console.log('=== Starting generateTimeSlots ===');
-        console.log('Generating slots for date:', dateObj.toISOString().split('T')[0]);
+        
+        // Ensure we're working with the correct date
+        const localDate = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+        console.log('Local date:', localDate);
+        console.log('ISO string:', localDate.toISOString());
+        console.log('Formatted date:', localDate.toISOString().split('T')[0]);
         
         const timeSlotsContainer = document.getElementById('time-slots');
         timeSlotsContainer.innerHTML = '';
