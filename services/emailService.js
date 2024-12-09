@@ -52,7 +52,6 @@ class EmailService {
                 description: `
                     Klijent: ${appointment.name}
                     Telefon: ${appointment.phone}
-                    Email: ${appointment.email}
                     Usluga: ${serviceName}
                     Cijena: ${appointment.price} KM
                 `,
@@ -64,7 +63,7 @@ class EmailService {
                 throw new Error('Failed to create calendar event');
             }
 
-            // Send email with the formatted date
+            // Send email to shop owner only
             const emailContent = {
                 from: process.env.EMAIL_USER,
                 to: process.env.SHOP_EMAIL,
@@ -99,9 +98,6 @@ class EmailService {
                                 <p style="margin: 10px 0; color: #ffffff;">
                                     <strong style="color: #D4AF37;">Telefon:</strong> ${appointment.phone}
                                 </p>
-                                <p style="margin: 10px 0; color: #ffffff;">
-                                    <strong style="color: #D4AF37;">Email:</strong> ${appointment.email}
-                                </p>
                             </div>
                         </div>
                     </div>
@@ -115,9 +111,8 @@ class EmailService {
                 success: true,
                 calendarEventId: calendarResult.eventId
             };
-
         } catch (error) {
-            console.error('Email service error:', error);
+            console.error('Error sending notification:', error);
             return {
                 success: false,
                 error: error.message
