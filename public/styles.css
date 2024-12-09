@@ -553,86 +553,54 @@ body {
     -webkit-appearance: none;
     -moz-appearance: none;
     box-sizing: border-box;
-    text-align-last: center;
     text-align: center;
+    text-align-last: center;
     -webkit-text-align-last: center;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D4AF37'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    background-size: 20px;
 }
 
 .time-select option {
-    padding: 12px;
+    padding: 16px;
     font-size: 16px;
     text-align: center;
     background-color: var(--black);
     color: white;
+    height: 50px;
+    line-height: 50px;
 }
 
-/* Mobile styles */
+/* Mobile styles - single definition */
 @media (max-width: 768px) {
-    .booking-form {
-        padding: 1rem;
-    }
-
-    .calendar-wrapper {
-        padding: 0;
-    }
-
-    .datetime-picker {
-        padding: 0;
-    }
-
-    .time-slots-wrapper,
-    .time-slots {
-        width: 100%;
-        margin: 0;
-        padding: 0;
-    }
-
     .time-select {
-        width: 100%;
-        height: 65px !important;
-        font-size: 18px !important;
-        margin: 0;
+        height: 70px !important;
+        font-size: 20px !important;
         padding: 0 40px;
-        border: 2px solid var(--gold);
     }
 
     .time-select option {
-        padding: 16px;
-        font-size: 18px;
-        height: 65px;
-        line-height: 65px;
+        padding: 20px;
+        font-size: 20px;
+        height: 70px;
+        line-height: 70px;
     }
 }
 
 /* Small mobile devices */
 @media (max-width: 480px) {
-    .booking-form {
-        padding: 0.5rem;
-    }
-
-    .datetime-picker {
-        padding: 0;
-    }
-
-    .time-slots-wrapper,
-    .time-slots {
-        width: 100%;
-        margin: 0;
-        padding: 0;
-    }
-
     .time-select {
-        height: 60px !important;
-        font-size: 17px !important;
+        height: 65px !important;
+        font-size: 18px !important;
     }
-}
 
-/* Custom dropdown arrow */
-select.time-select {
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D4AF37'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 16px;
+    .time-select option {
+        padding: 18px;
+        font-size: 18px;
+        height: 65px;
+        line-height: 65px;
+    }
 }
 
 /* Calendar wrapper */
@@ -761,65 +729,53 @@ select.time-select {
     -webkit-appearance: none;
     -moz-appearance: none;
     box-sizing: border-box;
-    text-align-last: center;
     text-align: center;
+    text-align-last: center;
     -webkit-text-align-last: center;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D4AF37'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    background-size: 20px;
 }
 
 .time-select option {
-    padding: 12px;
+    padding: 16px;
     font-size: 16px;
     text-align: center;
     background-color: var(--black);
     color: white;
+    height: 50px;
+    line-height: 50px;
 }
 
-/* Mobile styles */
+/* Mobile styles - single definition */
 @media (max-width: 768px) {
-    .booking-form {
-        padding: 1rem;
-    }
-
-    .calendar-wrapper {
-        padding: 0;
-    }
-
-    .time-slots-wrapper {
-        padding: 0 1rem;
-        margin: 1rem 0;
-    }
-
     .time-select {
-        width: 100%;
-        height: 65px !important;
-        font-size: 18px !important;
-        margin: 0;
+        height: 70px !important;
+        font-size: 20px !important;
         padding: 0 40px;
-        border: 2px solid var(--gold);
     }
 
     .time-select option {
-        padding: 16px;
-        font-size: 18px;
-        height: 65px;
-        line-height: 65px;
+        padding: 20px;
+        font-size: 20px;
+        height: 70px;
+        line-height: 70px;
     }
 }
 
 /* Small mobile devices */
 @media (max-width: 480px) {
-    .booking-form {
-        padding: 1rem;
-    }
-
-    .time-slots-wrapper {
-        padding: 0 1rem;
-        margin: 0.5rem 0;
-    }
-
     .time-select {
-        height: 60px !important;
-        font-size: 17px !important;
+        height: 65px !important;
+        font-size: 18px !important;
+    }
+
+    .time-select option {
+        padding: 18px;
+        font-size: 18px;
+        height: 65px;
+        line-height: 65px;
     }
 }
 
