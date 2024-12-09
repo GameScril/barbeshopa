@@ -589,15 +589,18 @@ body {
 
     .time-select {
         width: 100%;
-        height: 50px;
-        font-size: 16px;
+        height: 65px !important;
+        font-size: 18px !important;
         margin: 0;
-        padding: 0 30px;
+        padding: 0 40px;
+        border: 2px solid var(--gold);
     }
 
     .time-select option {
-        padding: 12px;
-        font-size: 16px;
+        padding: 16px;
+        font-size: 18px;
+        height: 65px;
+        line-height: 65px;
     }
 }
 
@@ -619,8 +622,8 @@ body {
     }
 
     .time-select {
-        height: 45px;
-        font-size: 15px;
+        height: 60px !important;
+        font-size: 17px !important;
     }
 }
 
@@ -686,15 +689,18 @@ select.time-select {
 
     .time-select {
         width: 100%;
-        height: 50px;
-        font-size: 16px;
+        height: 65px !important;
+        font-size: 18px !important;
         margin: 0;
-        padding: 0 30px;
+        padding: 0 40px;
+        border: 2px solid var(--gold);
     }
 
     .time-select option {
-        padding: 12px;
-        font-size: 16px;
+        padding: 16px;
+        font-size: 18px;
+        height: 65px;
+        line-height: 65px;
     }
 
     .customer-info {
@@ -728,8 +734,8 @@ select.time-select {
     }
 
     .time-select {
-        height: 45px;
-        font-size: 15px;
+        height: 60px !important;
+        font-size: 17px !important;
     }
 }
 
@@ -779,21 +785,24 @@ select.time-select {
     }
 
     .time-slots-wrapper {
-        padding: 0;
+        padding: 0 1rem;
         margin: 1rem 0;
     }
 
     .time-select {
         width: 100%;
-        height: 50px;
-        font-size: 16px;
+        height: 65px !important;
+        font-size: 18px !important;
         margin: 0;
-        padding: 0 30px;
+        padding: 0 40px;
+        border: 2px solid var(--gold);
     }
 
     .time-select option {
-        padding: 12px;
-        font-size: 16px;
+        padding: 16px;
+        font-size: 18px;
+        height: 65px;
+        line-height: 65px;
     }
 }
 
@@ -804,13 +813,13 @@ select.time-select {
     }
 
     .time-slots-wrapper {
-        padding: 0;
+        padding: 0 1rem;
         margin: 0.5rem 0;
     }
 
     .time-select {
-        height: 45px;
-        font-size: 15px;
+        height: 60px !important;
+        font-size: 17px !important;
     }
 }
 
