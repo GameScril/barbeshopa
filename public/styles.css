@@ -160,8 +160,9 @@ h2 {
 }
 
 .selected-date {
-    width: calc(100% - 2rem);
-    margin: 1rem auto;
+    display: none;
+    width: 100%;
+    margin: 1rem 0;
     padding: 1rem;
     background: rgba(212, 175, 55, 0.1);
     border-radius: 8px;
@@ -520,11 +521,10 @@ body {
 }
 
 .time-slots-wrapper {
-    width: calc(100% - 2rem);
-    margin: 1rem auto;
+    width: 100%;
+    margin: 1rem 0;
     padding: 0;
     box-sizing: border-box;
-    position: relative;
 }
 
 .time-select {
@@ -563,7 +563,7 @@ body {
     }
     
     .booking-form {
-        padding: 1.5rem;
+        padding: 1rem;
     }
     
     .service-options {
@@ -621,10 +621,10 @@ body {
     }
 
     .time-slots-wrapper {
-        width: 100%;
-        max-width: none;
+        width: calc(100% + 2rem);
+        margin-left: -1rem;
+        margin-right: -1rem;
         padding: 0;
-        margin: 1rem 0;
     }
 
     .selected-date,
@@ -636,9 +636,12 @@ body {
     }
 
     .time-select {
+        width: 100%;
+        border-left: none;
+        border-right: none;
+        border-radius: 0;
         height: 65px;
-        font-size: 18px;
-        border-radius: 8px;
+        font-size: 20px;
     }
 }
 
