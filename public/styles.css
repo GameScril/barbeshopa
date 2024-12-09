@@ -578,4 +578,196 @@ body {
         width: 90%;
     }
 }
+
+/* Calendar improvements */
+.calendar {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.calendar-dates {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    text-align: center;
+}
+
+.calendar-dates div {
+    padding: 8px;
+    font-size: 14px;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+/* Time select improvements */
+.time-select {
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    background-color: var(--black);
+    color: white;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+/* Customer info improvements */
+.customer-info {
+    max-width: 400px;
+    margin: 2rem auto;
+}
+
+.customer-info input {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 1rem;
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    background-color: var(--black);
+    color: white;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+/* Mobile improvements */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .booking-form {
+        padding: 1.5rem;
+    }
+
+    .calendar-wrapper {
+        padding: 1rem;
+        margin: 0;
+        border-radius: 8px;
+    }
+
+    .calendar-dates div {
+        padding: 6px;
+        font-size: 14px;
+    }
+
+    .time-select {
+        padding: 15px;
+        font-size: 16px;
+        height: auto;
+    }
+
+    .time-select option {
+        padding: 15px;
+        font-size: 16px;
+    }
+
+    .customer-info input {
+        padding: 12px;
+        font-size: 16px;
+    }
+
+    h1 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0.5rem;
+    }
+
+    .booking-form {
+        padding: 1rem;
+    }
+
+    .calendar-dates {
+        gap: 2px;
+    }
+
+    .calendar-dates div {
+        padding: 4px;
+        font-size: 12px;
+    }
+
+    .time-select, 
+    .customer-info input {
+        font-size: 16px;
+        padding: 12px;
+    }
+}
+
+/* Fix for dropdown arrow */
+.time-slots {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.time-slots::after {
+    content: '▼';
+    font-size: 14px;
+    color: var(--gold);
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+/* Ensure dropdown options are visible and scrollable */
+.time-select {
+    max-height: none;
+}
+
+.time-select option {
+    padding: 10px;
+}
+
+/* Fix calendar header */
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0 0.5rem;
+}
+
+.calendar-header button {
+    background: none;
+    border: none;
+    color: var(--gold);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+/* Fix weekday headers */
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.calendar-weekdays div {
+    color: var(--gold);
+    font-weight: 600;
+    padding: 5px;
+    font-size: 14px;
+}
  
