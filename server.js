@@ -145,33 +145,34 @@ app.get('/api/appointments/slots/:date', async (req, res) => {
 
     try {
         connection = await pool.getConnection();
-        // Get all appointments for the specified date with more precise time format
+        
+        // Debug log the date parameter
+        console.log('Checking appointments for date:', date);
+        
+        // Get all appointments for the specified date
         const [rows] = await connection.execute(
-            `SELECT 
-                TIME_FORMAT(time, '%H:%i') as time,
-                duration,
-                TIME_FORMAT(
-                    ADDTIME(time, SEC_TO_TIME(duration * 60)),
-                    '%H:%i'
-                ) as end_time
-            FROM appointments 
-            WHERE date = ? 
-            ORDER BY time`,
+            'SELECT * FROM appointments WHERE date = ?',
             [date]
         );
         
-        console.log('Found appointments for date:', date, rows);
-        
-        // Make sure we're returning the data in the correct format with start and end times
+        console.log('Raw database results:', rows);
+
+        if (rows.length === 0) {
+            console.log('No appointments found for date:', date);
+        }
+
+        // Format the results
         const bookedSlots = rows.map(row => {
-            const [startHours, startMinutes] = row.time.split(':').map(Number);
-            const [endHours, endMinutes] = row.end_time.split(':').map(Number);
+            const timeStr = row.time.toString().slice(0, 5); // Convert TIME to HH:MM format
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            const startMinutes = hours * 60 + minutes;
+            const endMinutes = startMinutes + row.duration;
             
             return {
-                time: row.time,
-                duration: parseInt(row.duration),
-                startMinutes: startHours * 60 + startMinutes,
-                endMinutes: endHours * 60 + endMinutes
+                time: timeStr,
+                duration: row.duration,
+                startMinutes: startMinutes,
+                endMinutes: endMinutes
             };
         });
 
