@@ -294,6 +294,7 @@ input:focus {
     padding: 0 1rem;
     font-size: 1.2rem;
     color: var(--gold);
+    white-space: nowrap;
 }
 
 .calendar-header button {
@@ -470,7 +471,8 @@ body {
 
 .time-select {
     width: 100%;
-    padding: 15px;
+    height: 60px;
+    padding: 12px 35px 12px 15px;
     font-size: 18px;
     border: 2px solid var(--gold);
     border-radius: 8px;
@@ -480,8 +482,8 @@ body {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    margin: 0 auto;
-    height: 50px;
+    box-sizing: border-box;
+    text-align: center;
 }
 
 .time-select:hover {
@@ -497,10 +499,10 @@ body {
 }
 
 .time-select option {
-    padding: 15px;
-    font-size: 16px;
+    padding: 20px 15px;
+    font-size: 18px;
+    min-height: 50px;
     background-color: var(--black);
-    color: white;
 }
 
 .time-select option:checked {
@@ -917,6 +919,177 @@ body {
     select.time-select {
         text-align: center;
         font-weight: 500;
+    }
+}
+
+/* Calendar header adjustments */
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+    font-size: 1.2rem;
+    color: var(--gold);
+    white-space: nowrap;
+}
+
+/* Time select dropdown - consolidated styles */
+.time-select {
+    width: 100%;
+    height: 60px;
+    padding: 12px 35px 12px 15px;
+    font-size: 18px;
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    background-color: var(--black);
+    color: white;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.time-select option {
+    padding: 20px 15px;
+    font-size: 18px;
+    min-height: 50px;
+    background-color: var(--black);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .calendar-header {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+        gap: 10px;
+    }
+
+    .time-select {
+        height: 65px;
+        font-size: 20px;
+        padding: 15px 35px 15px 15px;
+    }
+
+    .time-select option {
+        padding: 20px 15px;
+        font-size: 18px;
+        min-height: 55px;
+    }
+}
+
+@media (max-width: 480px) {
+    .calendar-header {
+        font-size: 1rem;
+        padding: 0 0.5rem;
+    }
+
+    .time-select {
+        height: 60px;
+        font-size: 18px;
+        margin: 1rem 0;
+    }
+
+    /* Ensure dropdown is large enough on mobile */
+    select.time-select {
+        text-align: center;
+        font-weight: 500;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D4AF37'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 20px;
+    }
+}
+
+/* iOS specific fixes */
+@supports (-webkit-touch-callout: none) {
+    select.time-select {
+        font-size: 18px;
+        padding-right: 30px;
+        height: 60px;
+    }
+}
+
+/* Time select dropdown - base styles */
+.time-select {
+    width: 100%;
+    height: 60px;
+    padding: 15px 35px 15px 15px;
+    font-size: 18px;
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    background-color: var(--black);
+    color: white;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+/* Time slots wrapper */
+.time-slots-wrapper {
+    max-width: 500px;
+    margin: 1.5rem auto;
+    padding: 0 1rem;
+    position: relative;
+}
+
+/* Dropdown options */
+.time-select option {
+    padding: 20px 15px;
+    font-size: 18px;
+    min-height: 60px;
+    background-color: var(--black);
+    color: white;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .time-select {
+        height: 70px; /* Increased height */
+        font-size: 20px; /* Larger font */
+        padding: 15px 40px 15px 15px;
+    }
+
+    .time-select option {
+        padding: 25px 15px; /* More padding */
+        font-size: 20px;
+        min-height: 70px;
+    }
+
+    /* Custom dropdown arrow */
+    select.time-select {
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D4AF37'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        background-size: 24px;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+    .time-select {
+        height: 65px;
+        font-size: 18px;
+        margin: 1rem 0;
+    }
+
+    .time-select option {
+        padding: 22px 15px;
+        min-height: 65px;
+    }
+}
+
+/* iOS specific fixes */
+@supports (-webkit-touch-callout: none) {
+    select.time-select {
+        height: 70px;
+        font-size: 20px;
     }
 }
  
