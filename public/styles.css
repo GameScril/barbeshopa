@@ -282,9 +282,9 @@ input:focus {
 
 .calendar {
     width: 100%;
-    max-width: 400px;
+    max-width: 100%;
     margin: 0 auto;
-    padding: 1rem;
+    padding: 0.5rem;
     box-sizing: border-box;
 }
 
@@ -325,23 +325,24 @@ input:focus {
 .calendar-dates {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
+    gap: 4px;
     text-align: center;
     margin: 0 auto;
-    max-width: 460px;
+    width: 100%;
+    max-width: 100%;
 }
 
 .calendar-dates div {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
+    margin: 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     border-radius: 50%;
     transition: all 0.3s ease;
-    position: relative;
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .calendar-dates div:not(.disabled):hover {
@@ -475,7 +476,7 @@ body {
     width: 100%;
     max-width: 500px;
     margin: 1.5rem auto;
-    padding: 0;
+    padding: 0 1rem;
     box-sizing: border-box;
 }
 
@@ -656,7 +657,7 @@ select.time-select {
     width: 100%;
     max-width: 500px;
     margin: 1.5rem auto;
-    padding: 0;
+    padding: 0 1rem;
     box-sizing: border-box;
 }
 
@@ -681,22 +682,36 @@ select.time-select {
 @media (max-width: 768px) {
     .calendar-wrapper {
         width: 100%;
-        max-width: 100%;
-        padding: 0.5rem;
+        padding: 1rem 0.5rem;
+        margin: 0;
+    }
+
+    .calendar {
+        padding: 0;
+        width: 100%;
+    }
+
+    .calendar-dates {
+        gap: 2px;
+    }
+
+    .calendar-dates div {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
     }
 
     .time-slots-wrapper {
-        width: 100%;
-        max-width: 100%;
-        padding: 0 0.5rem;
-        margin: 1rem 0;
+        width: 100vw;
+        max-width: none;
+        margin: 1rem -1rem;
+        padding: 0 1rem;
+        box-sizing: border-box;
     }
 
     .time-select {
         width: 100%;
-        min-width: 280px; /* Ensure minimum width */
-        font-size: 18px;
-        margin: 0.5rem 0;
+        max-width: none;
     }
 }
 
@@ -707,13 +722,19 @@ select.time-select {
     }
 
     .calendar-wrapper {
-        padding: 0;
+        padding: 0.5rem 0;
+    }
+
+    .calendar-dates div {
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
     }
 
     .time-slots-wrapper {
-        width: calc(100% - 1rem); /* Account for parent padding */
-        margin: 1rem 0.5rem;
-        padding: 0;
+        width: 100vw;
+        margin: 1rem -0.5rem;
+        padding: 0 0.5rem;
     }
 
     .time-select {
