@@ -531,7 +531,7 @@ body {
 .time-slots-wrapper {
     width: 100%;
     margin: 1rem 0;
-    padding: 0;
+    padding: 0 1rem;
     box-sizing: border-box;
 }
 
@@ -541,9 +541,9 @@ body {
 
 .time-select {
     width: 100%;
-    height: 60px;
+    height: 50px;
     padding: 0 15px;
-    font-size: 18px;
+    font-size: 16px;
     border: 2px solid var(--gold);
     border-radius: 8px;
     background-color: var(--black);
@@ -553,7 +553,17 @@ body {
     -webkit-appearance: none;
     -moz-appearance: none;
     box-sizing: border-box;
+    text-align-last: center;
     text-align: center;
+    -webkit-text-align-last: center;
+}
+
+.time-select option {
+    padding: 12px;
+    font-size: 16px;
+    text-align: center;
+    background-color: var(--black);
+    color: white;
 }
 
 /* Mobile styles */
@@ -579,10 +589,15 @@ body {
 
     .time-select {
         width: 100%;
-        border-radius: 8px;
-        height: 65px;
-        font-size: 18px;
-        margin: 1rem 0;
+        height: 50px;
+        font-size: 16px;
+        margin: 0;
+        padding: 0 30px;
+    }
+
+    .time-select option {
+        padding: 12px;
+        font-size: 16px;
     }
 }
 
@@ -604,10 +619,8 @@ body {
     }
 
     .time-select {
-        width: 100%;
-        height: 60px;
-        font-size: 16px;
-        margin: 1rem 0;
+        height: 45px;
+        font-size: 15px;
     }
 }
 
@@ -615,8 +628,8 @@ body {
 select.time-select {
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D4AF37'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
     background-repeat: no-repeat;
-    background-position: right 15px center;
-    background-size: 20px;
+    background-position: right 12px center;
+    background-size: 16px;
 }
 
 /* Calendar wrapper */
@@ -668,13 +681,20 @@ select.time-select {
 
     .time-slots-wrapper {
         padding: 0;
+        margin: 1rem 0;
     }
 
     .time-select {
         width: 100%;
-        max-width: none;
-        font-size: 18px;
-        margin: 0.5rem 0;
+        height: 50px;
+        font-size: 16px;
+        margin: 0;
+        padding: 0 30px;
+    }
+
+    .time-select option {
+        padding: 12px;
+        font-size: 16px;
     }
 
     .customer-info {
@@ -708,8 +728,8 @@ select.time-select {
     }
 
     .time-select {
-        width: 100%;
-        margin: 0.5rem 0;
+        height: 45px;
+        font-size: 15px;
     }
 }
 
@@ -717,15 +737,15 @@ select.time-select {
 .time-slots-wrapper {
     width: 100%;
     margin: 1rem 0;
-    padding: 0;
+    padding: 0 1rem;
     box-sizing: border-box;
 }
 
 .time-select {
     width: 100%;
-    height: 60px;
+    height: 50px;
     padding: 0 15px;
-    font-size: 18px;
+    font-size: 16px;
     border: 2px solid var(--gold);
     border-radius: 8px;
     background-color: var(--black);
@@ -735,7 +755,17 @@ select.time-select {
     -webkit-appearance: none;
     -moz-appearance: none;
     box-sizing: border-box;
+    text-align-last: center;
     text-align: center;
+    -webkit-text-align-last: center;
+}
+
+.time-select option {
+    padding: 12px;
+    font-size: 16px;
+    text-align: center;
+    background-color: var(--black);
+    color: white;
 }
 
 /* Mobile styles */
@@ -749,24 +779,21 @@ select.time-select {
     }
 
     .time-slots-wrapper {
-        width: 100%;
+        padding: 0;
         margin: 1rem 0;
-        padding: 0 1rem;
     }
 
     .time-select {
         width: 100%;
-        border-radius: 8px;
-        height: 65px;
-        font-size: 18px;
+        height: 50px;
+        font-size: 16px;
         margin: 0;
+        padding: 0 30px;
     }
 
     .time-select option {
-        padding: 15px;
+        padding: 12px;
         font-size: 16px;
-        text-align: center;
-        background-color: var(--black);
     }
 }
 
@@ -777,14 +804,13 @@ select.time-select {
     }
 
     .time-slots-wrapper {
-        width: 100%;
-        padding: 0 1rem;
-        margin: 1rem 0;
+        padding: 0;
+        margin: 0.5rem 0;
     }
 
     .time-select {
-        height: 60px;
-        font-size: 16px;
+        height: 45px;
+        font-size: 15px;
     }
 }
 
@@ -836,7 +862,7 @@ select.time-select {
 .time-select {
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D4AF37'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
     background-repeat: no-repeat;
-    background-position: right 20px center;
-    background-size: 24px;
+    background-position: right 12px center;
+    background-size: 16px;
 }
  
