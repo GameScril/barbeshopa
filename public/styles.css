@@ -290,8 +290,10 @@ input:focus {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
     padding: 0 1rem;
+    font-size: 1.2rem;
+    color: var(--gold);
 }
 
 .calendar-header button {
@@ -310,10 +312,11 @@ input:focus {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     text-align: center;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     font-weight: bold;
     color: var(--gold);
     font-size: 1.1rem;
+    padding: 0.5rem 0;
 }
 
 .calendar-dates {
@@ -822,5 +825,98 @@ body {
 .booking-form {
     padding: 2rem;
     box-sizing: border-box;
+}
+
+/* Calendar header and days styling */
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+    font-size: 1.2rem;
+    color: var(--gold);
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+    color: var(--gold);
+    font-size: 1.1rem;
+    padding: 0.5rem 0;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .calendar-header {
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+    }
+
+    .calendar-days {
+        font-size: 0.9rem;
+        margin-bottom: 1.2rem;
+        padding: 0.4rem 0;
+    }
+
+    /* Larger dropdown for mobile */
+    .time-select {
+        height: 55px;
+        font-size: 18px;
+        padding: 12px 35px 12px 15px;
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .time-select option {
+        padding: 15px;
+        font-size: 16px;
+        min-height: 45px;
+    }
+
+    /* Ensure dropdown container has proper spacing */
+    .time-slots-wrapper {
+        margin: 1.5rem auto;
+        padding: 0 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .calendar-header {
+        font-size: 1rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .calendar-days {
+        font-size: 0.85rem;
+        padding: 0.3rem 0;
+        margin-bottom: 1rem;
+        letter-spacing: 0.5px;
+    }
+
+    /* Even larger touch targets for smaller screens */
+    .time-select {
+        height: 60px;
+        font-size: 18px;
+    }
+
+    .time-select option {
+        padding: 18px 15px;
+        min-height: 50px;
+    }
+
+    /* Add more spacing between elements */
+    .time-slots-wrapper {
+        margin: 1.2rem auto;
+    }
+
+    /* Ensure text is centered and visible */
+    select.time-select {
+        text-align: center;
+        font-weight: 500;
+    }
 }
  
