@@ -68,7 +68,6 @@ class CalendarService {
                         { method: 'popup', minutes: 10 }
                     ],
                 },
-                // Only add organizer since we don't have client email
                 organizer: {
                     email: process.env.SHOP_EMAIL,
                     displayName: process.env.SHOP_NAME
@@ -82,9 +81,18 @@ class CalendarService {
                 duration
             });
 
+            // Actually create the event in Google Calendar
+            const response = await this.calendar.events.insert({
+                calendarId: 'primary', // Use the primary calendar
+                requestBody: event,
+            });
+
+            console.log('Calendar event created:', response.data);
+
             return {
                 success: true,
-                eventId: Date.now().toString()
+                eventId: response.data.id,
+                htmlLink: response.data.htmlLink // URL to view the event
             };
         } catch (error) {
             console.error('Error creating calendar event:', error);
