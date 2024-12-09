@@ -284,9 +284,8 @@ input:focus {
 
     .time-slots-wrapper {
         width: 100%;
-        max-width: none;
-        padding: 0;
         margin: 1rem 0;
+        padding: 0 1rem;
     }
 
     .selected-date,
@@ -298,9 +297,18 @@ input:focus {
     }
 
     .time-select {
+        width: 100%;
+        border-radius: 8px;
         height: 65px;
         font-size: 18px;
-        border-radius: 8px;
+        margin: 0;
+    }
+
+    .time-select option {
+        padding: 15px;
+        font-size: 16px;
+        text-align: center;
+        background-color: var(--black);
     }
 }
 
@@ -525,7 +533,6 @@ body {
     margin: 1rem 0;
     padding: 0;
     box-sizing: border-box;
-    position: relative;
 }
 
 .time-select {
@@ -622,10 +629,9 @@ body {
     }
 
     .time-slots-wrapper {
-        width: calc(100% + 2rem);
-        margin-left: -1rem;
-        margin-right: -1rem;
-        padding: 0;
+        width: 100%;
+        margin: 1rem 0;
+        padding: 0 1rem;
     }
 
     .selected-date,
@@ -638,16 +644,15 @@ body {
 
     .time-select {
         width: 100%;
-        border-radius: 0;
-        border-left: none;
-        border-right: none;
+        border-radius: 8px;
         height: 65px;
-        font-size: 20px;
+        font-size: 18px;
+        margin: 0;
     }
 
     .time-select option {
-        padding: 20px;
-        font-size: 18px;
+        padding: 15px;
+        font-size: 16px;
         text-align: center;
         background-color: var(--black);
     }
@@ -813,7 +818,6 @@ select.time-select {
     margin: 1rem 0;
     padding: 0;
     box-sizing: border-box;
-    position: relative;
 }
 
 .time-select {
@@ -840,28 +844,26 @@ select.time-select {
     }
 
     .calendar-wrapper {
-        padding: 1rem;
+        padding: 0;
     }
 
     .time-slots-wrapper {
-        width: calc(100% + 2rem);
-        margin-left: -1rem;
-        margin-right: -1rem;
-        padding: 0;
+        width: 100%;
+        margin: 1rem 0;
+        padding: 0 1rem;
     }
 
     .time-select {
         width: 100%;
-        border-radius: 0;
-        border-left: none;
-        border-right: none;
+        border-radius: 8px;
         height: 65px;
-        font-size: 20px;
+        font-size: 18px;
+        margin: 0;
     }
 
     .time-select option {
-        padding: 20px;
-        font-size: 18px;
+        padding: 15px;
+        font-size: 16px;
         text-align: center;
         background-color: var(--black);
     }
@@ -870,22 +872,17 @@ select.time-select {
 /* Small mobile devices */
 @media (max-width: 480px) {
     .booking-form {
-        padding: 1rem 0.5rem;
+        padding: 1rem;
     }
 
     .time-slots-wrapper {
-        width: calc(100% + 1rem);
-        margin-left: -0.5rem;
-        margin-right: -0.5rem;
+        width: 100%;
+        padding: 0 1rem;
+        margin: 1rem 0;
     }
 
     .time-select {
         height: 60px;
-        font-size: 18px;
-    }
-
-    .time-select option {
-        padding: 15px;
         font-size: 16px;
     }
 }
