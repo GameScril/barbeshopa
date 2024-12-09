@@ -282,8 +282,10 @@ input:focus {
 
 .calendar {
     width: 100%;
-    max-width: 460px;
+    max-width: 400px;
     margin: 0 auto;
+    padding: 1rem;
+    box-sizing: border-box;
 }
 
 .calendar-header {
@@ -470,11 +472,11 @@ body {
 }
 
 .time-slots-wrapper {
-    max-width: 500px;
-    margin: 1.5rem auto;
-    padding: 0 1rem;
-    position: relative;
     width: 100%;
+    max-width: 100%;
+    margin: 1.5rem auto;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 .time-select {
@@ -503,17 +505,47 @@ body {
 
 /* Mobile styles */
 @media (max-width: 768px) {
-    .time-slots-wrapper {
-        max-width: 100%;
-        padding: 0 0.5rem;
+    .container {
+        padding: 1rem;
+    }
+    
+    h1 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .booking-form {
+        padding: 1rem;
+    }
+    
+    .service-options {
+        grid-template-columns: 1fr;
+        gap: 1rem;
     }
 
-    .time-select {
-        width: 100%;
-        font-size: 18px;
-        text-align: center;
-        background-position: right 15px center;
-        background-size: 24px;
+    .time-slots {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 8px;
+    }
+
+    .time-slot {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    input {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .book-btn {
+        padding: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .calendar td {
+        padding: 0.5rem;
+        font-size: 0.9rem;
     }
 }
 
@@ -523,5 +555,99 @@ select.time-select {
     background-repeat: no-repeat;
     background-position: right 15px center;
     background-size: 20px;
+}
+
+/* Calendar wrapper */
+.calendar-wrapper {
+    width: 100%;
+    margin: 0 auto;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+/* Customer info section */
+.customer-info {
+    width: 100%;
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    box-sizing: border-box;
+}
+
+.customer-info input {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 1rem;
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    background-color: var(--black);
+    color: white;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .booking-form {
+        padding: 1rem;
+    }
+
+    .calendar {
+        padding: 0.5rem;
+    }
+
+    .calendar-wrapper {
+        padding: 0.5rem;
+    }
+
+    .time-slots-wrapper {
+        padding: 0;
+    }
+
+    .time-select {
+        width: 100%;
+        max-width: none;
+        font-size: 18px;
+        margin: 0.5rem 0;
+    }
+
+    .customer-info {
+        padding: 0;
+    }
+
+    .customer-info input {
+        font-size: 16px;
+        padding: 12px 15px;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+    .container {
+        padding: 0.5rem;
+    }
+
+    .booking-form {
+        padding: 1rem 0.5rem;
+    }
+
+    .calendar {
+        padding: 0;
+    }
+
+    .time-slots-wrapper,
+    .customer-info {
+        padding: 0;
+        margin: 1rem 0;
+    }
+
+    .time-select {
+        width: 100%;
+        margin: 0.5rem 0;
+    }
 }
  
