@@ -153,12 +153,17 @@ app.get('/api/appointments/slots/:date', async (req, res) => {
         
         console.log('Found appointments for date:', date, rows); // Debug log
         
+        // Make sure we're returning the data in the correct format
+        const bookedSlots = rows.map(row => ({
+            time: row.time,
+            duration: parseInt(row.duration)
+        }));
+
+        console.log('Formatted booked slots:', bookedSlots); // Additional debug log
+        
         res.json({ 
             success: true,
-            bookedSlots: rows.map(row => ({
-                time: row.time,
-                duration: parseInt(row.duration)
-            }))
+            bookedSlots: bookedSlots
         });
     } catch (error) {
         console.error('Error fetching booked slots:', error);
