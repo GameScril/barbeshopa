@@ -151,17 +151,21 @@ app.get('/api/appointments/slots/:date', async (req, res) => {
         
         // Get all appointments for the specified date
         const [rows] = await connection.execute(
-            'SELECT TIME_FORMAT(time, "%H:%i") as time, duration FROM appointments WHERE date = ?',
+            'SELECT DATE_FORMAT(date, "%Y-%m-%d") as date, TIME_FORMAT(time, "%H:%i") as time, duration FROM appointments WHERE date = ?',
             [date]
         );
         
         console.log('Database query results:', rows);
 
         // Format the results
-        const bookedSlots = rows.map(row => ({
-            time: row.time,
-            duration: parseInt(row.duration)
-        }));
+        const bookedSlots = rows.map(row => {
+            console.log(`Processing booking for ${row.date} at ${row.time} for ${row.duration} minutes`);
+            return {
+                time: row.time,
+                duration: parseInt(row.duration),
+                date: row.date
+            };
+        });
 
         console.log('Formatted booked slots:', bookedSlots);
         

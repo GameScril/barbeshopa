@@ -227,6 +227,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function generateTimeSlots(dateObj) {
         console.log('=== Starting generateTimeSlots ===');
+        console.log('Generating slots for date:', dateObj.toISOString().split('T')[0]);
+        
         const timeSlotsContainer = document.getElementById('time-slots');
         timeSlotsContainer.innerHTML = '';
         
@@ -249,7 +251,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const serviceDuration = getServiceDuration(selectedService.dataset.service);
 
+            // Format date in YYYY-MM-DD format
             const formattedDate = dateObj.toISOString().split('T')[0];
+            console.log('Fetching slots for date:', formattedDate);
+            
             const response = await fetch(`/api/appointments/slots/${formattedDate}`);
             
             if (!response.ok) {
@@ -262,15 +267,16 @@ document.addEventListener('DOMContentLoaded', () => {
             // Convert booked slots to minutes for easier comparison
             const bookedSlots = (result.bookedSlots || []).map(booking => {
                 const [hours, minutes] = booking.time.split(':').map(Number);
+                const startMinutes = hours * 60 + minutes;
+                const endMinutes = startMinutes + booking.duration;
+                console.log(`Found booking: ${booking.time} for ${booking.duration} minutes (${startMinutes}-${endMinutes})`);
                 return {
-                    startMinutes: hours * 60 + minutes,
-                    endMinutes: hours * 60 + minutes + booking.duration,
+                    startMinutes,
+                    endMinutes,
                     time: booking.time,
                     duration: booking.duration
                 };
             });
-
-            console.log('Processed booked slots:', bookedSlots);
 
             // Generate time slots
             const startTime = 8 * 60; // 8:00
@@ -287,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         (slotEndMinutes > booking.startMinutes && slotEndMinutes <= booking.endMinutes) ||
                         (minutes <= booking.startMinutes && slotEndMinutes >= booking.endMinutes)) {
                         isAvailable = false;
-                        console.log(`Slot ${formatMinutes(minutes)} blocked by booking at ${booking.time}`);
+                        console.log(`Blocking slot ${formatMinutes(minutes)}-${formatMinutes(slotEndMinutes)} due to booking at ${booking.time}`);
                         break;
                     }
                 }
