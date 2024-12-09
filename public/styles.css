@@ -473,9 +473,10 @@ body {
 }
 
 .time-slots-wrapper {
-    width: 100%;
-    margin: 1.5rem -2rem;
-    padding: 0 2rem;
+    width: calc(100% + 4rem);
+    margin-left: -2rem;
+    margin-right: -2rem;
+    padding: 0;
     box-sizing: border-box;
     position: relative;
 }
@@ -486,7 +487,7 @@ body {
     padding: 0 15px;
     font-size: 18px;
     border: 2px solid var(--gold);
-    border-radius: 8px;
+    border-radius: 0;
     background-color: var(--black);
     color: white;
     cursor: pointer;
@@ -522,6 +523,7 @@ body {
     .service-options {
         grid-template-columns: 1fr;
         gap: 1rem;
+        padding: 0 1rem;
     }
 
     .time-slots {
@@ -547,6 +549,96 @@ body {
     .calendar td {
         padding: 0.5rem;
         font-size: 0.9rem;
+    }
+
+    .service-card {
+        padding: 1.2rem;
+        max-width: 100%;
+        margin: 0 auto;
+    }
+
+    .service-card h3 {
+        font-size: 1.2rem;
+        margin: 0.5rem 0;
+    }
+
+    .price {
+        font-size: 1.3rem;
+        margin-top: 0.5rem;
+    }
+
+    .service-card::before {
+        font-size: 1.8rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+
+    .time-slots-wrapper {
+        width: 100vw;
+        margin-left: calc(-50vw + 50%);
+        margin-right: calc(-50vw + 50%);
+        position: relative;
+        left: 50%;
+        right: 50%;
+        transform: translateX(-50%);
+    }
+
+    .time-select {
+        width: 100%;
+        border-left: none;
+        border-right: none;
+        border-radius: 0;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+    .container {
+        padding: 0.5rem;
+    }
+
+    .booking-form {
+        padding: 1rem 0.5rem;
+    }
+
+    .calendar {
+        padding: 0;
+    }
+
+    .time-slots-wrapper,
+    .customer-info {
+        padding: 0;
+        margin: 1rem 0;
+    }
+
+    .time-select {
+        width: 100%;
+        margin: 0.5rem 0;
+    }
+
+    .service-options {
+        padding: 0 0.5rem;
+    }
+
+    .service-card {
+        padding: 1rem;
+    }
+
+    .service-card h3 {
+        font-size: 1.1rem;
+    }
+
+    .price {
+        font-size: 1.2rem;
+    }
+
+    .time-select {
+        font-size: 16px;
+        height: 55px;
+    }
+
+    .time-select option {
+        padding: 15px;
+        font-size: 16px;
     }
 }
 
