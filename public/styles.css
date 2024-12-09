@@ -478,6 +478,7 @@ body {
     margin: 1.5rem auto;
     padding: 0 1rem;
     box-sizing: border-box;
+    position: relative;
 }
 
 .time-select {
@@ -659,6 +660,7 @@ select.time-select {
     margin: 1.5rem auto;
     padding: 0 1rem;
     box-sizing: border-box;
+    position: relative;
 }
 
 .time-select {
@@ -680,38 +682,23 @@ select.time-select {
 
 /* Mobile styles */
 @media (max-width: 768px) {
-    .calendar-wrapper {
+    .booking-form {
+        padding: 1rem;
         width: 100%;
-        padding: 1rem 0.5rem;
-        margin: 0;
-    }
-
-    .calendar {
-        padding: 0;
-        width: 100%;
-    }
-
-    .calendar-dates {
-        gap: 2px;
-    }
-
-    .calendar-dates div {
-        width: 35px;
-        height: 35px;
-        font-size: 14px;
+        box-sizing: border-box;
     }
 
     .time-slots-wrapper {
-        width: 100vw;
+        width: calc(100% + 2rem); /* Extend beyond parent padding */
         max-width: none;
-        margin: 1rem -1rem;
+        margin-left: -1rem;
+        margin-right: -1rem;
         padding: 0 1rem;
-        box-sizing: border-box;
     }
 
     .time-select {
         width: 100%;
-        max-width: none;
+        font-size: 18px;
     }
 }
 
@@ -721,25 +708,29 @@ select.time-select {
         padding: 1rem 0.5rem;
     }
 
-    .calendar-wrapper {
-        padding: 0.5rem 0;
-    }
-
-    .calendar-dates div {
-        width: 32px;
-        height: 32px;
-        font-size: 13px;
-    }
-
     .time-slots-wrapper {
-        width: 100vw;
-        margin: 1rem -0.5rem;
+        width: calc(100% + 1rem);
+        margin-left: -0.5rem;
+        margin-right: -0.5rem;
         padding: 0 0.5rem;
     }
 
     .time-select {
         width: 100%;
-        min-width: 100%;
+        min-width: calc(100% + 1rem);
+        transform: translateX(-0.25rem);
     }
+
+    /* Ensure dropdown options are also wide enough */
+    .time-select option {
+        width: 100%;
+        min-width: 100%;
+        padding: 15px;
+    }
+}
+
+/* Remove any conflicting styles */
+.time-slots {
+    width: 100%;
 }
  
