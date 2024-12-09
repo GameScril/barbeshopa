@@ -531,12 +531,8 @@ body {
 .time-slots-wrapper {
     width: 100%;
     margin: 1rem 0;
-    padding: 0 1rem;
+    padding: 0;
     box-sizing: border-box;
-}
-
-.time-slots {
-    width: 100%;
 }
 
 .time-select {
@@ -556,10 +552,6 @@ body {
     text-align: center;
     text-align-last: center;
     -webkit-text-align-last: center;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D4AF37'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 20px center;
-    background-size: 20px;
 }
 
 .time-select option {
@@ -570,41 +562,33 @@ body {
     color: white;
 }
 
-/* Mobile styles */
 @media (max-width: 768px) {
-    .time-slots-wrapper {
-        padding: 0 1rem;
-    }
-
     .time-select {
-        height: 80px !important;
-        font-size: 22px !important;
+        height: 90px !important;
+        font-size: 24px !important;
         padding: 0 40px;
         border-width: 3px;
-        background-position: right 25px center;
-        background-size: 24px;
     }
 
     .time-select option {
-        padding: 20px;
-        font-size: 22px;
+        padding: 24px;
+        font-size: 24px;
+        height: 90px;
+        line-height: 90px;
     }
 }
 
-/* Small mobile devices */
 @media (max-width: 480px) {
-    .time-slots-wrapper {
-        padding: 0 0.5rem;
-    }
-
     .time-select {
-        height: 70px !important;
-        font-size: 20px !important;
+        height: 80px !important;
+        font-size: 22px !important;
     }
 
     .time-select option {
-        padding: 18px;
-        font-size: 20px;
+        padding: 22px;
+        font-size: 22px;
+        height: 80px;
+        line-height: 80px;
     }
 }
 
@@ -716,7 +700,7 @@ body {
 .time-slots-wrapper {
     width: 100%;
     margin: 1rem 0;
-    padding: 0 1rem;
+    padding: 0;
     box-sizing: border-box;
 }
 
@@ -737,10 +721,6 @@ body {
     text-align: center;
     text-align-last: center;
     -webkit-text-align-last: center;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D4AF37'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 20px center;
-    background-size: 20px;
 }
 
 .time-select option {
@@ -749,8 +729,6 @@ body {
     text-align: center;
     background-color: var(--black);
     color: white;
-    height: 50px;
-    line-height: 50px;
 }
 
 /* Mobile styles - single definition */
