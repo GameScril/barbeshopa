@@ -261,42 +261,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(result.error || 'Failed to fetch booked slots');
             }
 
-            console.log('Booked slots:', result.bookedSlots); // Debug log
-
             // Create array of all possible time slots
             const startMinutes = 8 * 60; // 8:00
             const endMinutes = 16 * 60; // 16:00
             const lastPossibleStartTime = endMinutes - serviceDuration;
 
-            // Create array of booked time ranges with buffer
+            // Create array of booked time ranges
             const bookedRanges = result.bookedSlots.map(slot => {
                 const [hours, minutes] = slot.time.split(':').map(Number);
                 const startTime = hours * 60 + minutes;
                 const duration = parseInt(slot.duration);
-                // Add a small buffer before and after each booking
                 return {
-                    start: startTime - 5, // 5-minute buffer before
-                    end: startTime + duration + 5, // 5-minute buffer after
-                    duration: duration
+                    start: startTime,
+                    end: startTime + duration
                 };
             });
 
-            console.log('Booked ranges with buffers:', bookedRanges);
-
-            // Generate time slots in 5-minute increments
-            for (let currentMinute = startMinutes; currentMinute <= lastPossibleStartTime; currentMinute += 5) {
+            // Generate time slots in 1-minute increments
+            for (let currentMinute = startMinutes; currentMinute <= lastPossibleStartTime; currentMinute += 1) {
                 const slotEnd = currentMinute + serviceDuration;
                 
                 // Check if this slot overlaps with any booking
                 const isOverlapping = bookedRanges.some(booking => {
-                    // A slot overlaps if it starts before a booking ends AND ends after a booking starts
-                    const hasOverlap = !(currentMinute >= booking.end || slotEnd <= booking.start);
-                    
-                    if (hasOverlap) {
-                        console.log(`Blocking slot ${formatMinutes(currentMinute)}-${formatMinutes(slotEnd)} due to booking ${formatMinutes(booking.start)}-${formatMinutes(booking.end)}`);
-                    }
-                    
-                    return hasOverlap;
+                    // A slot overlaps if:
+                    return (
+                        // 1. The new appointment starts during an existing booking
+                        (currentMinute >= booking.start && currentMinute < booking.end) || 
+                        // 2. The new appointment ends during an existing booking
+                        (slotEnd > booking.start && slotEnd <= booking.end) ||
+                        // 3. The new appointment completely encompasses an existing booking
+                        (currentMinute <= booking.start && slotEnd >= booking.end)
+                    );
                 });
 
                 if (!isOverlapping) {
@@ -311,7 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            if (select.children.length <= 1) { // Only has the default option
+            if (select.children.length <= 1) {
                 const noTimesOption = document.createElement('option');
                 noTimesOption.value = '';
                 noTimesOption.disabled = true;
