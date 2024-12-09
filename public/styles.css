@@ -568,38 +568,43 @@ body {
     text-align: center;
     background-color: var(--black);
     color: white;
-    height: 50px;
-    line-height: 50px;
 }
 
-/* Mobile styles - single definition */
+/* Mobile styles */
 @media (max-width: 768px) {
+    .time-slots-wrapper {
+        padding: 0 1rem;
+    }
+
     .time-select {
-        height: 70px !important;
-        font-size: 20px !important;
+        height: 80px !important;
+        font-size: 22px !important;
         padding: 0 40px;
+        border-width: 3px;
+        background-position: right 25px center;
+        background-size: 24px;
     }
 
     .time-select option {
         padding: 20px;
-        font-size: 20px;
-        height: 70px;
-        line-height: 70px;
+        font-size: 22px;
     }
 }
 
 /* Small mobile devices */
 @media (max-width: 480px) {
+    .time-slots-wrapper {
+        padding: 0 0.5rem;
+    }
+
     .time-select {
-        height: 65px !important;
-        font-size: 18px !important;
+        height: 70px !important;
+        font-size: 20px !important;
     }
 
     .time-select option {
         padding: 18px;
-        font-size: 18px;
-        height: 65px;
-        line-height: 65px;
+        font-size: 20px;
     }
 }
 
