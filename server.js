@@ -143,11 +143,11 @@ app.get('/api/appointments/slots/:date', async (req, res) => {
     const { date } = req.params;
     let connection;
 
+    console.log('\n=== Fetching Appointments ===');
+    console.log('Requested date:', date);
+
     try {
         connection = await pool.getConnection();
-        
-        // Debug log the date parameter
-        console.log('Checking appointments for date:', date);
         
         // Get all appointments for the specified date
         const [rows] = await connection.execute(
@@ -155,11 +155,7 @@ app.get('/api/appointments/slots/:date', async (req, res) => {
             [date]
         );
         
-        console.log('Raw database results:', rows);
-
-        if (rows.length === 0) {
-            console.log('No appointments found for date:', date);
-        }
+        console.log('Database query results:', JSON.stringify(rows, null, 2));
 
         // Format the results
         const bookedSlots = rows.map(row => {
@@ -167,6 +163,10 @@ app.get('/api/appointments/slots/:date', async (req, res) => {
             const [hours, minutes] = timeStr.split(':').map(Number);
             const startMinutes = hours * 60 + minutes;
             const endMinutes = startMinutes + row.duration;
+            
+            console.log(`Processing booking: ${timeStr} (${row.duration} minutes)`);
+            console.log(`  Start: ${hours}:${minutes} (${startMinutes} minutes)`);
+            console.log(`  End: ${Math.floor(endMinutes/60)}:${endMinutes%60} (${endMinutes} minutes)`);
             
             return {
                 time: timeStr,
@@ -176,7 +176,8 @@ app.get('/api/appointments/slots/:date', async (req, res) => {
             };
         });
 
-        console.log('Formatted booked slots:', bookedSlots);
+        console.log('Formatted response:', JSON.stringify(bookedSlots, null, 2));
+        console.log('=== End Fetching Appointments ===\n');
         
         res.json({ 
             success: true,

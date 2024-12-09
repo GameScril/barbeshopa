@@ -226,6 +226,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function generateTimeSlots(dateObj) {
+        console.log('=== Starting generateTimeSlots ===');
+        console.log('Date:', dateObj);
+        
         const timeSlotsContainer = document.getElementById('time-slots');
         timeSlotsContainer.innerHTML = '';
         
@@ -248,8 +251,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             const serviceDuration = getServiceDuration(selectedService.dataset.service);
+            console.log('Service Duration:', serviceDuration, 'minutes');
 
             const formattedDate = dateObj.toISOString().split('T')[0];
+            console.log('Fetching slots for date:', formattedDate);
+            
             const response = await fetch(`/api/appointments/slots/${formattedDate}`);
             
             if (!response.ok) {
@@ -261,10 +267,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(result.error || 'Failed to fetch booked slots');
             }
 
+            console.log('Received booked slots:', result.bookedSlots);
+
             // Create array of all possible time slots
             const startMinutes = 8 * 60; // 8:00
             const endMinutes = 16 * 60; // 16:00
             const lastPossibleStartTime = endMinutes - serviceDuration;
+
+            console.log('Time range:', {
+                start: formatMinutes(startMinutes),
+                end: formatMinutes(endMinutes),
+                lastPossible: formatMinutes(lastPossibleStartTime)
+            });
 
             // Generate time slots in 1-minute increments
             for (let currentMinute = startMinutes; currentMinute <= lastPossibleStartTime; currentMinute += 1) {
@@ -278,18 +292,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     const bookingStart = booking.startMinutes || (parseInt(booking.time.split(':')[0]) * 60 + parseInt(booking.time.split(':')[1]));
                     const bookingEnd = booking.endMinutes || (bookingStart + booking.duration);
 
+                    console.log(`Checking slot ${formatMinutes(currentMinute)}-${formatMinutes(slotEnd)} against booking ${formatMinutes(bookingStart)}-${formatMinutes(bookingEnd)}`);
+
                     // Check for overlap
                     if ((currentMinute >= bookingStart && currentMinute < bookingEnd) || 
                         (slotEnd > bookingStart && slotEnd <= bookingEnd) ||
                         (currentMinute <= bookingStart && slotEnd >= bookingEnd)) {
                         isOverlapping = true;
-                        console.log(`Blocking slot ${formatMinutes(currentMinute)} due to overlap with booking at ${booking.time}`);
+                        console.log(`BLOCKED: Slot ${formatMinutes(currentMinute)}-${formatMinutes(slotEnd)} overlaps with booking ${formatMinutes(bookingStart)}-${formatMinutes(bookingEnd)}`);
                         break;
                     }
                 }
 
                 if (!isOverlapping) {
                     const timeString = formatMinutes(currentMinute);
+                    console.log(`AVAILABLE: Adding time slot ${timeString}`);
                     const option = document.createElement('option');
                     option.value = timeString;
                     option.textContent = timeString;
@@ -297,7 +314,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
+            console.log('Total available slots:', select.children.length - 1); // -1 for default option
+
             if (select.children.length <= 1) {
+                console.log('No available slots found');
                 const noTimesOption = document.createElement('option');
                 noTimesOption.value = '';
                 noTimesOption.disabled = true;
@@ -307,6 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             timeSlotsContainer.appendChild(select);
             timeSlotsContainer.classList.add('visible');
+            console.log('=== Finished generateTimeSlots ===');
 
         } catch (error) {
             console.error('Error generating time slots:', error);
