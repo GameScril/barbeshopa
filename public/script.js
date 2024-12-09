@@ -271,6 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const [hours, minutes] = slot.time.split(':').map(Number);
                 const startTime = hours * 60 + minutes;
                 const duration = parseInt(slot.duration);
+                console.log(`Booked slot: ${hours}:${minutes} for ${duration} minutes (${startTime}-${startTime + duration})`);
                 return {
                     start: startTime,
                     end: startTime + duration
@@ -283,15 +284,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Check if this slot overlaps with any booking
                 const isOverlapping = bookedRanges.some(booking => {
-                    // A slot overlaps if:
-                    return (
-                        // 1. The new appointment starts during an existing booking
+                    const overlap = (
                         (currentMinute >= booking.start && currentMinute < booking.end) || 
-                        // 2. The new appointment ends during an existing booking
                         (slotEnd > booking.start && slotEnd <= booking.end) ||
-                        // 3. The new appointment completely encompasses an existing booking
                         (currentMinute <= booking.start && slotEnd >= booking.end)
                     );
+                    
+                    if (overlap) {
+                        const currentTime = `${Math.floor(currentMinute/60)}:${currentMinute%60}`;
+                        const endTime = `${Math.floor(slotEnd/60)}:${slotEnd%60}`;
+                        console.log(`Blocking slot ${currentTime}-${endTime} due to overlap with booking ${Math.floor(booking.start/60)}:${booking.start%60}-${Math.floor(booking.end/60)}:${booking.end%60}`);
+                    }
+                    
+                    return overlap;
                 });
 
                 if (!isOverlapping) {
@@ -305,6 +310,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     select.appendChild(option);
                 }
             }
+
+            console.log(`Generated ${select.children.length - 1} available time slots`); // -1 for default option
 
             if (select.children.length <= 1) {
                 const noTimesOption = document.createElement('option');
