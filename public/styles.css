@@ -50,7 +50,8 @@ h2 {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
+    padding: 0;
 }
 
 .service-card {
@@ -159,12 +160,12 @@ h2 {
 }
 
 .selected-date {
-    margin: 1rem 0;
+    margin: 1rem auto;
     padding: 1rem;
     background: rgba(212, 175, 55, 0.1);
     border-radius: 8px;
     text-align: center;
-    display: none;
+    max-width: 500px;
 }
 
 .selected-date.visible {
@@ -228,6 +229,7 @@ input:focus {
     .service-options {
         grid-template-columns: 1fr;
         gap: 1rem;
+        padding: 0;
     }
 
     .time-slots {
@@ -253,6 +255,50 @@ input:focus {
     .calendar td {
         padding: 0.5rem;
         font-size: 0.9rem;
+    }
+
+    .service-card {
+        padding: 1.2rem;
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    .service-card h3 {
+        font-size: 1.2rem;
+        margin: 0.5rem 0;
+    }
+
+    .price {
+        font-size: 1.3rem;
+        margin-top: 0.5rem;
+    }
+
+    .service-card::before {
+        font-size: 1.8rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+
+    .time-slots-wrapper {
+        width: 100%;
+        max-width: none;
+        padding: 0;
+        margin: 1rem 0;
+    }
+
+    .selected-date,
+    .time-select {
+        width: 100%;
+        max-width: none;
+        margin: 0.5rem 0;
+        box-sizing: border-box;
+    }
+
+    .time-select {
+        height: 65px;
+        font-size: 18px;
+        border-radius: 8px;
     }
 }
 
@@ -473,12 +519,11 @@ body {
 }
 
 .time-slots-wrapper {
-    width: calc(100% + 4rem);
-    margin-left: -2rem;
-    margin-right: -2rem;
-    padding: 0;
+    width: 100%;
+    max-width: 500px;
+    margin: 1rem auto;
+    padding: 0 1rem;
     box-sizing: border-box;
-    position: relative;
 }
 
 .time-select {
@@ -487,7 +532,7 @@ body {
     padding: 0 15px;
     font-size: 18px;
     border: 2px solid var(--gold);
-    border-radius: 0;
+    border-radius: 8px;
     background-color: var(--black);
     color: white;
     cursor: pointer;
@@ -523,7 +568,7 @@ body {
     .service-options {
         grid-template-columns: 1fr;
         gap: 1rem;
-        padding: 0 1rem;
+        padding: 0;
     }
 
     .time-slots {
@@ -553,8 +598,10 @@ body {
 
     .service-card {
         padding: 1.2rem;
-        max-width: 100%;
-        margin: 0 auto;
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        box-sizing: border-box;
     }
 
     .service-card h3 {
@@ -573,20 +620,24 @@ body {
     }
 
     .time-slots-wrapper {
-        width: 100vw;
-        margin-left: calc(-50vw + 50%);
-        margin-right: calc(-50vw + 50%);
-        position: relative;
-        left: 50%;
-        right: 50%;
-        transform: translateX(-50%);
+        width: 100%;
+        max-width: none;
+        padding: 0;
+        margin: 1rem 0;
+    }
+
+    .selected-date,
+    .time-select {
+        width: 100%;
+        max-width: none;
+        margin: 0.5rem 0;
+        box-sizing: border-box;
     }
 
     .time-select {
-        width: 100%;
-        border-left: none;
-        border-right: none;
-        border-radius: 0;
+        height: 65px;
+        font-size: 18px;
+        border-radius: 8px;
     }
 }
 
