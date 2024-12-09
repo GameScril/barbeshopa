@@ -227,8 +227,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function generateTimeSlots(dateObj) {
         console.log('=== Starting generateTimeSlots ===');
-        console.log('Date:', dateObj);
-        
         const timeSlotsContainer = document.getElementById('time-slots');
         timeSlotsContainer.innerHTML = '';
         
@@ -244,18 +242,14 @@ document.addEventListener('DOMContentLoaded', () => {
         select.appendChild(defaultOption);
 
         try {
-            // Get selected service duration
             const selectedService = document.querySelector('.service-card.selected');
             if (!selectedService) {
                 showNotification('Upozorenje', 'Molimo izaberite uslugu prvo');
                 return;
             }
             const serviceDuration = getServiceDuration(selectedService.dataset.service);
-            console.log('Service Duration:', serviceDuration, 'minutes');
 
             const formattedDate = dateObj.toISOString().split('T')[0];
-            console.log('Fetching slots for date:', formattedDate);
-            
             const response = await fetch(`/api/appointments/slots/${formattedDate}`);
             
             if (!response.ok) {
@@ -263,50 +257,43 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             const result = await response.json();
-            if (!result.success) {
-                throw new Error(result.error || 'Failed to fetch booked slots');
-            }
+            console.log('Server response:', result);
 
-            console.log('Received booked slots:', result.bookedSlots);
-
-            // Create array of all possible time slots
-            const startMinutes = 8 * 60; // 8:00
-            const endMinutes = 16 * 60; // 16:00
-            const lastPossibleStartTime = endMinutes - serviceDuration;
-
-            console.log('Time range:', {
-                start: formatMinutes(startMinutes),
-                end: formatMinutes(endMinutes),
-                lastPossible: formatMinutes(lastPossibleStartTime)
+            // Convert booked slots to minutes for easier comparison
+            const bookedSlots = (result.bookedSlots || []).map(booking => {
+                const [hours, minutes] = booking.time.split(':').map(Number);
+                return {
+                    startMinutes: hours * 60 + minutes,
+                    endMinutes: hours * 60 + minutes + booking.duration,
+                    time: booking.time,
+                    duration: booking.duration
+                };
             });
 
-            // Generate time slots in 1-minute increments
-            for (let currentMinute = startMinutes; currentMinute <= lastPossibleStartTime; currentMinute += 1) {
-                const slotEnd = currentMinute + serviceDuration;
-                
-                // Check if this slot overlaps with any booking
-                let isOverlapping = false;
-                
-                for (const booking of result.bookedSlots) {
-                    // Convert booking times to minutes if not already converted
-                    const bookingStart = booking.startMinutes || (parseInt(booking.time.split(':')[0]) * 60 + parseInt(booking.time.split(':')[1]));
-                    const bookingEnd = booking.endMinutes || (bookingStart + booking.duration);
+            console.log('Processed booked slots:', bookedSlots);
 
-                    console.log(`Checking slot ${formatMinutes(currentMinute)}-${formatMinutes(slotEnd)} against booking ${formatMinutes(bookingStart)}-${formatMinutes(bookingEnd)}`);
+            // Generate time slots
+            const startTime = 8 * 60; // 8:00
+            const endTime = 16 * 60; // 16:00
+            const interval = 1; // 1 minute intervals
 
-                    // Check for overlap
-                    if ((currentMinute >= bookingStart && currentMinute < bookingEnd) || 
-                        (slotEnd > bookingStart && slotEnd <= bookingEnd) ||
-                        (currentMinute <= bookingStart && slotEnd >= bookingEnd)) {
-                        isOverlapping = true;
-                        console.log(`BLOCKED: Slot ${formatMinutes(currentMinute)}-${formatMinutes(slotEnd)} overlaps with booking ${formatMinutes(bookingStart)}-${formatMinutes(bookingEnd)}`);
+            for (let minutes = startTime; minutes <= endTime - serviceDuration; minutes += interval) {
+                const slotEndMinutes = minutes + serviceDuration;
+                let isAvailable = true;
+
+                // Check if this slot overlaps with any booked slots
+                for (const booking of bookedSlots) {
+                    if ((minutes >= booking.startMinutes && minutes < booking.endMinutes) ||
+                        (slotEndMinutes > booking.startMinutes && slotEndMinutes <= booking.endMinutes) ||
+                        (minutes <= booking.startMinutes && slotEndMinutes >= booking.endMinutes)) {
+                        isAvailable = false;
+                        console.log(`Slot ${formatMinutes(minutes)} blocked by booking at ${booking.time}`);
                         break;
                     }
                 }
 
-                if (!isOverlapping) {
-                    const timeString = formatMinutes(currentMinute);
-                    console.log(`AVAILABLE: Adding time slot ${timeString}`);
+                if (isAvailable) {
+                    const timeString = formatMinutes(minutes);
                     const option = document.createElement('option');
                     option.value = timeString;
                     option.textContent = timeString;
@@ -314,20 +301,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            console.log('Total available slots:', select.children.length - 1); // -1 for default option
-
-            if (select.children.length <= 1) {
-                console.log('No available slots found');
-                const noTimesOption = document.createElement('option');
-                noTimesOption.value = '';
-                noTimesOption.disabled = true;
-                noTimesOption.textContent = 'Nema dostupnih termina za izabranu uslugu';
-                select.appendChild(noTimesOption);
-            }
-
             timeSlotsContainer.appendChild(select);
             timeSlotsContainer.classList.add('visible');
-            console.log('=== Finished generateTimeSlots ===');
+            console.log(`Generated ${select.children.length - 1} available time slots`);
 
         } catch (error) {
             console.error('Error generating time slots:', error);

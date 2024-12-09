@@ -151,33 +151,19 @@ app.get('/api/appointments/slots/:date', async (req, res) => {
         
         // Get all appointments for the specified date
         const [rows] = await connection.execute(
-            'SELECT * FROM appointments WHERE date = ?',
+            'SELECT TIME_FORMAT(time, "%H:%i") as time, duration FROM appointments WHERE date = ?',
             [date]
         );
         
-        console.log('Database query results:', JSON.stringify(rows, null, 2));
+        console.log('Database query results:', rows);
 
         // Format the results
-        const bookedSlots = rows.map(row => {
-            const timeStr = row.time.toString().slice(0, 5); // Convert TIME to HH:MM format
-            const [hours, minutes] = timeStr.split(':').map(Number);
-            const startMinutes = hours * 60 + minutes;
-            const endMinutes = startMinutes + row.duration;
-            
-            console.log(`Processing booking: ${timeStr} (${row.duration} minutes)`);
-            console.log(`  Start: ${hours}:${minutes} (${startMinutes} minutes)`);
-            console.log(`  End: ${Math.floor(endMinutes/60)}:${endMinutes%60} (${endMinutes} minutes)`);
-            
-            return {
-                time: timeStr,
-                duration: row.duration,
-                startMinutes: startMinutes,
-                endMinutes: endMinutes
-            };
-        });
+        const bookedSlots = rows.map(row => ({
+            time: row.time,
+            duration: parseInt(row.duration)
+        }));
 
-        console.log('Formatted response:', JSON.stringify(bookedSlots, null, 2));
-        console.log('=== End Fetching Appointments ===\n');
+        console.log('Formatted booked slots:', bookedSlots);
         
         res.json({ 
             success: true,
