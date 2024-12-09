@@ -552,6 +552,10 @@ body {
     text-align: center;
     text-align-last: center;
     -webkit-text-align-last: center;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D4AF37'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    background-size: 24px;
 }
 
 .time-select option {
@@ -562,33 +566,42 @@ body {
     color: white;
 }
 
+/* Single mobile definition for time select */
 @media (max-width: 768px) {
+    .time-slots-wrapper {
+        padding: 0;
+        margin: 1rem 0;
+    }
+
     .time-select {
-        height: 90px !important;
-        font-size: 24px !important;
-        padding: 0 40px;
+        height: 130px !important; /* Much taller */
+        font-size: 28px !important; /* Much larger font */
+        padding: 0 50px;
         border-width: 3px;
+        background-position: right 25px center;
+        background-size: 30px;
     }
 
     .time-select option {
-        padding: 24px;
-        font-size: 24px;
-        height: 90px;
-        line-height: 90px;
+        padding: 32px;
+        font-size: 28px;
+        height: 130px;
+        line-height: 130px;
     }
 }
 
+/* Small mobile devices */
 @media (max-width: 480px) {
     .time-select {
-        height: 80px !important;
-        font-size: 22px !important;
+        height: 120px !important; /* Still very tall */
+        font-size: 26px !important;
     }
 
     .time-select option {
-        padding: 22px;
-        font-size: 22px;
-        height: 80px;
-        line-height: 80px;
+        padding: 30px;
+        font-size: 26px;
+        height: 120px;
+        line-height: 120px;
     }
 }
 
@@ -721,6 +734,10 @@ body {
     text-align: center;
     text-align-last: center;
     -webkit-text-align-last: center;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D4AF37'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    background-size: 24px;
 }
 
 .time-select option {
