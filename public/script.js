@@ -249,7 +249,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const serviceDuration = getServiceDuration(selectedService.dataset.service);
 
-            // Fetch booked slots from the database
             const formattedDate = dateObj.toISOString().split('T')[0];
             const response = await fetch(`/api/appointments/slots/${formattedDate}`);
             
@@ -262,50 +261,46 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(result.error || 'Failed to fetch booked slots');
             }
 
-            // Convert booked slots to minute ranges
-            const bookedRanges = result.bookedSlots.map(slot => {
-                const [hours, minutes] = slot.time.split(':').map(Number);
-                const startTime = hours * 60 + minutes;
-                const duration = parseInt(slot.duration);
-                return {
-                    start: startTime,
-                    end: startTime + duration
-                };
-            });
+            console.log('Booked slots:', result.bookedSlots);
 
-            // Generate available time slots
+            // Create array of all possible time slots
             const startMinutes = 8 * 60; // 8:00
             const endMinutes = 16 * 60; // 16:00
             const lastPossibleStartTime = endMinutes - serviceDuration;
 
-            // Check each minute for availability
+            // Generate time slots in 1-minute increments
             for (let currentMinute = startMinutes; currentMinute <= lastPossibleStartTime; currentMinute += 1) {
                 const slotEnd = currentMinute + serviceDuration;
                 
                 // Check if this slot overlaps with any booking
-                const isOverlapping = bookedRanges.some(booking => {
-                    // Check for any overlap with existing bookings
-                    return (
-                        (currentMinute >= booking.start && currentMinute < booking.end) || // Start during booking
-                        (slotEnd > booking.start && slotEnd <= booking.end) || // End during booking
-                        (currentMinute <= booking.start && slotEnd >= booking.end) // Completely cover booking
+                const isOverlapping = result.bookedSlots.some(booking => {
+                    // Add 5-minute buffer before and after bookings
+                    const bookingStartWithBuffer = booking.startMinutes - 5;
+                    const bookingEndWithBuffer = booking.endMinutes + 5;
+                    
+                    const overlap = (
+                        (currentMinute >= bookingStartWithBuffer && currentMinute < bookingEndWithBuffer) ||
+                        (slotEnd > bookingStartWithBuffer && slotEnd <= bookingEndWithBuffer) ||
+                        (currentMinute <= bookingStartWithBuffer && slotEnd >= bookingEndWithBuffer)
                     );
+                    
+                    if (overlap) {
+                        console.log(`Blocking slot ${formatMinutes(currentMinute)}-${formatMinutes(slotEnd)} due to overlap with ${booking.time}-${formatMinutes(booking.endMinutes)}`);
+                    }
+                    
+                    return overlap;
                 });
 
-                // Only add available slots
                 if (!isOverlapping) {
-                    const hour = Math.floor(currentMinute / 60);
-                    const minute = currentMinute % 60;
-                    const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-                    
+                    const timeString = formatMinutes(currentMinute);
                     const option = document.createElement('option');
                     option.value = timeString;
                     option.textContent = timeString;
                     select.appendChild(option);
+                    console.log(`Added available slot: ${timeString}`);
                 }
             }
 
-            // Show message if no slots available
             if (select.children.length <= 1) {
                 const noTimesOption = document.createElement('option');
                 noTimesOption.value = '';
