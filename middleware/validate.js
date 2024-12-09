@@ -33,10 +33,20 @@ const validateAppointment = async (req, res, next) => {
     // Check if the time slot is available
     const connection = await pool.getConnection();
     try {
+        // Get all appointments for the requested date
         const [existingBookings] = await connection.execute(
             'SELECT TIME_FORMAT(time, "%H:%i") as time, duration FROM appointments WHERE date = ?',
             [date]
         );
+
+        console.log('Validating appointment:', {
+            date,
+            time,
+            duration,
+            requestedTimeInMinutes,
+            requestedEndTime,
+            existingBookings
+        });
         
         // Check for conflicts with existing bookings
         const hasConflict = existingBookings.some(booking => {
@@ -44,16 +54,21 @@ const validateAppointment = async (req, res, next) => {
             const bookingStart = bookingHours * 60 + bookingMinutes;
             const bookingEnd = bookingStart + parseInt(booking.duration);
             
-            // Add 5-minute buffer before and after
-            const bookingStartWithBuffer = bookingStart - 5;
-            const bookingEndWithBuffer = bookingEnd + 5;
-            
-            return !(requestedTimeInMinutes >= bookingEndWithBuffer || 
-                    requestedEndTime <= bookingStartWithBuffer);
+            const overlap = (
+                (requestedTimeInMinutes >= bookingStart && requestedTimeInMinutes < bookingEnd) ||
+                (requestedEndTime > bookingStart && requestedEndTime <= bookingEnd) ||
+                (requestedTimeInMinutes <= bookingStart && requestedEndTime >= bookingEnd)
+            );
+
+            if (overlap) {
+                console.log(`Conflict detected: ${time}-${formatMinutes(requestedEndTime)} overlaps with booking ${booking.time}-${formatMinutes(bookingEnd)}`);
+            }
+
+            return overlap;
         });
         
         if (hasConflict) {
-            return res.status(400).json({
+            return res.status(409).json({
                 success: false,
                 error: 'Izabrani termin nije dostupan'
             });
@@ -73,9 +88,11 @@ const validateAppointment = async (req, res, next) => {
     }
 };
 
-function convertTimeToMinutes(timeString) {
-    const [hours, minutes] = timeString.split(':').map(Number);
-    return hours * 60 + minutes;
+// Helper function to format minutes to HH:MM
+function formatMinutes(totalMinutes) {
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 }
 
 module.exports = { validateAppointment }; 
