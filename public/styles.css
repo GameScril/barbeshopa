@@ -474,9 +474,8 @@ body {
 
 .time-slots-wrapper {
     width: 100%;
-    max-width: 500px;
-    margin: 1.5rem auto;
-    padding: 0 1rem;
+    margin: 1.5rem -2rem;
+    padding: 0 2rem;
     box-sizing: border-box;
     position: relative;
 }
@@ -484,7 +483,7 @@ body {
 .time-select {
     width: 100%;
     height: 60px;
-    padding: 15px 35px 15px 15px;
+    padding: 0 15px;
     font-size: 18px;
     border: 2px solid var(--gold);
     border-radius: 8px;
@@ -517,7 +516,7 @@ body {
     }
     
     .booking-form {
-        padding: 1rem;
+        padding: 1.5rem;
     }
     
     .service-options {
@@ -656,9 +655,8 @@ select.time-select {
 /* Time slots wrapper and dropdown styles */
 .time-slots-wrapper {
     width: 100%;
-    max-width: 500px;
-    margin: 1.5rem auto;
-    padding: 0 1rem;
+    margin: 1.5rem -2rem;
+    padding: 0 2rem;
     box-sizing: border-box;
     position: relative;
 }
@@ -666,7 +664,7 @@ select.time-select {
 .time-select {
     width: 100%;
     height: 60px;
-    padding: 15px 35px 15px 15px;
+    padding: 0 15px;
     font-size: 18px;
     border: 2px solid var(--gold);
     border-radius: 8px;
@@ -689,16 +687,27 @@ select.time-select {
     }
 
     .time-slots-wrapper {
-        width: calc(100% + 2rem); /* Extend beyond parent padding */
-        max-width: none;
-        margin-left: -1rem;
-        margin-right: -1rem;
-        padding: 0 1rem;
+        width: calc(100% + 3rem);
+        margin-left: -1.5rem;
+        margin-right: -1.5rem;
+        padding: 0 1.5rem;
     }
 
     .time-select {
         width: 100%;
+        border-left: 2px solid var(--gold);
+        border-right: 2px solid var(--gold);
+        height: 65px;
+        font-size: 20px;
+        background-position: calc(100% - 20px) center;
+    }
+
+    /* Make dropdown options full width */
+    .time-select option {
+        padding: 20px;
         font-size: 18px;
+        text-align: center;
+        background-color: var(--black);
     }
 }
 
@@ -709,28 +718,73 @@ select.time-select {
     }
 
     .time-slots-wrapper {
-        width: calc(100% + 1rem);
-        margin-left: -0.5rem;
-        margin-right: -0.5rem;
-        padding: 0 0.5rem;
+        width: calc(100% + 2rem);
+        margin-left: -1rem;
+        margin-right: -1rem;
+        padding: 0 1rem;
     }
 
     .time-select {
-        width: 100%;
-        min-width: calc(100% + 1rem);
-        transform: translateX(-0.25rem);
+        height: 60px;
+        font-size: 18px;
+        border-radius: 0;
     }
 
-    /* Ensure dropdown options are also wide enough */
     .time-select option {
-        width: 100%;
-        min-width: 100%;
-        padding: 15px;
+        padding: 18px;
+        font-size: 16px;
     }
 }
 
 /* Remove any conflicting styles */
 .time-slots {
     width: 100%;
+}
+
+/* Service cards mobile adjustments */
+@media (max-width: 768px) {
+    .service-card {
+        padding: 1.5rem;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+
+    .service-card h3 {
+        font-size: 1.2rem;
+    }
+
+    .price {
+        font-size: 1.3rem;
+    }
+
+    .service-card::before {
+        font-size: 1.8rem !important;
+        margin-bottom: 0.8rem !important;
+    }
+}
+
+/* Calendar navigation arrows */
+.calendar-header button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--gold);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--black);
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin: 0 10px;
+}
+
+/* Custom dropdown arrow */
+.time-select {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D4AF37'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    background-size: 24px;
 }
  
