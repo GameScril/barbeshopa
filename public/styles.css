@@ -548,24 +548,29 @@ body {
 }
 
 @media (max-width: 480px) {
-    .calendar-wrapper {
-        max-width: 300px;
-        padding: 0.8rem;
+    h1 {
+        font-size: 1.8rem;
     }
 
-    .calendar-dates div {
-        width: 28px;
-        height: 28px;
-        font-size: 13px;
+    h2 {
+        font-size: 1.5rem;
     }
 
-    .time-select {
-        font-size: 15px;
-        height: 40px;
+    .service-card {
+        padding: 1.5rem;
+    }
+
+    .price {
+        font-size: 1.3rem;
+    }
+
+    .install-button {
+        bottom: 15px;
+        padding: 10px 20px;
+        font-size: 0.9rem;
     }
 }
 
-/* Calendar improvements */
 .calendar {
     width: 100%;
     max-width: 400px;
@@ -575,24 +580,27 @@ body {
 .calendar-dates {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
+    gap: 5px;
     text-align: center;
 }
 
 .calendar-dates div {
-    padding: 8px;
-    font-size: 14px;
-    aspect-ratio: 1;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
     border-radius: 50%;
+    transition: all 0.3s ease;
+    position: relative;
+    font-size: 16px;
 }
 
-/* Time select improvements */
+/* Time select styles for desktop */
 .time-select {
     width: 100%;
-    padding: 15px;
+    padding: 12px;
     font-size: 16px;
     border: 2px solid var(--gold);
     border-radius: 8px;
@@ -602,252 +610,85 @@ body {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-}
-
-/* Customer info improvements */
-.customer-info {
-    max-width: 400px;
-    margin: 2rem auto;
-}
-
-.customer-info input {
-    width: 100%;
-    padding: 15px;
-    margin-bottom: 1rem;
-    border: 2px solid var(--gold);
-    border-radius: 8px;
-    background-color: var(--black);
-    color: white;
-    font-size: 16px;
-    box-sizing: border-box;
-}
-
-/* Mobile improvements */
-@media (max-width: 768px) {
-    .container {
-        padding: 1rem;
-    }
-
-    .booking-form {
-        padding: 1.5rem;
-    }
-
-    .calendar-wrapper {
-        padding: 1rem;
-        margin: 0;
-        border-radius: 8px;
-    }
-
-    .calendar-dates div {
-        padding: 6px;
-        font-size: 14px;
-    }
-
-    .time-select {
-        padding: 15px;
-        font-size: 16px;
-        height: auto;
-    }
-
-    .time-select option {
-        padding: 15px;
-        font-size: 16px;
-    }
-
-    .customer-info input {
-        padding: 12px;
-        font-size: 16px;
-    }
-
-    h1 {
-        font-size: 2rem;
-        margin-bottom: 1.5rem;
-    }
-
-    h2 {
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .container {
-        padding: 0.5rem;
-    }
-
-    .booking-form {
-        padding: 1rem;
-    }
-
-    .calendar-dates {
-        gap: 2px;
-    }
-
-    .calendar-dates div {
-        padding: 4px;
-        font-size: 12px;
-    }
-
-    .time-select, 
-    .customer-info input {
-        font-size: 16px;
-        padding: 12px;
-    }
-}
-
-/* Fix for dropdown arrow */
-.time-slots {
-    position: relative;
-    width: 100%;
-    max-width: 400px;
-    margin: 0 auto;
-}
-
-.time-slots::after {
-    content: '▼';
-    font-size: 14px;
-    color: var(--gold);
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-}
-
-/* Ensure dropdown options are visible and scrollable */
-.time-select {
-    max-height: none;
+    height: 45px;
 }
 
 .time-select option {
-    padding: 10px;
+    padding: 12px;
+    font-size: 16px;
+    background-color: var(--black);
+    color: white;
 }
 
-/* Fix calendar header */
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    padding: 0 0.5rem;
-}
-
-.calendar-header button {
-    background: none;
-    border: none;
-    color: var(--gold);
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 5px 10px;
-}
-
-/* Fix weekday headers */
-.calendar-weekdays {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-    text-align: center;
-    margin-bottom: 0.5rem;
-}
-
-.calendar-weekdays div {
-    color: var(--gold);
-    font-weight: 600;
-    padding: 5px;
-    font-size: 14px;
-}
-
-/* Time select container */
+/* Time slots container */
 .time-slots-wrapper {
     max-width: 320px;
     margin: 1rem auto;
     position: relative;
 }
 
-/* Time select dropdown */
-.time-select {
+.time-slots {
+    position: relative;
     width: 100%;
-    padding: 12px 35px 12px 15px; /* Increased right padding for arrow */
-    font-size: 18px;
-    border: 2px solid var(--gold);
-    border-radius: 8px;
-    background-color: var(--black);
-    color: white;
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    height: 50px;
 }
 
-/* Dropdown options */
-.time-select option {
-    padding: 12px 15px;
-    font-size: 16px;
-    background-color: var(--black);
-    color: white;
-    min-width: 200px; /* Ensure minimum width */
-    text-align: left;
-}
-
-/* Custom dropdown arrow */
+/* Dropdown arrow */
 .time-slots::after {
     content: '▼';
-    font-size: 16px;
+    font-size: 14px;
     color: var(--gold);
     position: absolute;
     right: 15px;
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
-    z-index: 1;
 }
 
-/* Mobile adjustments */
+/* Mobile styles */
 @media (max-width: 768px) {
+    .calendar-dates div {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+    }
+
     .time-select {
-        font-size: 16px;
-        padding: 10px 35px 10px 15px;
+        font-size: 18px;
+        height: 55px;
+        padding: 15px;
+        text-align: center;
     }
 
     .time-select option {
-        padding: 12px 15px;
-        font-size: 16px;
+        padding: 20px 15px;
+        font-size: 18px;
+        min-height: 50px;
     }
 }
 
 @media (max-width: 480px) {
-    .time-select {
-        font-size: 15px;
-        padding: 8px 35px 8px 15px;
+    .calendar-dates div {
+        width: 30px;
+        height: 30px;
+        font-size: 13px;
     }
-}
 
-/* Fix for dropdown width in different browsers */
-@-moz-document url-prefix() {
     .time-select {
-        text-indent: 0;
-        text-overflow: ellipsis;
-        padding-right: 35px;
+        font-size: 16px;
+        height: 50px;
     }
-    
+
     .time-select option {
-        padding: 12px 15px;
+        padding: 18px 15px;
+        font-size: 16px;
     }
 }
 
-/* Webkit browsers specific styles */
-.time-select::-webkit-scrollbar {
-    width: 12px;
-}
-
-.time-select::-webkit-scrollbar-track {
-    background: var(--black);
-}
-
-.time-select::-webkit-scrollbar-thumb {
-    background-color: var(--gold);
-    border-radius: 6px;
-    border: 3px solid var(--black);
+/* iOS specific fixes */
+@supports (-webkit-touch-callout: none) {
+    .time-select {
+        font-size: 16px;
+        padding-right: 30px;
+    }
 }
  
