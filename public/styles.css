@@ -146,7 +146,7 @@ h2 {
 #calendar-container {
     background: var(--black);
     border-radius: 12px;
-    padding: 1.5rem;
+    padding: 1rem;
     margin-bottom: 1rem;
 }
 
@@ -154,48 +154,49 @@ h2 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
-    padding: 0 0.5rem;
+    margin-bottom: 0.5rem;
+    padding: 0;
 }
 
 .calendar-header h3 {
     color: var(--gold);
     margin: 0;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
 }
 
 .calendar-nav {
     background: none;
     border: none;
     color: var(--gold);
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0.3rem;
 }
 
 .calendar-days {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
+    gap: 0.2rem;
+    margin-bottom: 0.3rem;
     text-align: center;
     color: var(--gold);
     font-weight: bold;
+    font-size: 0.9rem;
 }
 
 .calendar-dates {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 0.5rem;
+    gap: 0.2rem;
 }
 
 .calendar-dates div {
-    padding: 0.8rem;
+    padding: 0.5rem;
     text-align: center;
-    border-radius: 8px;
+    border-radius: 4px;
     cursor: pointer;
     transition: all 0.3s ease;
-    border: 1px solid transparent;
+    font-size: 0.9rem;
 }
 
 .calendar-dates div:not(.empty):not(.disabled):hover {
@@ -220,8 +221,8 @@ h2 {
 /* Mobile calendar adjustments */
 @media (max-width: 768px) {
     #calendar-container {
-        padding: 1rem;
-        border: 1px solid var(--gold);
+        padding: 0.8rem;
+        margin: 0 -0.5rem;
     }
 
     .calendar-header h3 {
@@ -229,14 +230,14 @@ h2 {
     }
 
     .calendar-dates div {
-        padding: 0.6rem;
-        font-size: 0.9rem;
+        padding: 0.4rem;
+        font-size: 0.85rem;
     }
 }
 
 @media (max-width: 480px) {
     #calendar-container {
-        padding: 0.8rem;
+        padding: 0.6rem;
     }
 
     .calendar-header h3 {
@@ -244,7 +245,7 @@ h2 {
     }
 
     .calendar-dates div {
-        padding: 0.5rem;
+        padding: 0.3rem;
         font-size: 0.8rem;
     }
 }
@@ -414,14 +415,61 @@ h2 {
 
 /* Install button */
 .install-button {
-    display: block;
-    margin: 1rem auto;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
     padding: 0.8rem 1.5rem;
-    background: var(--black);
-    border: 2px solid var(--gold);
-    border-radius: 8px;
-    color: var(--gold);
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    border-radius: 50px;
     font-size: 1rem;
+    font-weight: bold;
     cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 1000;
     transition: all 0.3s ease;
+}
+
+.install-button:hover {
+    background: var(--light-gold);
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    #calendar-container {
+        padding: 0.8rem;
+        margin: 0 -0.5rem;
+    }
+
+    .calendar-dates div {
+        padding: 0.4rem;
+        font-size: 0.85rem;
+    }
+
+    .install-button {
+        bottom: 15px;
+        padding: 0.7rem 1.2rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    #calendar-container {
+        padding: 0.6rem;
+    }
+
+    .calendar-dates div {
+        padding: 0.3rem;
+        font-size: 0.8rem;
+    }
+
+    .install-button {
+        bottom: 10px;
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+    }
 }
