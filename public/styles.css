@@ -139,7 +139,7 @@ h2 {
 .calendar-wrapper {
     width: 100%;
     margin: 0 auto;
-    padding: 0 1rem;
+    padding: 0;
     box-sizing: border-box;
 }
 
@@ -148,26 +148,57 @@ h2 {
     border-radius: 12px;
     padding: 1.5rem;
     margin-bottom: 1rem;
-    border: 2px solid var(--gold);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0 0.5rem;
+}
+
+.calendar-header h3 {
+    color: var(--gold);
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+.calendar-nav {
+    background: none;
+    border: none;
+    color: var(--gold);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
+    color: var(--gold);
+    font-weight: bold;
 }
 
 .calendar-dates {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 0.5rem;
-    padding: 0.5rem;
 }
 
 .calendar-dates div {
-    position: relative;
     padding: 0.8rem;
     text-align: center;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
+    border: 1px solid transparent;
 }
 
-.calendar-dates div:hover:not(.empty):not(.disabled) {
+.calendar-dates div:not(.empty):not(.disabled):hover {
     background: var(--gold);
     color: var(--black);
 }
@@ -175,6 +206,47 @@ h2 {
 .calendar-dates div.selected {
     background: var(--gold);
     color: var(--black);
+}
+
+.calendar-dates div.disabled {
+    color: #666;
+    cursor: not-allowed;
+}
+
+.calendar-dates div.today {
+    border-color: var(--gold);
+}
+
+/* Mobile calendar adjustments */
+@media (max-width: 768px) {
+    #calendar-container {
+        padding: 1rem;
+        border: 1px solid var(--gold);
+    }
+
+    .calendar-header h3 {
+        font-size: 1.2rem;
+    }
+
+    .calendar-dates div {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    #calendar-container {
+        padding: 0.8rem;
+    }
+
+    .calendar-header h3 {
+        font-size: 1.1rem;
+    }
+
+    .calendar-dates div {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
 }
 
 /* Customer info */
