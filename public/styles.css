@@ -669,4 +669,37 @@ body {
     font-size: 1.2rem;
     margin: 0 10px;
 }
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .customer-info {
+        width: 100%;
+        padding: 0;
+        margin: 1rem 0;
+    }
+
+    .customer-info input {
+        width: 100%;
+        font-size: 16px;
+        padding: 12px 15px;
+        box-sizing: border-box;
+        max-width: 100%; /* Prevent overflow */
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+    .customer-info {
+        width: 100%;
+        padding: 0;
+        margin: 1rem 0;
+    }
+
+    .customer-info input {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        margin: 0.5rem 0;
+    }
+}
  
