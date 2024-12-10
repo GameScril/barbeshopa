@@ -566,7 +566,7 @@ body {
     color: white;
 }
 
-/* Single mobile definition for time select */
+/* Mobile styles */
 @media (max-width: 768px) {
     .time-slots-wrapper {
         padding: 0;
@@ -574,34 +574,27 @@ body {
     }
 
     .time-select {
-        height: 130px !important; /* Much taller */
-        font-size: 28px !important; /* Much larger font */
-        padding: 0 50px;
-        border-width: 3px;
-        background-position: right 25px center;
-        background-size: 30px;
+        height: 150px !important; /* Much taller */
+        font-size: 24px !important; /* Larger font */
+        padding: 0 40px;
     }
 
     .time-select option {
-        padding: 32px;
-        font-size: 28px;
-        height: 130px;
-        line-height: 130px;
+        padding: 20px;
+        font-size: 24px;
     }
 }
 
 /* Small mobile devices */
 @media (max-width: 480px) {
     .time-select {
-        height: 120px !important; /* Still very tall */
-        font-size: 26px !important;
+        height: 130px !important; /* Still very tall */
+        font-size: 22px !important;
     }
 
     .time-select option {
-        padding: 30px;
-        font-size: 26px;
-        height: 120px;
-        line-height: 120px;
+        padding: 18px;
+        font-size: 22px;
     }
 }
 
