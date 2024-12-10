@@ -603,14 +603,14 @@ body {
     .time-slots-wrapper {
         width: 100%;
         padding: 0;
+        margin: 1rem 0.5rem;
     }
 
     .time-select {
-        width: calc(100% + 4rem); /* Extra wide for mobile */
-        margin: 0 -2rem; /* Negative margin to extend beyond container */
+        width: calc(100% + 5.5rem);
+        margin-left: -0.5rem;
         font-size: 20px !important;
         padding: 0 40px;
-        min-width: 300px;
     }
 
     .time-select option {
@@ -640,10 +640,9 @@ body {
     }
 
     .time-select {
-        width: calc(100% + 3rem);
-        margin: 0 -1.5rem;
+        width: calc(100% + 4.5rem);
+        margin-left: -0.5rem;
         font-size: 18px !important;
-        min-width: 280px;
     }
 
     .time-select option {
