@@ -56,9 +56,6 @@ h2 {
     gap: 1.5rem;
     margin-bottom: 2rem;
     padding: 0;
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .service-card {
@@ -214,8 +211,8 @@ h2 {
 
     .service-card {
         padding: 1.5rem;
-        max-width: none;
-        margin: 0;
+        max-width: 300px;
+        margin: 0 auto;
     }
 
     .service-card h3 {
@@ -229,37 +226,21 @@ h2 {
     .time-slots-wrapper {
         width: 100%;
         padding: 0;
-        margin: 1rem 0;
+        margin: 1rem -1rem;
     }
 
     .time-select {
-        width: 100%;
+        width: calc(100% + 3rem);
+        margin: 0;
         font-size: 20px !important;
         padding: 0 40px;
-        min-width: 280px;
-        max-width: 500px;
-        margin: 0 auto;
+        min-width: 300px;
     }
 
     .time-select option {
         padding: 16px;
         font-size: 20px;
         white-space: nowrap;
-    }
-
-    .service-options {
-        gap: 1rem;
-        padding: 0 1rem;
-    }
-
-    .calendar-wrapper {
-        margin: 1rem auto;
-        padding: 1rem 0.5rem;
-    }
-
-    .book-btn {
-        margin: 1.5rem auto;
-        padding: 0.8rem;
     }
 }
 
@@ -282,34 +263,18 @@ h2 {
     }
 
     .time-slots-wrapper {
-        margin: 1rem 0;
-        width: 100%;
+        margin: 1rem -0.5rem;
     }
 
     .time-select {
-        width: 100%;
+        width: calc(100% + 2rem);
         font-size: 18px !important;
         min-width: 280px;
-        max-width: 500px;
-        margin: 0 auto;
     }
 
     .time-select option {
         padding: 14px;
         font-size: 18px;
-    }
-
-    .service-options {
-        padding: 0 0.5rem;
-    }
-
-    .calendar-wrapper {
-        padding: 0.5rem;
-    }
-
-    .book-btn {
-        margin: 1rem auto;
-        font-size: 1.1rem;
     }
 }
 
