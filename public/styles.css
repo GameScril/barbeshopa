@@ -51,21 +51,25 @@ h2 {
 
 /* Service cards */
 .service-options {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
     margin-bottom: 2rem;
     padding: 0;
+    width: 100%;
 }
 
 .service-card {
     background: linear-gradient(145deg, #222 0%, var(--black) 100%);
-    padding: 2rem;
+    padding: 1.5rem;
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
     border: 2px solid transparent;
     text-align: center;
+    width: 100%;
+    max-width: 300px;
 }
 
 .service-card:hover {
@@ -139,39 +143,26 @@ h2 {
 .calendar-wrapper {
     width: 100%;
     margin: 0 auto;
-    padding: 1rem;
+    padding: 0;
     box-sizing: border-box;
+    background: transparent;
+    border-radius: 12px;
+}
+
+#calendar-container {
     background: var(--black);
     border-radius: 12px;
-    max-width: 500px;
-    overflow: hidden;
+    padding: 1rem;
+    margin-bottom: 1rem;
 }
 
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    padding: 0 1rem;
-    font-size: 1.2rem;
+.selected-date {
+    background: var(--dark-gray);
     color: var(--gold);
-    white-space: nowrap;
-}
-
-.calendar-header button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: var(--gold);
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    color: var(--black);
-    font-weight: bold;
-    font-size: 1.2rem;
-    margin: 0 10px;
+    padding: 1rem;
+    text-align: center;
+    border-radius: 8px;
+    margin: 1rem 0;
 }
 
 /* Customer info */
@@ -210,9 +201,8 @@ h2 {
     }
 
     .service-card {
-        padding: 1.5rem;
-        max-width: 300px;
-        margin: 0 auto;
+        padding: 1.2rem;
+        max-width: 280px;
     }
 
     .service-card h3 {
@@ -241,6 +231,23 @@ h2 {
         padding: 16px;
         font-size: 20px;
         white-space: nowrap;
+    }
+
+    .service-options {
+        gap: 0.8rem;
+    }
+
+    .calendar-wrapper {
+        padding: 0 0.5rem;
+    }
+
+    #calendar-container {
+        padding: 0.8rem;
+    }
+
+    .book-btn {
+        margin: 1.5rem auto;
+        max-width: 280px;
     }
 }
 
@@ -276,4 +283,44 @@ h2 {
         padding: 14px;
         font-size: 18px;
     }
+
+    .service-card {
+        padding: 1rem;
+        max-width: 260px;
+    }
+
+    .calendar-wrapper {
+        padding: 0;
+    }
+
+    #calendar-container {
+        padding: 0.5rem;
+    }
+
+    .book-btn {
+        margin: 1rem auto;
+        max-width: 260px;
+    }
+}
+
+/* Book button */
+.book-btn {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.book-btn:hover {
+    background: var(--light-gold);
+    transform: translateY(-2px);
 }
