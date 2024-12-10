@@ -56,6 +56,9 @@ h2 {
     gap: 1.5rem;
     margin-bottom: 2rem;
     padding: 0;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .service-card {
@@ -211,8 +214,8 @@ h2 {
 
     .service-card {
         padding: 1.5rem;
-        max-width: 300px;
-        margin: 0 auto;
+        max-width: none;
+        margin: 0;
     }
 
     .service-card h3 {
@@ -242,6 +245,21 @@ h2 {
         padding: 16px;
         font-size: 20px;
         white-space: nowrap;
+    }
+
+    .service-options {
+        gap: 1rem;
+        padding: 0 1rem;
+    }
+
+    .calendar-wrapper {
+        margin: 1rem auto;
+        padding: 1rem 0.5rem;
+    }
+
+    .book-btn {
+        margin: 1.5rem auto;
+        padding: 0.8rem;
     }
 }
 
@@ -280,5 +298,41 @@ h2 {
         padding: 14px;
         font-size: 18px;
     }
+
+    .service-options {
+        padding: 0 0.5rem;
+    }
+
+    .calendar-wrapper {
+        padding: 0.5rem;
+    }
+
+    .book-btn {
+        margin: 1rem auto;
+        font-size: 1.1rem;
+    }
+}
+
+/* Add new button styles */
+.book-btn {
+    display: block;
+    width: 100%;
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.book-btn:hover {
+    background: var(--light-gold);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
 }
  
