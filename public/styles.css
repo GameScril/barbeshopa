@@ -216,21 +216,18 @@ h2 {
     .time-slots-wrapper {
         width: 100%;
         padding: 0;
-        margin: 1rem -1rem;
     }
 
     .time-select {
-        width: calc(100% + 3rem);
-        margin: 0;
+        width: calc(100% + 2rem);
+        margin: 0 -1rem;
         font-size: 20px !important;
         padding: 0 40px;
-        min-width: 300px;
     }
 
     .time-select option {
         padding: 16px;
         font-size: 20px;
-        white-space: nowrap;
     }
 
     .service-options {
@@ -274,9 +271,9 @@ h2 {
     }
 
     .time-select {
-        width: calc(100% + 2rem);
+        width: calc(100% + 1rem);
+        margin: 0 -0.5rem;
         font-size: 18px !important;
-        min-width: 280px;
     }
 
     .time-select option {
