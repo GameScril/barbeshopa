@@ -217,6 +217,7 @@ input:focus {
 @media (max-width: 768px) {
     .container {
         padding: 1rem;
+        overflow-x: hidden;
     }
     
     h1 {
@@ -225,7 +226,8 @@ input:focus {
     }
     
     .booking-form {
-        padding: 1.5rem;
+        padding: 1rem;
+        margin: 0 -0.5rem;
     }
     
     .service-options {
@@ -261,31 +263,31 @@ input:focus {
 
     .service-card {
         padding: 1.2rem;
-        width: 100%;
-        max-width: none;
-        margin: 0;
-        box-sizing: border-box;
+        max-width: 300px;
+        margin: 0 auto;
+        min-height: auto;
     }
 
     .service-card h3 {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         margin: 0.5rem 0;
+        word-wrap: break-word;
     }
 
     .price {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
         margin-top: 0.5rem;
     }
 
     .service-card::before {
-        font-size: 1.8rem !important;
+        font-size: 1.6rem !important;
         margin-bottom: 0.5rem !important;
     }
 
     .time-slots-wrapper {
         width: 100%;
-        margin: 1rem 0;
-        padding: 0 1rem;
+        padding: 0;
+        margin: 1rem -1rem;
     }
 
     .selected-date,
@@ -297,18 +299,24 @@ input:focus {
     }
 
     .time-select {
-        width: 100%;
-        border-radius: 8px;
-        height: 65px;
-        font-size: 18px;
-        margin: 0;
+        width: calc(100% + 5rem);
+        margin: 0 -2.5rem;
+        font-size: 20px !important;
+        padding: 0 40px;
+        min-width: 320px;
     }
 
     .time-select option {
-        padding: 15px;
-        font-size: 16px;
-        text-align: center;
-        background-color: var(--black);
+        padding: 16px;
+        font-size: 20px;
+        white-space: nowrap;
+    }
+
+    input, 
+    textarea {
+        width: 100%;
+        box-sizing: border-box;
+        max-width: 100%;
     }
 }
 
@@ -322,7 +330,8 @@ input:focus {
     }
 
     .service-card {
-        padding: 1.5rem;
+        padding: 1rem;
+        margin: 0 auto;
     }
 
     .price {
@@ -570,53 +579,62 @@ body {
 @media (max-width: 768px) {
     .container {
         padding: 1rem;
-    }
-
-    h1 {
-        font-size: 2rem;
-        margin-bottom: 1.5rem;
+        overflow-x: hidden;
     }
 
     .booking-form {
-        padding: 1.5rem;
+        padding: 1rem;
+        margin: 0 -0.5rem;
     }
 
     .service-card {
-        padding: 1.5rem;
+        padding: 1.2rem;
         max-width: 300px;
         margin: 0 auto;
+        min-height: auto;
     }
 
     .service-card h3 {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
+        margin: 0.5rem 0;
+        word-wrap: break-word;
     }
 
     .price {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
+        margin-top: 0.5rem;
     }
 
     .service-card::before {
-        font-size: 1.8rem !important;
-        margin-bottom: 0.8rem !important;
+        font-size: 1.6rem !important;
+        margin-bottom: 0.5rem !important;
     }
 
     .time-slots-wrapper {
         width: 100%;
         padding: 0;
+        margin: 1rem -1rem;
     }
 
     .time-select {
-        width: calc(100% + 4rem); /* Wider for better text visibility */
-        margin: 0 -2rem; /* Negative margin to extend beyond container */
+        width: calc(100% + 5rem);
+        margin: 0 -2.5rem;
         font-size: 20px !important;
         padding: 0 40px;
-        min-width: 300px;
+        min-width: 320px;
     }
 
     .time-select option {
         padding: 16px;
         font-size: 20px;
         white-space: nowrap;
+    }
+
+    input, 
+    textarea {
+        width: 100%;
+        box-sizing: border-box;
+        max-width: 100%;
     }
 }
 
@@ -628,21 +646,23 @@ body {
 
     .booking-form {
         padding: 1rem 0.5rem;
+        margin: 0 -0.25rem;
     }
 
-    h1 {
-        font-size: 1.8rem;
+    .service-card {
+        padding: 1rem;
+        margin: 0 auto;
     }
 
-    h2 {
-        font-size: 1.5rem;
+    .time-slots-wrapper {
+        margin: 1rem -0.5rem;
     }
 
     .time-select {
-        width: calc(100% + 3rem);
-        margin: 0 -1.5rem;
+        width: calc(100% + 4rem);
+        margin: 0 -2rem;
         font-size: 18px !important;
-        min-width: 280px;
+        min-width: 300px;
     }
 
     .time-select option {
