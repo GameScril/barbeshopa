@@ -568,32 +568,35 @@ body {
 
 /* Mobile styles */
 @media (max-width: 768px) {
+    .time-slots-wrapper {
+        width: 100%;
+        padding: 0;
+    }
+
     .time-select {
-        height: 150px !important; /* Much taller for better mobile interaction */
-        font-size: 24px !important;
+        width: calc(100% + 2rem); /* Make wider than container */
+        margin: 0 -1rem; /* Negative margin to extend beyond container */
+        font-size: 20px !important;
         padding: 0 40px;
     }
 
     .time-select option {
-        padding: 20px;
-        font-size: 24px;
-        height: 150px;
-        line-height: 150px;
+        padding: 16px;
+        font-size: 20px;
     }
 }
 
 /* Small mobile devices */
 @media (max-width: 480px) {
     .time-select {
-        height: 130px !important;
-        font-size: 22px !important;
+        width: calc(100% + 1rem); /* Slightly less wide for very small screens */
+        margin: 0 -0.5rem;
+        font-size: 18px !important;
     }
 
     .time-select option {
-        padding: 18px;
-        font-size: 22px;
-        height: 130px;
-        line-height: 130px;
+        padding: 14px;
+        font-size: 18px;
     }
 }
 
@@ -742,32 +745,35 @@ body {
 
 /* Mobile styles */
 @media (max-width: 768px) {
+    .time-slots-wrapper {
+        width: 100%;
+        padding: 0;
+    }
+
     .time-select {
-        height: 150px !important; /* Much taller for better mobile interaction */
-        font-size: 24px !important;
+        width: calc(100% + 2rem); /* Make wider than container */
+        margin: 0 -1rem; /* Negative margin to extend beyond container */
+        font-size: 20px !important;
         padding: 0 40px;
     }
 
     .time-select option {
-        padding: 20px;
-        font-size: 24px;
-        height: 150px;
-        line-height: 150px;
+        padding: 16px;
+        font-size: 20px;
     }
 }
 
 /* Small mobile devices */
 @media (max-width: 480px) {
     .time-select {
-        height: 130px !important;
-        font-size: 22px !important;
+        width: calc(100% + 1rem); /* Slightly less wide for very small screens */
+        margin: 0 -0.5rem;
+        font-size: 18px !important;
     }
 
     .time-select option {
-        padding: 18px;
-        font-size: 22px;
-        height: 130px;
-        line-height: 130px;
+        padding: 14px;
+        font-size: 18px;
     }
 }
 
