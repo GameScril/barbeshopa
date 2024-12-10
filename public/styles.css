@@ -607,11 +607,13 @@ body {
     }
 
     .time-select {
-        width: calc(100% + 4rem) !important;
-        margin-left: -2rem !important;
+        width: calc(100% + 3rem) !important;
+        margin-left: -1.5rem !important;
         font-size: 20px !important;
         padding: 0 40px;
         box-sizing: border-box;
+        max-width: 500px;
+        margin: 0 auto !important;
     }
 
     .time-select option {
@@ -641,10 +643,11 @@ body {
     }
 
     .time-select {
-        width: calc(100% + 2rem) !important;
-        margin-left: -1rem !important;
+        width: 100% !important;
+        margin: 0 auto !important;
         font-size: 18px !important;
         padding: 0 40px;
+        max-width: 100%;
     }
 
     .time-select option {
