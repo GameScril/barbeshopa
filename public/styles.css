@@ -277,27 +277,3 @@ h2 {
         font-size: 18px;
     }
 }
-
-/* Add new button styles */
-.book-btn {
-    display: block;
-    width: 100%;
-    max-width: 500px;
-    margin: 2rem auto;
-    padding: 1rem;
-    background: var(--gold);
-    color: var(--black);
-    border: none;
-    border-radius: 8px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.book-btn:hover {
-    background: var(--light-gold);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
-}
- 
