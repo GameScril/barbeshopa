@@ -607,13 +607,12 @@ body {
     }
 
     .time-select {
-        width: 100% !important;
-        margin: 0 !important;
+        width: calc(100% - 2rem) !important;
+        margin: 0 1rem !important;
         font-size: 20px !important;
         padding: 0 40px;
         box-sizing: border-box;
-        max-width: 300px !important;
-        margin: 0 auto !important;
+        max-width: none !important;
         display: block;
     }
 
@@ -644,11 +643,11 @@ body {
     }
 
     .time-select {
-        width: 100% !important;
-        margin: 0 auto !important;
+        width: calc(100% - 1rem) !important;
+        margin: 0 0.5rem !important;
         font-size: 18px !important;
         padding: 0 40px;
-        max-width: 300px !important;
+        max-width: none !important;
     }
 
     .time-select option {
