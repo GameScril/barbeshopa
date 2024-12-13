@@ -285,7 +285,7 @@ input:focus {
     .time-slots-wrapper {
         width: 100%;
         margin: 1rem 0;
-        padding: 0 1rem;
+        padding: 0;
     }
 
     .selected-date,
@@ -299,17 +299,19 @@ input:focus {
     .time-select {
         width: 100% !important;
         margin: 0 !important;
-        font-size: 20px !important;
-        padding: 0 40px;
+        font-size: 16px !important;
+        padding: 10px 40px 10px 10px !important;
         box-sizing: border-box;
         max-width: none !important;
         display: block;
+        background-position: right 10px center;
     }
 
     .time-select option {
-        padding: 16px;
-        font-size: 20px;
+        padding: 12px;
+        font-size: 16px;
         white-space: nowrap;
+        text-align: left;
     }
 }
 
@@ -339,14 +341,16 @@ input:focus {
     .time-select {
         width: 100% !important;
         margin: 0 !important;
-        font-size: 18px !important;
-        padding: 0 30px;
+        font-size: 16px !important;
+        padding: 10px 40px 10px 10px !important;
         max-width: none !important;
+        background-position: right 10px center;
     }
 
     .time-select option {
-        padding: 14px;
-        font-size: 18px;
+        padding: 12px;
+        font-size: 16px;
+        text-align: left;
     }
 }
 
@@ -623,17 +627,19 @@ body {
     .time-select {
         width: 100% !important;
         margin: 0 !important;
-        font-size: 20px !important;
-        padding: 0 40px;
+        font-size: 16px !important;
+        padding: 10px 40px 10px 10px !important;
         box-sizing: border-box;
         max-width: none !important;
         display: block;
+        background-position: right 10px center;
     }
 
     .time-select option {
-        padding: 16px;
-        font-size: 20px;
+        padding: 12px;
+        font-size: 16px;
         white-space: nowrap;
+        text-align: left;
     }
 
     .customer-info input {
@@ -659,14 +665,16 @@ body {
     .time-select {
         width: 100% !important;
         margin: 0 !important;
-        font-size: 18px !important;
-        padding: 0 30px;
+        font-size: 16px !important;
+        padding: 10px 40px 10px 10px !important;
         max-width: none !important;
+        background-position: right 10px center;
     }
 
     .time-select option {
-        padding: 14px;
-        font-size: 18px;
+        padding: 12px;
+        font-size: 16px;
+        text-align: left;
     }
 }
 
