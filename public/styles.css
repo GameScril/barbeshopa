@@ -297,18 +297,19 @@ input:focus {
     }
 
     .time-select {
-        width: 100%;
-        border-radius: 8px;
-        height: 65px;
-        font-size: 18px;
-        margin: 0;
+        width: 100% !important;
+        margin: 0 !important;
+        font-size: 20px !important;
+        padding: 0 40px;
+        box-sizing: border-box;
+        max-width: none !important;
+        display: block;
     }
 
     .time-select option {
-        padding: 15px;
-        font-size: 16px;
-        text-align: center;
-        background-color: var(--black);
+        padding: 16px;
+        font-size: 20px;
+        white-space: nowrap;
     }
 }
 
@@ -333,6 +334,19 @@ input:focus {
         bottom: 15px;
         padding: 10px 20px;
         font-size: 0.9rem;
+    }
+
+    .time-select {
+        width: 100% !important;
+        margin: 0 !important;
+        font-size: 18px !important;
+        padding: 0 30px;
+        max-width: none !important;
+    }
+
+    .time-select option {
+        padding: 14px;
+        font-size: 18px;
     }
 }
 
@@ -607,8 +621,8 @@ body {
     }
 
     .time-select {
-        width: calc(100% - 2rem) !important;
-        margin: 0 1rem !important;
+        width: 100% !important;
+        margin: 0 !important;
         font-size: 20px !important;
         padding: 0 40px;
         box-sizing: border-box;
@@ -643,10 +657,10 @@ body {
     }
 
     .time-select {
-        width: calc(100% - 1rem) !important;
-        margin: 0 0.5rem !important;
+        width: 100% !important;
+        margin: 0 !important;
         font-size: 18px !important;
-        padding: 0 40px;
+        padding: 0 30px;
         max-width: none !important;
     }
 
