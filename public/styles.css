@@ -567,12 +567,10 @@ body {
     -webkit-appearance: none;
     -moz-appearance: none;
     box-sizing: border-box;
-    text-align: center;
-    text-align-last: center;
-    -webkit-text-align-last: center;
+    text-align: left;
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D4AF37'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
     background-repeat: no-repeat;
-    background-position: right 20px center;
+    background-position: right 15px center;
     background-size: 24px;
 }
 
@@ -620,26 +618,22 @@ body {
 
     .time-slots-wrapper {
         width: 100%;
-        padding: 0;
+        padding: 0 15px;
         margin: 1rem 0;
     }
 
     .time-select {
         width: 100% !important;
-        margin: 0 !important;
+        height: 48px !important;
+        padding: 0 40px 0 15px !important;
         font-size: 16px !important;
-        padding: 10px 40px 10px 10px !important;
-        box-sizing: border-box;
-        max-width: none !important;
-        display: block;
-        background-position: right 10px center;
+        text-align: left !important;
+        background-position: right 15px center !important;
     }
 
     .time-select option {
         padding: 12px;
         font-size: 16px;
-        white-space: nowrap;
-        text-align: left;
     }
 
     .customer-info input {
@@ -664,11 +658,9 @@ body {
 
     .time-select {
         width: 100% !important;
-        margin: 0 !important;
+        height: 48px !important;
+        padding: 0 40px 0 15px !important;
         font-size: 16px !important;
-        padding: 10px 40px 10px 10px !important;
-        max-width: none !important;
-        background-position: right 10px center;
     }
 
     .time-select option {
