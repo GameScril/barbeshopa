@@ -549,7 +549,7 @@ body {
 .time-slots-wrapper {
     width: 100%;
     margin: 1rem 0;
-    padding: 0;
+    padding: 0 15px;
     box-sizing: border-box;
 }
 
@@ -572,6 +572,7 @@ body {
     background-repeat: no-repeat;
     background-position: right 15px center;
     background-size: 24px;
+    min-width: 200px;
 }
 
 .time-select option {
@@ -623,12 +624,12 @@ body {
     }
 
     .time-select {
-        width: 100% !important;
-        height: 48px !important;
-        padding: 0 40px 0 15px !important;
+        width: calc(100% - 30px) !important;
+        min-width: none !important;
+        margin: 0 auto !important;
+        display: block !important;
         font-size: 16px !important;
-        text-align: left !important;
-        background-position: right 15px center !important;
+        height: 48px !important;
     }
 
     .time-select option {
@@ -657,10 +658,7 @@ body {
     }
 
     .time-select {
-        width: 100% !important;
-        height: 48px !important;
-        padding: 0 40px 0 15px !important;
-        font-size: 16px !important;
+        width: calc(100% - 20px) !important;
     }
 
     .time-select option {
