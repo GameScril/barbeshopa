@@ -225,7 +225,9 @@ input:focus {
     }
     
     .booking-form {
-        padding: 1.5rem;
+        width: 100%;
+        padding: 1rem;
+        box-sizing: border-box;
     }
     
     .service-options {
@@ -297,14 +299,13 @@ input:focus {
     }
 
     .time-select {
-        width: 100% !important;
-        margin: 0 !important;
-        font-size: 16px !important;
-        padding: 10px 40px 10px 10px !important;
-        box-sizing: border-box;
+        width: calc(100% - 2px) !important;
+        min-width: 0 !important;
         max-width: none !important;
-        display: block;
-        background-position: right 10px center;
+        margin: 0 !important;
+        padding: 0 40px 0 15px !important;
+        box-sizing: border-box !important;
+        display: block !important;
     }
 
     .time-select option {
@@ -648,16 +649,20 @@ body {
     }
 
     .booking-form {
-        padding: 1rem 0.5rem;
+        padding: 1rem;
+        border-radius: 8px;
+        width: 100%;
+        box-sizing: border-box;
     }
 
-    .calendar {
-        padding: 0;
+    .time-slots-wrapper {
+        margin: 0.5rem 0;
+        width: 100%;
     }
 
     .time-select {
-        width: 100% !important;
-        max-width: 100% !important;
+        width: calc(100% - 2px) !important;
+        margin: 0 !important;
     }
 }
 
