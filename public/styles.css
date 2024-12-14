@@ -299,9 +299,9 @@ input:focus {
     }
 
     .time-select {
-        width: calc(100% - 2px) !important;
+        width: 100% !important;
+        max-width: 100% !important;
         min-width: 0 !important;
-        max-width: none !important;
         margin: 0 !important;
         padding: 0 40px 0 15px !important;
         box-sizing: border-box !important;
@@ -661,8 +661,11 @@ body {
     }
 
     .time-select {
-        width: calc(100% - 2px) !important;
+        width: 100% !important;
         margin: 0 !important;
+        padding: 10px 40px 10px 10px !important;
+        max-width: none !important;
+        background-position: right 10px center;
     }
 }
 
