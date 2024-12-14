@@ -572,6 +572,7 @@ body {
     background-repeat: no-repeat;
     background-position: right 15px center;
     background-size: 24px;
+    min-width: 200px;
 }
 
 .time-select option {
@@ -624,11 +625,13 @@ body {
 
     .time-select {
         width: 100% !important;
+        min-width: 100% !important;
         margin: 0 !important;
-        display: block !important;
         font-size: 16px !important;
-        height: 48px !important;
         padding: 0 40px 0 15px !important;
+        box-sizing: border-box;
+        max-width: none !important;
+        display: block !important;
     }
 
     .time-select option {
