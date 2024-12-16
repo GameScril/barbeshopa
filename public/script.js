@@ -239,7 +239,6 @@ document.addEventListener('DOMContentLoaded', () => {
     async function generateTimeSlots(dateObj) {
         console.log('=== Starting generateTimeSlots ===');
         
-        // Fix timezone issue by using date parts directly
         const year = dateObj.getFullYear();
         const month = String(dateObj.getMonth() + 1).padStart(2, '0');
         const day = String(dateObj.getDate()).padStart(2, '0');
@@ -250,10 +249,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const timeSlotsContainer = document.getElementById('time-slots');
         timeSlotsContainer.innerHTML = '';
         
+        // Create select element with Bootstrap classes
         const select = document.createElement('select');
         select.id = 'time-select';
-        select.classList.add('time-select');
+        select.classList.add('form-select', 'time-select');
         
+        // Add default option
         const defaultOption = document.createElement('option');
         defaultOption.value = '';
         defaultOption.textContent = 'Izaberite vrijeme';
@@ -293,10 +294,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
             });
 
-            // Generate time slots
+            // Generate time slots with 10-minute intervals
             const startTime = 8 * 60; // 8:00
             const endTime = 16 * 60; // 16:00
-            const interval = 1; // 1 minute intervals
+            const interval = 10; // 10-minute intervals
 
             for (let minutes = startTime; minutes <= endTime - serviceDuration; minutes += interval) {
                 const slotEndMinutes = minutes + serviceDuration;
@@ -323,16 +324,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             timeSlotsContainer.appendChild(select);
-            timeSlotsContainer.classList.add('visible');
             console.log(`Generated ${select.children.length - 1} available time slots`);
 
         } catch (error) {
             console.error('Error generating time slots:', error);
-            select.disabled = true;
             const errorOption = document.createElement('option');
             errorOption.value = '';
             errorOption.textContent = 'Greška pri učitavanju termina';
             select.appendChild(errorOption);
+            select.disabled = true;
             timeSlotsContainer.appendChild(select);
         }
     }
@@ -536,11 +536,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Helper function to get service duration
     function getServiceDuration(service) {
         const durations = {
-            'brada': 10,
-            'kosa': 20,
-            'bradaikosa': 30
+            'brada': 30,    // 30 minutes for beard
+            'kosa': 30,     // 30 minutes for hair
+            'bradaikosa': 60 // 60 minutes for both
         };
-        return durations[service] || 20;
+        return durations[service] || 30; // Default to 30 minutes if service not found
     }
 
     // Helper function to format minutes into HH:MM
