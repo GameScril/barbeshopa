@@ -215,32 +215,49 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) {
                 throw new Error('Failed to fetch booked slots');
             }
+
             const result = await response.json();
             const bookedSlots = result.bookedSlots || [];
+            console.log('Received booked slots:', bookedSlots);
 
-            const bookedTimes = bookedSlots.map(slot => ({
-                start: convertTimeToMinutes(slot.time),
-                end: convertTimeToMinutes(slot.time) + slot.duration
-            }));
+            // Convert booked slots to minutes ranges with duration
+            const bookedRanges = bookedSlots.map(slot => {
+                const [hours, minutes] = slot.time.split(':').map(Number);
+                const startMinutes = hours * 60 + minutes;
+                const duration = parseInt(slot.duration) || 30;
+                return {
+                    start: startMinutes,
+                    end: startMinutes + duration,
+                    duration: duration
+                };
+            });
+            console.log('Converted booked ranges:', bookedRanges);
 
-            // Generate time slots from 8:00 to endTime with 10-minute intervals
-            for (let minutes = 8 * 60; minutes <= endTime - serviceDuration; minutes += 10) {
-                const slotEnd = minutes + serviceDuration;
-                let isAvailable = true;
+            const startTime = 8 * 60; // 8:00
+            const interval = 10; // 10-minute intervals
 
-                for (const bookedSlot of bookedTimes) {
-                    if ((minutes >= bookedSlot.start && minutes < bookedSlot.end) ||
-                        (slotEnd > bookedSlot.start && slotEnd <= bookedSlot.end) ||
-                        (minutes <= bookedSlot.start && slotEnd >= bookedSlot.end)) {
-                        isAvailable = false;
-                        break;
+            for (let time = startTime; time <= endTime - serviceDuration; time += interval) {
+                const slotEndTime = time + serviceDuration;
+                
+                // Detailed overlap check
+                const isAvailable = !bookedRanges.some(range => {
+                    const hasOverlap = (
+                        (time >= range.start && time < range.end) || // Starts during a booking
+                        (slotEndTime > range.start && slotEndTime <= range.end) || // Ends during a booking
+                        (time <= range.start && slotEndTime >= range.end) // Encompasses a booking
+                    );
+                    
+                    if (hasOverlap) {
+                        console.log(`Slot ${formatMinutes(time)}-${formatMinutes(slotEndTime)} overlaps with booking ${formatMinutes(range.start)}-${formatMinutes(range.end)}`);
                     }
-                }
+                    
+                    return hasOverlap;
+                });
 
                 if (isAvailable) {
                     const option = document.createElement('option');
-                    option.value = formatMinutes(minutes);
-                    option.textContent = formatMinutes(minutes);
+                    option.value = formatMinutes(time);
+                    option.textContent = formatMinutes(time);
                     timeSlotsSelect.appendChild(option);
                 }
             }
