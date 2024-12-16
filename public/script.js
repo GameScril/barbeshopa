@@ -508,4 +508,27 @@ document.addEventListener('DOMContentLoaded', () => {
             createCalendar(currentDate);
         }
     });
+
+    // Add time slot selection handler
+    const timeSlotSelect = document.getElementById('time-slots');
+    timeSlotSelect.addEventListener('change', (e) => {
+        const selectedTime = e.target.value;
+        if (selectedTime) {
+            // Add selected class to wrapper to show it's been selected
+            const timeSlotsWrapper = document.querySelector('.time-slots-wrapper');
+            timeSlotsWrapper.classList.add('selected');
+            
+            // Update the date display to include the selected time
+            if (selectedDate && dateDisplay) {
+                const formattedDate = selectedDate.toLocaleDateString('sr-Latn', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                dateDisplay.textContent = `${formattedDate} u ${selectedTime}`;
+                dateDisplay.classList.add('visible');
+            }
+        }
+    });
 }); 
