@@ -123,38 +123,31 @@ document.addEventListener('DOMContentLoaded', () => {
         // Get last day of month
         const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
         
-        // Get day of week for first day (0 = Sunday, 1 = Monday, etc)
-        let firstDayIndex = firstDay.getDay() || 7; // Convert Sunday from 0 to 7
-        firstDayIndex--; // Adjust to Monday = 0
-
-        // Add empty cells for days before first day of month
+        // Calculate padding for first week
+        let firstDayIndex = firstDay.getDay() || 7; // Convert Sunday (0) to 7 for proper padding
+        firstDayIndex--; // Adjust to start from Monday
+        
+        // Add padding cells
         for (let i = 0; i < firstDayIndex; i++) {
-            const emptyDiv = document.createElement('div');
-            emptyDiv.classList.add('empty');
-            datesContainer.appendChild(emptyDiv);
+            const paddingCell = document.createElement('div');
+            datesContainer.appendChild(paddingCell);
         }
-
-        // Add cells for each day of the month
+        
+        // Add date cells
         for (let day = 1; day <= lastDay.getDate(); day++) {
-            const dayDiv = document.createElement('div');
-            dayDiv.textContent = day;
+            const dateCell = document.createElement('div');
+            const dateObj = new Date(date.getFullYear(), date.getMonth(), day);
             
-            const currentDayDate = new Date(date.getFullYear(), date.getMonth(), day);
+            dateCell.textContent = day;
             
-            // Add event listener and styling for each day
-            if (currentDayDate >= new Date()) {
-                dayDiv.addEventListener('click', () => selectDate(currentDayDate, dayDiv));
+            // Disable Sundays and past dates
+            if (dateObj.getDay() === 0 || dateObj < new Date(new Date().setHours(0, 0, 0, 0))) {
+                dateCell.classList.add('disabled');
             } else {
-                dayDiv.classList.add('disabled');
+                dateCell.addEventListener('click', () => selectDate(dateObj, dateCell));
             }
-
-            if (day === new Date().getDate() && 
-                date.getMonth() === new Date().getMonth() && 
-                date.getFullYear() === new Date().getFullYear()) {
-                dayDiv.classList.add('today');
-            }
-
-            datesContainer.appendChild(dayDiv);
+            
+            datesContainer.appendChild(dateCell);
         }
     }
 
@@ -165,14 +158,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         
-        if (dateObj < today) {
-            showNotification('Upozorenje', 'Ne možete izabrati datum u prošlosti');
+        // Check if it's a Sunday (0 is Sunday in getDay())
+        if (dateObj.getDay() === 0) {
+            showNotification('Upozorenje', 'Nedjelja je neradni dan');
             return;
         }
 
-        const dayOfWeek = dateObj.getDay();
-        if (dayOfWeek === 0) { // Sunday
-            showNotification('Upozorenje', 'Ne radimo nedjeljom');
+        if (dateObj < today) {
+            showNotification('Upozorenje', 'Ne možete izabrati datum u prošlosti');
             return;
         }
 
