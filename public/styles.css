@@ -279,10 +279,8 @@ h2 {
 
 /* Install Button */
 .install-button {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+    position: static;
+    display: none;
     background: var(--gold);
     color: var(--black);
     padding: 12px 24px;
@@ -291,8 +289,8 @@ h2 {
     cursor: pointer;
     border: none;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    z-index: 1000;
-    display: none; /* Hidden by default */
+    margin: 2rem auto 0;
+    transform: none;
 }
 
 .install-button.show {
@@ -301,15 +299,16 @@ h2 {
 
 .install-button:hover {
     background: var(--light-gold);
-    transform: translateX(-50%) translateY(-2px);
+    transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(0,0,0,0.4);
 }
 
 @media (max-width: 768px) {
     .install-button {
-        font-size: 0.9rem;
-        padding: 10px 20px;
-        bottom: 15px;
+        width: calc(100% - 2rem);
+        margin: 2rem 1rem;
+        padding: 15px;
+        font-size: 1rem;
     }
 }
 
@@ -418,13 +417,20 @@ h2 {
     max-width: 1000px !important; /* Wider container to match red lines */
     margin: 0 auto;
     padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 /* Update booking form */
 .booking-form {
+    width: 100%;
     max-width: 900px;
-    margin: 0 auto;
+    margin: 0 auto 2rem;
     padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 /* Update service cards */
@@ -516,7 +522,7 @@ h2 {
 .booking-form {
     width: 100%;
     max-width: 900px;
-    margin: 0 auto;
+    margin: 0 auto 2rem;
     padding: 2rem;
     display: flex;
     flex-direction: column;
