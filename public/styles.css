@@ -462,4 +462,65 @@ h2 {
     font-size: 1.3rem; /* Smaller section titles */
     margin-bottom: 1.2rem;
 }
+
+/* Update customer info section */
+.customer-info {
+    max-width: 500px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Update form controls */
+.form-control, 
+.form-select.time-select {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    display: block;
+}
+
+/* Update form groups */
+.mb-3 {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto 1rem auto;
+}
+
+/* Update container padding */
+.container {
+    max-width: 1000px !important;
+    margin: 0 auto;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Update booking form */
+.booking-form {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Update sections */
+.services,
+.datetime-picker {
+    width: 100%;
+    text-align: center;
+}
+
+/* Keep time select centered */
+.time-slots-wrapper {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
  
