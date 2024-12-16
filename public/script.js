@@ -84,6 +84,38 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         calendarContainer.innerHTML = calendarHTML;
+
+        // Add event listeners for month navigation
+        const prevButton = document.getElementById('prev-month');
+        const nextButton = document.getElementById('next-month');
+
+        prevButton.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            const today = new Date();
+            
+            // Don't allow going before current month
+            if (currentDate < new Date(today.getFullYear(), today.getMonth(), 1)) {
+                currentDate = new Date(today.getFullYear(), today.getMonth(), 1);
+            }
+            
+            handleMonthChange();
+            createCalendar(currentDate);
+        });
+
+        nextButton.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            const maxDate = new Date();
+            maxDate.setMonth(maxDate.getMonth() + 3);
+            
+            // Don't allow going beyond 3 months from now
+            if (currentDate > maxDate) {
+                currentDate = new Date(maxDate.getFullYear(), maxDate.getMonth(), 1);
+            }
+            
+            handleMonthChange();
+            createCalendar(currentDate);
+        });
+
         const datesContainer = calendarContainer.querySelector('.calendar-dates');
 
         // Get first day of month
@@ -500,35 +532,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (timeSlotsWrapper) {
         timeSlotsWrapper.classList.remove('visible');
     }
-
-    // Update the month navigation in createCalendar function
-    document.getElementById('prev-month')?.addEventListener('click', () => {
-        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
-        if (currentDate.getMonth() >= new Date().getMonth() || 
-            currentDate.getFullYear() > new Date().getFullYear()) {
-            handleMonthChange();
-            createCalendar(currentDate);
-        } else {
-            // Reset to current month if trying to go before current month
-            currentDate = new Date();
-            createCalendar(currentDate);
-        }
-    });
-
-    document.getElementById('next-month')?.addEventListener('click', () => {
-        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
-        const threeMonthsFromNow = new Date();
-        threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
-        
-        if (currentDate <= threeMonthsFromNow) {
-            handleMonthChange();
-            createCalendar(currentDate);
-        } else {
-            // Reset if trying to go beyond 3 months
-            currentDate = new Date(threeMonthsFromNow);
-            createCalendar(currentDate);
-        }
-    });
 
     // Add time slot selection handler
     const timeSlotSelect = document.getElementById('time-slots');
