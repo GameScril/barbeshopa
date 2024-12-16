@@ -472,9 +472,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Helper function to get service duration
     function getServiceDuration(service) {
         const durations = {
-            'brada': 30,    // 30 minutes for beard
-            'kosa': 30,     // 30 minutes for hair
-            'bradaikosa': 60 // 60 minutes for both
+            'brada': 10,    // 10 minutes for beard
+            'kosa': 20,     // 20 minutes for hair
+            'bradaikosa': 30 // 30 minutes for both
         };
         return durations[service] || 30; // Default to 30 minutes if service not found
     }
