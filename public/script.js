@@ -326,12 +326,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Booking submission
     bookButton.addEventListener('click', async () => {
         try {
-            const selectedTime = document.querySelector('#time-select');
+            const selectedTime = document.getElementById('time-slots');
             const selectedService = document.querySelector('.service-card.selected');
             const name = document.getElementById('name').value;
             const phone = document.getElementById('phone').value;
 
-            if (!selectedTime || !selectedTime.value) {
+            if (!selectedTime || !selectedTime.value || selectedTime.value === 'Izaberite vrijeme') {
                 showNotification('Upozorenje', 'Molimo izaberite vrijeme');
                 return;
             }
