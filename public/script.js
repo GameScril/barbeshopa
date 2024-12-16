@@ -139,8 +139,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const dayOfWeek = dateObj.getDay();
-        if (dayOfWeek === 0 || dayOfWeek === 6) {
-            showNotification('Upozorenje', 'Ne radimo vikendom');
+        if (dayOfWeek === 0) { // Sunday
+            showNotification('Upozorenje', 'Ne radimo nedjeljom');
             return;
         }
 
@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function generateTimeSlots(dateObj) {
         const timeSlotsSelect = document.getElementById('time-slots');
-        timeSlotsSelect.innerHTML = ''; // Clear existing options
+        timeSlotsSelect.innerHTML = '';
 
         // Add default option
         const defaultOption = document.createElement('option');
@@ -206,7 +206,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const day = String(dateObj.getDate()).padStart(2, '0');
             const formattedDate = `${year}-${month}-${day}`;
 
-            // Fetch booked slots for the selected date
+            // Check if it's Saturday
+            const isSaturday = dateObj.getDay() === 6;
+            // Set end time based on day
+            const endTime = isSaturday ? 15 * 60 : 16 * 60; // 3 PM on Saturday, 4 PM other days
+
             const response = await fetch(`${API_BASE_URL}/api/appointments/slots/${formattedDate}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch booked slots');
@@ -214,18 +218,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
             const bookedSlots = result.bookedSlots || [];
 
-            // Convert booked slots to minutes for easier comparison
             const bookedTimes = bookedSlots.map(slot => ({
                 start: convertTimeToMinutes(slot.time),
                 end: convertTimeToMinutes(slot.time) + slot.duration
             }));
 
-            // Generate time slots from 8:00 to 16:00 with 10-minute intervals
-            for (let minutes = 8 * 60; minutes <= 16 * 60 - serviceDuration; minutes += 10) {
+            // Generate time slots from 8:00 to endTime with 10-minute intervals
+            for (let minutes = 8 * 60; minutes <= endTime - serviceDuration; minutes += 10) {
                 const slotEnd = minutes + serviceDuration;
                 let isAvailable = true;
 
-                // Check if this slot overlaps with any booked slots
                 for (const bookedSlot of bookedTimes) {
                     if ((minutes >= bookedSlot.start && minutes < bookedSlot.end) ||
                         (slotEnd > bookedSlot.start && slotEnd <= bookedSlot.end) ||
@@ -243,7 +245,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // Show the time slots wrapper
             const timeSlotsWrapper = document.querySelector('.time-slots-wrapper');
             timeSlotsWrapper.classList.add('visible');
 
@@ -399,9 +400,8 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedDate = null;
         dateDisplay.textContent = '';
         dateDisplay.classList.remove('visible');
-        const timeSlotsContainer = document.getElementById('time-slots');
-        timeSlotsContainer.classList.remove('visible');
-        timeSlotsContainer.innerHTML = '';
+        const timeSlotsWrapper = document.querySelector('.time-slots-wrapper');
+        timeSlotsWrapper.classList.remove('visible');
     }
 
     function showNotification(title, message) {
@@ -424,7 +424,6 @@ document.addEventListener('DOMContentLoaded', () => {
         deferredPrompt = e;
         
         if (installButton) {
-            installButton.style.display = 'block';
             installButton.classList.add('show');
         }
     });
@@ -437,7 +436,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const { outcome } = await deferredPrompt.userChoice;
             console.log(`User response to the install prompt: ${outcome}`);
             deferredPrompt = null;
-            installButton.style.display = 'none';
+            installButton.classList.remove('show');
         });
     }
 
@@ -445,7 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.matchMedia('(display-mode: standalone)').matches || 
         window.navigator.standalone === true) {
         if (installButton) {
-            installButton.style.display = 'none';
+            installButton.classList.remove('show');
         }
     }
 
@@ -480,4 +479,33 @@ document.addEventListener('DOMContentLoaded', () => {
     if (timeSlotsWrapper) {
         timeSlotsWrapper.classList.remove('visible');
     }
+
+    // Update the month navigation in createCalendar function
+    document.getElementById('prev-month')?.addEventListener('click', () => {
+        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+        if (currentDate.getMonth() >= new Date().getMonth() || 
+            currentDate.getFullYear() > new Date().getFullYear()) {
+            handleMonthChange();
+            createCalendar(currentDate);
+        } else {
+            // Reset to current month if trying to go before current month
+            currentDate = new Date();
+            createCalendar(currentDate);
+        }
+    });
+
+    document.getElementById('next-month')?.addEventListener('click', () => {
+        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+        const threeMonthsFromNow = new Date();
+        threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
+        
+        if (currentDate <= threeMonthsFromNow) {
+            handleMonthChange();
+            createCalendar(currentDate);
+        } else {
+            // Reset if trying to go beyond 3 months
+            currentDate = new Date(threeMonthsFromNow);
+            createCalendar(currentDate);
+        }
+    });
 }); 

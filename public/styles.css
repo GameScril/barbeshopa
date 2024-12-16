@@ -65,7 +65,7 @@ h2 {
     background: var(--black);
     border-radius: 12px;
     overflow: hidden;
-    max-width: 500px;
+    max-width: 800px;
     margin: 0 auto;
     padding: 1.5rem;
 }
@@ -78,27 +78,27 @@ h2 {
 .calendar-days {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-    padding: 10px;
+    gap: 10px;
+    padding: 15px;
     text-align: center;
 }
 
 .calendar-days div {
-    padding: 6px;
+    padding: 10px;
     font-weight: 600;
     color: var(--gold);
-    font-size: 0.9rem;
+    font-size: 1rem;
 }
 
 .calendar-dates {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-    padding: 10px;
+    gap: 10px;
+    padding: 15px;
 }
 
 .calendar-dates div {
-    padding: 6px;
+    padding: 10px;
     text-align: center;
     cursor: pointer;
     border-radius: 8px;
@@ -292,12 +292,25 @@ h2 {
     border: none;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     z-index: 1000;
+    display: none; /* Hidden by default */
+}
+
+.install-button.show {
+    display: block;
 }
 
 .install-button:hover {
     background: var(--light-gold);
     transform: translateX(-50%) translateY(-2px);
     box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+}
+
+@media (max-width: 768px) {
+    .install-button {
+        font-size: 0.9rem;
+        padding: 10px 20px;
+        bottom: 15px;
+    }
 }
 
 /* Responsive Adjustments */
@@ -581,6 +594,42 @@ h2 {
     .customer-info,
     .mb-3 {
         max-width: 100%;
+    }
+}
+
+/* Update calendar mobile styles */
+@media (max-width: 768px) {
+    .calendar-wrapper {
+        padding: 0.5rem;
+        max-width: 100%;
+    }
+
+    .calendar-days,
+    .calendar-dates {
+        gap: 2px;
+        padding: 5px;
+    }
+
+    .calendar-days div,
+    .calendar-dates div {
+        padding: 8px 2px;
+        font-size: 0.9rem;
+    }
+
+    .calendar-header {
+        padding: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .calendar-header h3 {
+        font-size: 1rem;
+    }
+
+    .calendar-header button {
+        width: 30px;
+        height: 30px;
+        font-size: 1rem;
+        margin: 0 5px;
     }
 }
  
