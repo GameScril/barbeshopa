@@ -17,7 +17,7 @@ body {
 /* Typography */
 h1 {
     color: var(--gold);
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     text-transform: uppercase;
     letter-spacing: 2px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
@@ -26,20 +26,20 @@ h1 {
 
 h2 {
     color: var(--gold);
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+    margin-bottom: 1.2rem;
 }
 
 /* Service Cards */
 .service-card {
     background: linear-gradient(145deg, #222 0%, var(--black) 100%);
-    padding: 1.5rem;
+    padding: 1.2rem;
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
     border: 2px solid transparent;
     text-align: center;
-    max-width: 220px;
+    max-width: none;
     margin: 0 auto;
 }
 
@@ -56,7 +56,7 @@ h2 {
 
 .price {
     color: var(--gold);
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: bold;
 }
 
@@ -65,7 +65,7 @@ h2 {
     background: var(--black);
     border-radius: 12px;
     overflow: hidden;
-    max-width: 400px;
+    max-width: 500px;
     margin: 0 auto;
     padding: 1.5rem;
 }
@@ -177,7 +177,7 @@ h2 {
     padding: 1rem;
     font-size: 1rem;
     border-radius: 8px;
-    max-width: 400px;
+    max-width: 500px;
     margin: 0 auto;
 }
 
@@ -197,7 +197,7 @@ h2 {
     background-position: right 0.75rem center;
     background-size: 16px 12px;
     cursor: pointer;
-    max-width: 400px;
+    max-width: 500px;
     margin: 0 auto;
 }
 
@@ -216,7 +216,7 @@ h2 {
     letter-spacing: 1px;
     transition: all 0.3s ease;
     padding: 1.2rem;
-    max-width: 400px;
+    max-width: 500px;
     margin: 2rem auto 0;
 }
 
@@ -400,93 +400,66 @@ h2 {
     display: block;
 }
 
-/* Update container width and layout */
+/* Update container width */
 .container {
-    max-width: 800px !important; /* More narrow container for desktop */
+    max-width: 1000px !important; /* Wider container to match red lines */
     margin: 0 auto;
     padding: 2rem;
 }
 
 /* Update booking form */
 .booking-form {
-    max-width: 700px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 2rem;
 }
 
-/* Update service cards layout */
+/* Update service cards */
 .service-card {
-    padding: 1.5rem;
-    max-width: 220px;
-    margin: 0 auto;
+    padding: 1.2rem;
+    max-width: none; /* Remove max-width to allow cards to fill space */
 }
 
-/* Update calendar wrapper */
+.service-card h3 {
+    font-size: 1.1rem; /* Smaller font for service names */
+    margin-bottom: 0.5rem;
+}
+
+.service-card .price {
+    font-size: 1.2rem; /* Smaller price font */
+}
+
+/* Update row spacing */
+.row.g-3 {
+    --bs-gutter-x: 1rem; /* Reduce spacing between cards */
+}
+
+/* Update calendar wrapper to be proportional */
 .calendar-wrapper {
-    max-width: 400px;
+    max-width: 500px; /* Slightly wider calendar */
     margin: 0 auto;
     padding: 1.5rem;
 }
 
-/* Update calendar sizing */
-.calendar-dates div {
-    padding: 6px;
-    font-size: 0.9rem;
-}
-
-.calendar-days div {
-    padding: 6px;
-    font-size: 0.9rem;
-}
-
-/* Update form controls */
-.customer-info {
-    max-width: 400px;
-    margin: 0 auto;
-}
-
+/* Update form controls to match new width */
+.customer-info,
 .form-control, 
 .form-select.time-select {
-    max-width: 400px;
-    margin: 0 auto;
-}
-
-/* Update typography for desktop */
-h1 {
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-}
-
-h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .container {
-        padding: 1rem;
-    }
-
-    .booking-form {
-        padding: 1rem;
-    }
-
-    .calendar-wrapper,
-    .customer-info,
-    .form-control, 
-    .form-select.time-select {
-        max-width: 100%;
-    }
-
-    .service-card {
-        max-width: none;
-    }
+    max-width: 500px;
 }
 
 /* Update book button */
 .book-btn {
-    max-width: 400px;
-    margin: 2rem auto 0;
+    max-width: 500px;
+}
+
+/* Update typography */
+h1 {
+    font-size: 2.2rem; /* Slightly smaller main title */
+}
+
+h2 {
+    font-size: 1.3rem; /* Smaller section titles */
+    margin-bottom: 1.2rem;
 }
  
