@@ -229,38 +229,20 @@ document.addEventListener('DOMContentLoaded', () => {
         
         dateDisplay.textContent = `${bosnianDay}, ${selectedDate.getDate()}. ${monthName} ${selectedDate.getFullYear()}.`;
         dateDisplay.classList.add('visible');
-
-        // Show time slots wrapper and generate time slots
-        const timeSlotsWrapper = document.querySelector('.time-slots-wrapper');
-        timeSlotsWrapper.classList.add('visible');
         generateTimeSlots(selectedDate);
     }
 
     async function generateTimeSlots(dateObj) {
-        console.log('=== Starting generateTimeSlots ===');
-        
-        const year = dateObj.getFullYear();
-        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-        const day = String(dateObj.getDate()).padStart(2, '0');
-        const formattedDate = `${year}-${month}-${day}`;
-        
-        console.log('Using formatted date:', formattedDate);
-        
-        const timeSlotsContainer = document.getElementById('time-slots');
-        timeSlotsContainer.innerHTML = '';
-        
-        // Create select element with Bootstrap classes
-        const select = document.createElement('select');
-        select.id = 'time-select';
-        select.classList.add('form-select', 'time-select');
-        
+        const timeSlotsSelect = document.getElementById('time-slots');
+        timeSlotsSelect.innerHTML = ''; // Clear existing options
+
         // Add default option
         const defaultOption = document.createElement('option');
         defaultOption.value = '';
         defaultOption.textContent = 'Izaberite vrijeme';
         defaultOption.selected = true;
         defaultOption.disabled = true;
-        select.appendChild(defaultOption);
+        timeSlotsSelect.appendChild(defaultOption);
 
         try {
             const selectedService = document.querySelector('.service-card.selected');
@@ -268,72 +250,57 @@ document.addEventListener('DOMContentLoaded', () => {
                 showNotification('Upozorenje', 'Molimo izaberite uslugu prvo');
                 return;
             }
-            const serviceDuration = getServiceDuration(selectedService.dataset.service);
 
-            console.log('Fetching slots for date:', formattedDate);
-            const response = await fetch(`/api/appointments/slots/${formattedDate}`);
-            
+            const serviceDuration = getServiceDuration(selectedService.dataset.service);
+            const year = dateObj.getFullYear();
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            const formattedDate = `${year}-${month}-${day}`;
+
+            // Fetch booked slots for the selected date
+            const response = await fetch(`${API_BASE_URL}/api/appointments/slots/${formattedDate}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch booked slots');
             }
-            
             const result = await response.json();
-            console.log('Server response:', result);
+            const bookedSlots = result.bookedSlots || [];
 
             // Convert booked slots to minutes for easier comparison
-            const bookedSlots = (result.bookedSlots || []).map(booking => {
-                const [hours, minutes] = booking.time.split(':').map(Number);
-                const startMinutes = hours * 60 + minutes;
-                const endMinutes = startMinutes + booking.duration;
-                console.log(`Found booking: ${booking.time} for ${booking.duration} minutes (${startMinutes}-${endMinutes})`);
-                return {
-                    startMinutes,
-                    endMinutes,
-                    time: booking.time,
-                    duration: booking.duration
-                };
-            });
+            const bookedTimes = bookedSlots.map(slot => ({
+                start: convertTimeToMinutes(slot.time),
+                end: convertTimeToMinutes(slot.time) + slot.duration
+            }));
 
-            // Generate time slots with 10-minute intervals
-            const startTime = 8 * 60; // 8:00
-            const endTime = 16 * 60; // 16:00
-            const interval = 10; // 10-minute intervals
-
-            for (let minutes = startTime; minutes <= endTime - serviceDuration; minutes += interval) {
-                const slotEndMinutes = minutes + serviceDuration;
+            // Generate time slots from 8:00 to 16:00 with 10-minute intervals
+            for (let minutes = 8 * 60; minutes <= 16 * 60 - serviceDuration; minutes += 10) {
+                const slotEnd = minutes + serviceDuration;
                 let isAvailable = true;
 
                 // Check if this slot overlaps with any booked slots
-                for (const booking of bookedSlots) {
-                    if ((minutes >= booking.startMinutes && minutes < booking.endMinutes) ||
-                        (slotEndMinutes > booking.startMinutes && slotEndMinutes <= booking.endMinutes) ||
-                        (minutes <= booking.startMinutes && slotEndMinutes >= booking.endMinutes)) {
+                for (const bookedSlot of bookedTimes) {
+                    if ((minutes >= bookedSlot.start && minutes < bookedSlot.end) ||
+                        (slotEnd > bookedSlot.start && slotEnd <= bookedSlot.end) ||
+                        (minutes <= bookedSlot.start && slotEnd >= bookedSlot.end)) {
                         isAvailable = false;
-                        console.log(`Blocking slot ${formatMinutes(minutes)}-${formatMinutes(slotEndMinutes)} due to booking at ${booking.time}`);
                         break;
                     }
                 }
 
                 if (isAvailable) {
-                    const timeString = formatMinutes(minutes);
                     const option = document.createElement('option');
-                    option.value = timeString;
-                    option.textContent = timeString;
-                    select.appendChild(option);
+                    option.value = formatMinutes(minutes);
+                    option.textContent = formatMinutes(minutes);
+                    timeSlotsSelect.appendChild(option);
                 }
             }
 
-            timeSlotsContainer.appendChild(select);
-            console.log(`Generated ${select.children.length - 1} available time slots`);
+            // Show the time slots wrapper
+            const timeSlotsWrapper = document.querySelector('.time-slots-wrapper');
+            timeSlotsWrapper.classList.add('visible');
 
         } catch (error) {
             console.error('Error generating time slots:', error);
-            const errorOption = document.createElement('option');
-            errorOption.value = '';
-            errorOption.textContent = 'Greška pri učitavanju termina';
-            select.appendChild(errorOption);
-            select.disabled = true;
-            timeSlotsContainer.appendChild(select);
+            showNotification('Greška', 'Greška pri učitavanju termina');
         }
     }
 
