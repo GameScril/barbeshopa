@@ -84,96 +84,45 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         calendarContainer.innerHTML = calendarHTML;
+        const datesContainer = calendarContainer.querySelector('.calendar-dates');
 
-        try {
-            // Fetch all reservations for this month
-            const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
-            const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-            
-            const formattedStart = startOfMonth.toISOString().split('T')[0];
-            const formattedEnd = endOfMonth.toISOString().split('T')[0];
-            
-            console.log('Fetching reservations for:', { formattedStart, formattedEnd });
-            
-            const response = await fetch(`/api/appointments/month?start=${formattedStart}&end=${formattedEnd}`);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const result = await response.json();
-            console.log('Server response:', result);
+        // Get first day of month
+        const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+        // Get last day of month
+        const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+        
+        // Get day of week for first day (0 = Sunday, 1 = Monday, etc)
+        let firstDayIndex = firstDay.getDay() || 7; // Convert Sunday from 0 to 7
+        firstDayIndex--; // Adjust to Monday = 0
 
-            if (!result.success) {
-                throw new Error(result.error || 'Failed to fetch reservations');
-            }
+        // Add empty cells for days before first day of month
+        for (let i = 0; i < firstDayIndex; i++) {
+            const emptyDiv = document.createElement('div');
+            emptyDiv.classList.add('empty');
+            datesContainer.appendChild(emptyDiv);
+        }
 
-            const reservedDates = new Set(result.data);
-
-            // Generate calendar dates
-            const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-            const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-            const startingDay = (firstDay.getDay() + 6) % 7; // Adjust for Monday start
+        // Add cells for each day of the month
+        for (let day = 1; day <= lastDay.getDate(); day++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.textContent = day;
             
-            const datesContainer = calendarContainer.querySelector('.calendar-dates');
-
-            // Add empty cells for days before the first day of the month
-            for (let i = 0; i < startingDay; i++) {
-                const emptyDay = document.createElement('div');
-                datesContainer.appendChild(emptyDay);
+            const currentDayDate = new Date(date.getFullYear(), date.getMonth(), day);
+            
+            // Add event listener and styling for each day
+            if (currentDayDate >= new Date()) {
+                dayDiv.addEventListener('click', () => selectDate(currentDayDate, dayDiv));
+            } else {
+                dayDiv.classList.add('disabled');
             }
 
-            // Add cells for each day of the month
-            for (let i = 1; i <= lastDay.getDate(); i++) {
-                const dateObj = new Date(date.getFullYear(), date.getMonth(), i);
-                const dateCell = document.createElement('div');
-                dateCell.textContent = i;
-                
-                const formattedDate = dateObj.toISOString().split('T')[0];
-                const isWeekend = dateObj.getDay() === 0 || dateObj.getDay() === 6;
-                const now = new Date();
-                const isToday = dateObj.toDateString() === now.toDateString();
-                const isPast = dateObj < now;
-
-                if (isPast || isWeekend) {
-                    dateCell.classList.add('disabled');
-                } else {
-                    dateCell.addEventListener('click', () => selectDate(dateObj, dateCell));
-                }
-
-                if (isToday) {
-                    dateCell.classList.add('today');
-                }
-
-                datesContainer.appendChild(dateCell);
+            if (day === new Date().getDate() && 
+                date.getMonth() === new Date().getMonth() && 
+                date.getFullYear() === new Date().getFullYear()) {
+                dayDiv.classList.add('today');
             }
 
-            // Add navigation event listeners
-            document.getElementById('prev-month')?.addEventListener('click', () => {
-                const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1);
-                if (newDate.getMonth() >= new Date().getMonth() || 
-                    newDate.getFullYear() > new Date().getFullYear()) {
-                    currentDate = newDate;
-                    handleMonthChange();
-                    createCalendar(currentDate);
-                }
-            });
-
-            document.getElementById('next-month')?.addEventListener('click', () => {
-                const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1);
-                const threeMonthsFromNow = new Date();
-                threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
-                
-                if (newDate <= threeMonthsFromNow) {
-                    currentDate = newDate;
-                    handleMonthChange();
-                    createCalendar(currentDate);
-                }
-            });
-
-        } catch (error) {
-            console.error('Error in createCalendar:', error);
-            showNotification('Greška', 'Greška pri učitavanju kalendara');
+            datesContainer.appendChild(dayDiv);
         }
     }
 

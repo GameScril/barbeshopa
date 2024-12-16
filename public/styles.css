@@ -68,6 +68,99 @@ h2 {
     max-width: 100%;
 }
 
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    padding: 10px;
+    text-align: center;
+}
+
+.calendar-days div {
+    padding: 8px;
+    font-weight: 600;
+    color: var(--gold);
+}
+
+.calendar-dates {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    padding: 10px;
+}
+
+.calendar-dates div {
+    padding: 8px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.calendar-dates div:hover:not(.empty):not(.disabled) {
+    background: rgba(212, 175, 55, 0.1);
+    border-color: var(--gold);
+}
+
+.calendar-dates div.selected {
+    background: var(--gold);
+    color: var(--black);
+    font-weight: bold;
+}
+
+.calendar-dates div.empty {
+    cursor: default;
+}
+
+.calendar-dates div.disabled {
+    color: #666;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.calendar-dates div.today {
+    border: 1px solid var(--gold);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.calendar-header h3 {
+    color: var(--gold);
+    font-size: 1.2rem;
+    margin: 0;
+    flex-grow: 1;
+    text-align: center;
+}
+
+.calendar-header button {
+    background: var(--gold);
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    color: var(--black);
+    font-weight: bold;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    margin: 0 10px;
+}
+
+.calendar-header button:hover {
+    background: var(--light-gold);
+    transform: scale(1.05);
+}
+
 /* Form Controls */
 .form-control {
     background: rgba(0,0,0,0.2);
@@ -206,45 +299,6 @@ h2 {
     .service-card {
         padding: 1.5rem;
     }
-}
-
-/* Add these calendar-specific styles */
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    padding: 0 1rem;
-}
-
-.calendar-header h3 {
-    color: var(--gold);
-    font-size: 1.2rem;
-    margin: 0;
-    white-space: nowrap;
-    text-align: center;
-    flex-grow: 1;
-}
-
-.calendar-header button {
-    background: var(--gold);
-    border: none;
-    border-radius: 50%;
-    width: 35px;
-    height: 35px;
-    cursor: pointer;
-    color: var(--black);
-    font-weight: bold;
-    font-size: 1.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-}
-
-.calendar-header button:hover {
-    background: var(--light-gold);
-    transform: scale(1.05);
 }
 
 /* Selected date styling */
