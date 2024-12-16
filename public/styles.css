@@ -14,47 +14,21 @@ body {
     min-height: 100vh;
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-    box-sizing: border-box;
-}
-
+/* Typography */
 h1 {
-    text-align: center;
     color: var(--gold);
     font-size: 3rem;
-    margin-bottom: 2rem;
     text-transform: uppercase;
     letter-spacing: 2px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
-.booking-form {
-    background: rgba(51, 51, 51, 0.95);
-    padding: 2rem;
-    box-sizing: border-box;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    backdrop-filter: blur(10px);
-    width: 100%;
-}
-
 h2 {
     color: var(--gold);
-    margin-bottom: 1.5rem;
     font-size: 1.8rem;
 }
 
-.service-options {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-    padding: 0;
-}
-
+/* Service Cards */
 .service-card {
     background: linear-gradient(145deg, #222 0%, var(--black) 100%);
     padding: 2rem;
@@ -80,133 +54,63 @@ h2 {
     color: var(--gold);
     font-size: 1.5rem;
     font-weight: bold;
-    margin-top: 1rem;
 }
 
-.time-slots {
-    display: none;
-    margin: 1.5rem 0;
-    width: 100%;
-}
-
-.time-slots.visible {
-    display: block;
-}
-
-.time-slot {
-    background: linear-gradient(145deg, #222 0%, var(--black) 100%);
-    padding: 1rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-align: center;
-    border: 2px solid transparent;
-    position: relative;
-    color: white;
-}
-
-.time-slot.booked {
-    background: #1a1a1a !important;
-    color: rgba(255, 255, 255, 0.5) !important;
-    cursor: not-allowed !important;
-    border: 2px solid #333 !important;
-    pointer-events: none !important;
-    position: relative;
-}
-
-.time-slot.booked::before {
-    content: '×';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #ff0000;
-    font-size: 3em;
-    font-weight: bold;
-    z-index: 1;
-    text-shadow: 0 0 2px rgba(0,0,0,0.5);
-}
-
-.time-slot.booked::after {
-    display: none;
-}
-
-.time-slot:not(.booked):hover {
-    border-color: var(--gold);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
-}
-
-.time-slot.booked:hover {
-    transform: none;
-    cursor: not-allowed;
-}
-
-.time-slot.selected {
-    border-color: var(--gold);
-    background: linear-gradient(145deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.2) 100%);
-}
-
-.datetime-picker {
-    margin-bottom: 2rem;
-}
-
+/* Calendar Styles */
 .calendar-wrapper {
     background: var(--black);
-    padding: 2rem;
     border-radius: 12px;
-    margin: 0 auto 1.5rem auto;
-    max-width: 500px;
     overflow: hidden;
 }
 
-.selected-date {
-    display: none;
+.calendar {
     width: 100%;
-    margin: 1rem 0;
-    padding: 1rem;
-    background: rgba(212, 175, 55, 0.1);
-    border-radius: 8px;
-    text-align: center;
-    box-sizing: border-box;
+    max-width: 100%;
 }
 
-.selected-date.visible {
-    display: block;
-}
-
-input {
-    width: 100%;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
+/* Form Controls */
+.form-control {
     background: rgba(0,0,0,0.2);
     border: 2px solid var(--dark-gray);
-    border-radius: 8px;
     color: white;
+    padding: 1rem;
     font-size: 1rem;
-    transition: all 0.3s ease;
+    border-radius: 8px;
 }
 
-input:focus {
+.form-control:focus {
+    background: rgba(0,0,0,0.2);
     border-color: var(--gold);
-    outline: none;
-    box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+    color: white;
+    box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
 }
 
+.form-select.time-select {
+    background-color: var(--black);
+    color: white;
+    border: 2px solid var(--gold);
+    height: auto;
+    padding: 0.75rem 2.25rem 0.75rem 1rem;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
+    cursor: pointer;
+}
+
+.form-select.time-select option {
+    padding: 0.75rem;
+    background-color: var(--black);
+    color: white;
+}
+
+/* Button Styles */
 .book-btn {
-    width: 100%;
-    padding: 1.2rem;
     background: var(--gold);
     color: var(--black);
-    border: none;
-    border-radius: 8px;
-    font-size: 1.2rem;
     font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-top: 2rem;
+    transition: all 0.3s ease;
+    padding: 1.2rem;
 }
 
 .book-btn:hover {
@@ -215,291 +119,36 @@ input:focus {
     box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
 }
 
-@media (max-width: 768px) {
-    .container {
-        padding: 1rem;
-    }
-    
-    h1 {
-        font-size: 2rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .booking-form {
-        width: 100%;
-        padding: 1rem;
-        box-sizing: border-box;
-    }
-    
-    .service-options {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-        padding: 0;
-    }
-
-    .time-slots {
-        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-        gap: 8px;
-    }
-
-    .time-slot {
-        padding: 0.8rem;
-        font-size: 0.9rem;
-    }
-
-    input {
-        padding: 0.8rem;
-        font-size: 0.9rem;
-    }
-
-    .book-btn {
-        padding: 1rem;
-        font-size: 1.1rem;
-    }
-
-    .calendar td {
-        padding: 0.5rem;
-        font-size: 0.9rem;
-    }
-
-    .service-card {
-        padding: 1.2rem;
-        width: 100%;
-        max-width: none;
-        margin: 0;
-        box-sizing: border-box;
-    }
-
-    .service-card h3 {
-        font-size: 1.2rem;
-        margin: 0.5rem 0;
-    }
-
-    .price {
-        font-size: 1.3rem;
-        margin-top: 0.5rem;
-    }
-
-    .service-card::before {
-        font-size: 1.8rem !important;
-        margin-bottom: 0.5rem !important;
-    }
-
-    .time-slots-wrapper {
-        width: 100%;
-        margin: 1rem 0;
-        padding: 0;
-    }
-
-    .selected-date,
-    .time-select {
-        width: 100%;
-        max-width: none;
-        margin: 0.5rem 0;
-        box-sizing: border-box;
-    }
-
-    .time-select {
-        width: 100% !important;
-        min-width: 0 !important;
-        max-width: none !important;
-        margin: 0 !important;
-        padding: 0 40px 0 15px !important;
-        box-sizing: border-box !important;
-        display: block !important;
-        font-size: 16px !important;
-    }
-
-    .time-select option {
-        padding: 12px;
-        font-size: 16px;
-        white-space: normal;
-        text-align: left;
-    }
-}
-
-@media (max-width: 480px) {
-    h1 {
-        font-size: 1.8rem;
-    }
-
-    h2 {
-        font-size: 1.5rem;
-    }
-
-    .service-card {
-        padding: 1.5rem;
-    }
-
-    .price {
-        font-size: 1.3rem;
-    }
-
-    .install-button {
-        bottom: 15px;
-        padding: 10px 20px;
-        font-size: 0.9rem;
-    }
-
-    .time-select {
-        width: 100% !important;
-        margin: 0 !important;
-        font-size: 16px !important;
-        padding: 10px 40px 10px 10px !important;
-        max-width: none !important;
-        background-position: right 10px center;
-    }
-
-    .time-select option {
-        padding: 12px;
-        font-size: 16px;
-        text-align: left;
-    }
-}
-
-.calendar {
-    width: 100%;
-    max-width: 100%;
-    margin: 0 auto;
-    padding: 0.5rem;
-    box-sizing: border-box;
-}
-
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    padding: 0 1rem;
-    font-size: 1.2rem;
-    color: var(--gold);
-    white-space: nowrap;
-}
-
-.calendar-header button {
-    background: var(--gold);
-    border: none;
-    border-radius: 50%;
-    width: 35px;
-    height: 35px;
-    cursor: pointer;
-    color: var(--black);
-    font-weight: bold;
-    font-size: 1.2rem;
-}
-
-.calendar-days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    text-align: center;
-    margin-bottom: 1.5rem;
-    font-weight: bold;
-    color: var(--gold);
-    font-size: 1.1rem;
-    padding: 0.5rem 0;
-}
-
-.calendar-dates {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-    text-align: center;
-    margin: 0 auto;
-    width: 100%;
-    max-width: 100%;
-}
-
-.calendar-dates div {
-    width: 40px;
-    height: 40px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-    font-size: 16px;
-}
-
-.calendar-dates div:not(.disabled):hover {
-    background-color: var(--gold);
-    color: var(--black);
-    transform: scale(1.1);
-}
-
-.calendar-dates div.selected {
-    background-color: var(--gold);
-    color: var(--black);
-    font-weight: bold;
-}
-
-.calendar-dates div.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    background-color: transparent;
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-    font-family: 'Open Sans', sans-serif;
-}
-
-.modal.show {
-    display: flex;
-}
-
+/* Modal Styles */
 .modal-content {
-    background: var(--black);
-    padding: 2rem;
-    border-radius: 12px;
-    max-width: 400px;
-    width: 90%;
-    text-align: center;
+    background-color: var(--black);
     border: 2px solid var(--gold);
 }
 
-.modal-content h3 {
-    color: var(--gold);
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
+.modal-body {
+    padding: 1.5rem;
 }
 
-.modal-content p {
-    margin-bottom: 1.5rem;
-    line-height: 1.5;
-    color: white;
+.text-gold {
+    color: var(--gold) !important;
 }
 
-.modal-close {
+.border-gold {
+    border-color: var(--gold) !important;
+}
+
+.btn-gold {
     background: var(--gold);
     color: var(--black);
-    border: none;
-    padding: 0.8rem 2rem;
-    border-radius: 6px;
     font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
 }
 
-.modal-close:hover {
+.btn-gold:hover {
     background: var(--light-gold);
-    transform: translateY(-2px);
+    color: var(--black);
 }
 
-body {
-    font-family: 'Open Sans', sans-serif;
-}
-
+/* Service Icons */
 .service-card[data-service="brada"]::before {
     content: '✂️';
     font-size: 2rem;
@@ -521,6 +170,7 @@ body {
     margin-bottom: 1rem;
 }
 
+/* Install Button */
 .install-button {
     position: fixed;
     bottom: 20px;
@@ -532,15 +182,9 @@ body {
     border-radius: 50px;
     font-weight: bold;
     cursor: pointer;
+    border: none;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     z-index: 1000;
-    border: none;
-    display: none;
-    font-family: 'Montserrat', sans-serif;
-}
-
-.install-button.show {
-    display: block;
 }
 
 .install-button:hover {
@@ -549,229 +193,97 @@ body {
     box-shadow: 0 6px 16px rgba(0,0,0,0.4);
 }
 
-.time-slots-wrapper {
-    position: relative;
-    width: 100%;
-    margin: 1rem 0;
-    padding: 0 1rem;
-    box-sizing: border-box;
-}
-
-/* Custom select styling */
-.time-select {
-    /* Reset appearance */
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    
-    /* Base styles */
-    display: block;
-    width: 100%;
-    min-width: 200px;
-    height: 50px;
-    padding: 12px 40px 12px 16px;
-    font-size: 16px;
-    font-family: inherit;
-    line-height: 1.4;
-    
-    /* Colors and borders */
-    color: white;
-    background-color: var(--black);
-    border: 2px solid var(--gold);
-    border-radius: 8px;
-    
-    /* Dropdown arrow */
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D4AF37'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 20px;
-    
-    /* Other */
-    cursor: pointer;
-    transition: border-color 0.2s ease;
-}
-
-/* Dropdown options */
-.time-select option {
-    padding: 12px;
-    background-color: var(--black);
-    color: white;
-    font-size: 16px;
-}
-
-/* Focus state */
-.time-select:focus {
-    outline: none;
-    border-color: var(--light-gold);
-    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
-}
-
-/* Hover state */
-.time-select:hover {
-    border-color: var(--light-gold);
-}
-
-/* Mobile styles */
+/* Responsive Adjustments */
 @media (max-width: 768px) {
-    .time-slots-wrapper {
-        padding: 0 15px;
+    h1 {
+        font-size: 2rem;
     }
 
-    .time-select {
-        width: 100%;
-        min-width: 0;
-        font-size: 16px;
-        padding: 12px 40px 12px 16px;
-    }
-}
-
-/* Small mobile devices */
-@media (max-width: 480px) {
-    .time-slots-wrapper {
-        margin: 0.5rem 0;
-        padding: 0 15px;
+    h2 {
+        font-size: 1.5rem;
     }
 
-    .booking-form {
-        padding: 1rem;
-    }
-
-    .time-select {
-        width: 100%;
-        min-width: 0;
-        height: 50px;
-        font-size: 16px;
-        padding: 12px 40px 12px 16px;
+    .service-card {
+        padding: 1.5rem;
     }
 }
 
-/* For Firefox */
-.time-select:-moz-focusring {
-    color: transparent;
-    text-shadow: 0 0 0 white;
+/* Add these calendar-specific styles */
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
 }
 
-/* For IE/Edge */
-.time-select::-ms-expand {
-    display: none;
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
 }
 
-/* Calendar navigation arrows */
-.calendar-header button {
+.calendar-dates {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+    text-align: center;
+}
+
+.calendar-dates div {
+    aspect-ratio: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: var(--gold);
-    border: none;
+    cursor: pointer;
     border-radius: 50%;
-    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.calendar-dates div:not(.disabled):hover {
+    background-color: var(--gold);
     color: var(--black);
-    font-weight: bold;
-    font-size: 1.2rem;
-    margin: 0 10px;
 }
 
-/* Mobile styles */
-@media (max-width: 768px) {
-    .customer-info {
-        width: 100%;
-        padding: 0;
-        margin: 1rem 0;
-    }
-
-    .customer-info input {
-        width: 100%;
-        font-size: 16px;
-        padding: 12px 15px;
-        box-sizing: border-box;
-        max-width: 100%; /* Prevent overflow */
-    }
+.calendar-dates div.selected {
+    background-color: var(--gold);
+    color: var(--black);
 }
 
-/* Small mobile devices */
-@media (max-width: 480px) {
-    .customer-info {
-        width: 100%;
-        padding: 0;
-        margin: 1rem 0;
-    }
-
-    .customer-info input {
-        width: 100%;
-        max-width: 100%;
-        box-sizing: border-box;
-        margin: 0.5rem 0;
-    }
+.calendar-dates div.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
-/* Base time select styles */
-.time-slots-wrapper {
-    width: 100%;
-    margin: 1rem 0;
-    padding: 0;
-    box-sizing: border-box;
+/* Bootstrap overrides */
+.btn {
+    font-family: 'Montserrat', sans-serif;
 }
 
-.time-select {
-    width: 100%;
-    height: 50px;
-    padding: 0 40px 0 15px;
-    font-size: 16px;
-    border: 2px solid var(--gold);
-    border-radius: 8px;
-    background-color: var(--black);
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.form-control:focus {
+    background-color: rgba(0, 0, 0, 0.2);
     color: white;
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    box-sizing: border-box;
-    text-align: left;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D4AF37'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 15px center;
-    background-size: 24px;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
 }
 
-/* Mobile styles */
-@media (max-width: 768px) {
-    .time-slots-wrapper {
-        width: 100%;
-        padding: 0 1rem;
-        margin: 1rem 0;
-    }
-
-    .time-select {
-        width: calc(100% - 2rem);
-        margin: 0 1rem;
-        height: 50px;
-        padding: 0 40px 0 15px;
-        font-size: 16px;
-        border: 2px solid var(--gold);
-    }
+.bg-dark {
+    background-color: var(--dark-gray) !important;
 }
 
-/* Small mobile devices */
-@media (max-width: 480px) {
-    .booking-form {
-        padding: 1rem 0;
-    }
+.bg-black {
+    background-color: var(--black) !important;
+}
 
-    .time-slots-wrapper {
-        width: 100%;
-        padding: 0;
-        margin: 0.5rem 0;
-    }
-
-    .time-select {
-        width: calc(100% - 2rem);
-        margin: 0 1rem;
-        height: 50px;
-        padding: 0 40px 0 15px;
-        font-size: 16px;
-        border: 2px solid var(--gold);
+/* Make sure modals work properly on mobile */
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 1rem;
     }
 }
  

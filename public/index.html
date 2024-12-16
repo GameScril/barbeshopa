@@ -20,64 +20,85 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Royal Barbershop</h1>
-        <button id="install-button" class="install-button">
+    <div class="container py-4">
+        <h1 class="text-center mb-4">Royal Barbershop</h1>
+        
+        <button id="install-button" class="install-button d-none">
             📱 Dodaj na Početni Ekran
         </button>
         
-        <div class="booking-form">
-            <div class="services">
-                <h2>Izaberite uslugu</h2>
-                <div class="service-options">
-                    <div class="service-card" data-service="brada" data-price="4">
-                        <h3>Brijanje</h3>
-                        <p class="price">4 KM</p>
+        <div class="booking-form bg-dark p-4 rounded-3 shadow">
+            <!-- Services Section -->
+            <div class="services mb-4">
+                <h2 class="mb-3">Izaberite uslugu</h2>
+                <div class="row g-3 service-options">
+                    <div class="col-12 col-md-4">
+                        <div class="service-card h-100" data-service="brada" data-price="4">
+                            <h3>Brijanje</h3>
+                            <p class="price mb-0">4 KM</p>
+                        </div>
                     </div>
-                    <div class="service-card" data-service="kosa" data-price="8">
-                        <h3>Šisanje</h3>
-                        <p class="price">8 KM</p>
+                    <div class="col-12 col-md-4">
+                        <div class="service-card h-100" data-service="kosa" data-price="8">
+                            <h3>Šisanje</h3>
+                            <p class="price mb-0">8 KM</p>
+                        </div>
                     </div>
-                    <div class="service-card" data-service="bradaikosa" data-price="12">
-                        <h3>Brijanje i Šisanje</h3>
-                        <p class="price">12 KM</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="datetime-picker">
-                <h2>Izaberite datum i vrijeme</h2>
-                <div class="calendar-wrapper">
-                    <div id="calendar-container" class="calendar">
-                        <!-- Calendar content -->
-                    </div>
-                    <div id="selected-date" class="selected-date"></div>
-                    <div class="time-slots-wrapper">
-                        <div id="time-slots" class="time-slots">
-                            <!-- Time slots will be generated here -->
+                    <div class="col-12 col-md-4">
+                        <div class="service-card h-100" data-service="bradaikosa" data-price="12">
+                            <h3>Brijanje i Šisanje</h3>
+                            <p class="price mb-0">12 KM</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="customer-info">
-                <h2>Vaše Informacije</h2>
-                <input type="text" id="name" placeholder="Ime i Prezime" required>
-                <input type="tel" id="phone" placeholder="Broj Mobitela" required>
+            <!-- DateTime Picker Section -->
+            <div class="datetime-picker mb-4">
+                <h2 class="mb-3">Izaberite datum i vrijeme</h2>
+                <div class="calendar-wrapper bg-black p-4 rounded-3">
+                    <div id="calendar-container" class="calendar mb-3">
+                        <!-- Calendar content -->
+                    </div>
+                    <div id="selected-date" class="selected-date mb-3"></div>
+                    <div class="time-slots-wrapper">
+                        <select class="form-select time-select" id="time-slots">
+                            <option selected disabled>Izaberite vrijeme</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
-            <button id="book-appointment" class="book-btn">Rezerviši</button>
+            <!-- Customer Info Section -->
+            <div class="customer-info mb-4">
+                <h2 class="mb-3">Vaše Informacije</h2>
+                <div class="mb-3">
+                    <input type="text" id="name" class="form-control" placeholder="Ime i Prezime" required>
+                </div>
+                <div class="mb-3">
+                    <input type="tel" id="phone" class="form-control" placeholder="Broj Mobitela" required>
+                </div>
+            </div>
+
+            <button id="book-appointment" class="btn btn-lg w-100 book-btn">Rezerviši</button>
         </div>
     </div>
 
-    <div id="notification-modal" class="modal">
-        <div class="modal-content">
-            <h3 id="modal-title"></h3>
-            <p id="modal-message"></p>
-            <button class="modal-close">OK</button>
+    <!-- Modal -->
+    <div class="modal fade" id="notification-modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border-gold">
+                <div class="modal-body text-center p-4">
+                    <h3 id="modal-title" class="text-gold mb-3"></h3>
+                    <p id="modal-message" class="text-white mb-4"></p>
+                    <button type="button" class="btn btn-gold modal-close" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
         </div>
     </div>
 

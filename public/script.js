@@ -475,9 +475,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showNotification(title, message) {
-        modalTitle.textContent = title;
-        modalMessage.textContent = message;
-        modal.classList.add('show');
+        const modal = new bootstrap.Modal(document.getElementById('notification-modal'));
+        document.getElementById('modal-title').textContent = title;
+        document.getElementById('modal-message').textContent = message;
+        modal.show();
     }
 
     modalClose.addEventListener('click', () => {
@@ -534,4 +535,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const mins = minutes % 60;
         return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
     }
+
+    // Make sure to initialize any Bootstrap tooltips or popovers if you add them later
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize all tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
 }); 
