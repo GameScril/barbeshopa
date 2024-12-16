@@ -286,4 +286,13 @@ h2 {
         margin: 1rem;
     }
 }
+
+/* Add this to your existing styles */
+.time-slots-wrapper {
+    display: none; /* Hide by default */
+}
+
+.time-slots-wrapper.visible {
+    display: block;
+}
  

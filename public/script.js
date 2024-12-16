@@ -195,17 +195,22 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        const selectedService = document.querySelector('.service-card.selected');
+        if (!selectedService) {
+            showNotification('Upozorenje', 'Molimo izaberite uslugu prvo');
+            dateCell.classList.remove('selected');
+            return;
+        }
+
         // Clear previous selections
         document.querySelectorAll('.calendar-dates div').forEach(div => {
             div.classList.remove('selected');
         });
         
         dateCell.classList.add('selected');
-        
-        // Create a new date object to avoid timezone issues
         selectedDate = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
         
-        // Format date in Bosnian
+        // Format and display the selected date
         const bosnianDays = {
             'Monday': 'Ponedjeljak',
             'Tuesday': 'Utorak',
@@ -225,11 +230,9 @@ document.addEventListener('DOMContentLoaded', () => {
         dateDisplay.textContent = `${bosnianDay}, ${selectedDate.getDate()}. ${monthName} ${selectedDate.getFullYear()}.`;
         dateDisplay.classList.add('visible');
 
-        const timeSlotsContainer = document.getElementById('time-slots');
-        timeSlotsContainer.style.display = 'grid';
-
-        // Pass the correct date to generateTimeSlots
-        console.log('Passing date to generateTimeSlots:', selectedDate);
+        // Show time slots wrapper and generate time slots
+        const timeSlotsWrapper = document.querySelector('.time-slots-wrapper');
+        timeSlotsWrapper.classList.add('visible');
         generateTimeSlots(selectedDate);
     }
 
@@ -379,8 +382,19 @@ document.addEventListener('DOMContentLoaded', () => {
         card.addEventListener('click', () => {
             serviceCards.forEach(c => c.classList.remove('selected'));
             card.classList.add('selected');
+            
+            // Hide time slots when changing service
+            const timeSlotsWrapper = document.querySelector('.time-slots-wrapper');
+            timeSlotsWrapper.classList.remove('visible');
+            
+            // Clear date selection when changing service
             if (selectedDate) {
-                generateTimeSlots(selectedDate); // Regenerate time slots when service changes
+                document.querySelectorAll('.calendar-dates div').forEach(div => {
+                    div.classList.remove('selected');
+                });
+                selectedDate = null;
+                dateDisplay.textContent = '';
+                dateDisplay.classList.remove('visible');
             }
         });
     });
@@ -544,4 +558,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
     });
+
+    // Hide time slots wrapper initially
+    const timeSlotsWrapper = document.querySelector('.time-slots-wrapper');
+    if (timeSlotsWrapper) {
+        timeSlotsWrapper.classList.remove('visible');
+    }
 }); 
