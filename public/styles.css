@@ -213,47 +213,64 @@ h2 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
 }
 
-.calendar-days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
+.calendar-header h3 {
+    color: var(--gold);
+    font-size: 1.2rem;
+    margin: 0;
+    white-space: nowrap;
     text-align: center;
+    flex-grow: 1;
 }
 
-.calendar-dates {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 0.5rem;
-    text-align: center;
-}
-
-.calendar-dates div {
-    aspect-ratio: 1;
+.calendar-header button {
+    background: var(--gold);
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    color: var(--black);
+    font-weight: bold;
+    font-size: 1.2rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    border-radius: 50%;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
 }
 
-.calendar-dates div:not(.disabled):hover {
-    background-color: var(--gold);
-    color: var(--black);
+.calendar-header button:hover {
+    background: var(--light-gold);
+    transform: scale(1.05);
 }
 
-.calendar-dates div.selected {
-    background-color: var(--gold);
-    color: var(--black);
+/* Selected date styling */
+.selected-date {
+    text-align: center;
+    color: var(--gold);
+    font-size: 1.1rem;
+    margin: 1rem 0;
+    display: none;
 }
 
-.calendar-dates div.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+.selected-date.visible {
+    display: block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .calendar-header h3 {
+        font-size: 1.1rem;
+    }
+
+    .calendar-header button {
+        width: 30px;
+        height: 30px;
+        font-size: 1rem;
+    }
 }
 
 /* Bootstrap overrides */

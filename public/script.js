@@ -67,9 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const calendarHTML = `
             <div class="calendar-header">
-                <button id="prev-month" class="calendar-nav prev">&lt;</button>
+                <button id="prev-month">&lt;</button>
                 <h3>${capitalizedMonth} ${date.getFullYear()}</h3>
-                <button id="next-month" class="calendar-nav next">&gt;</button>
+                <button id="next-month">&gt;</button>
             </div>
             <div class="calendar-days">
                 <div>Pon</div>
