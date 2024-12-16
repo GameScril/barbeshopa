@@ -578,7 +578,6 @@ body {
     background-size: 24px;
     position: relative;
     display: block;
-    min-width: 200px;
 }
 
 .time-select option {
@@ -631,21 +630,21 @@ body {
     }
 
     .time-select {
-        width: 100% !important;
-        min-width: 0 !important;
-        max-width: none !important;
-        margin: 0 !important;
-        padding: 0 40px 0 15px !important;
-        box-sizing: border-box !important;
-        display: block !important;
-        font-size: 16px !important;
+        width: 100%;
+        min-width: 100%;
+        height: 50px;
+        margin: 0;
+        padding: 0 40px 0 15px;
+        font-size: 16px;
+        background-position: right 15px center;
+        border: 2px solid var(--gold);
     }
 
     .time-select option {
         padding: 12px;
         font-size: 16px;
-        white-space: normal;
-        text-align: left;
+        background-color: var(--black);
+        color: white;
     }
 }
 
@@ -668,18 +667,12 @@ body {
     }
 
     .time-select {
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 40px 0 15px !important;
-        font-size: 16px !important;
-        background-position: right 10px center !important;
-    }
-
-    .time-select option {
-        padding: 12px;
+        width: 100%;
+        height: 50px;
+        padding: 0 40px 0 15px;
         font-size: 16px;
-        text-align: left;
-        white-space: normal;
+        border: 2px solid var(--gold);
+        background-position: right 15px center;
     }
 }
 
