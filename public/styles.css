@@ -552,127 +552,71 @@ body {
 .time-slots-wrapper {
     width: 100%;
     margin: 1rem 0;
-    padding: 0;
+    padding: 0 1rem;
     box-sizing: border-box;
-    position: relative;
 }
 
 .time-select {
+    all: unset;
+    
+    display: block;
     width: 100%;
     height: 50px;
-    padding: 0 40px 0 15px;
-    font-size: 16px;
-    border: 2px solid var(--gold);
-    border-radius: 8px;
     background-color: var(--black);
     color: white;
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    padding: 0 15px;
+    font-size: 16px;
     cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
     box-sizing: border-box;
-    text-align: left;
+    
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D4AF37'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
     background-repeat: no-repeat;
     background-position: right 15px center;
     background-size: 24px;
-    position: relative;
-    display: block;
+    
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.time-select::-ms-expand {
+    display: none;
 }
 
 .time-select option {
     padding: 16px;
     font-size: 16px;
-    text-align: center;
     background-color: var(--black);
     color: white;
 }
 
 /* Mobile styles */
 @media (max-width: 768px) {
-    .container {
-        padding: 1rem;
-    }
-    
-    h1 {
-        font-size: 2rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .booking-form {
-        padding: 1rem;
-        width: 100%;
-        max-width: none;
-    }
-    
-    .service-options {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .service-card {
-        padding: 1.5rem;
-        max-width: 300px;
-        margin: 0 auto;
-    }
-
-    .service-card h3 {
-        font-size: 1.2rem;
-    }
-
-    .price {
-        font-size: 1.3rem;
-    }
-
     .time-slots-wrapper {
-        width: 100%;
-        max-width: none;
+        padding: 0 1rem;
     }
 
     .time-select {
         width: 100%;
-        min-width: 100%;
-        height: 50px;
-        margin: 0;
-        padding: 0 40px 0 15px;
-        font-size: 16px;
-        background-position: right 15px center;
-        border: 2px solid var(--gold);
-    }
-
-    .time-select option {
-        padding: 12px;
-        font-size: 16px;
-        background-color: var(--black);
-        color: white;
+        padding-right: 40px;
     }
 }
 
 /* Small mobile devices */
 @media (max-width: 480px) {
-    .container {
-        padding: 0.5rem;
-    }
-
     .booking-form {
         padding: 1rem;
-        margin: 0;
-        width: 100%;
     }
 
     .time-slots-wrapper {
-        margin: 0.5rem 0;
-        padding: 0;
-        width: 100%;
+        padding: 0 1rem;
     }
 
     .time-select {
         width: 100%;
-        height: 50px;
-        padding: 0 40px 0 15px;
-        font-size: 16px;
-        border: 2px solid var(--gold);
-        background-position: right 15px center;
+        padding-right: 40px;
     }
 }
 
