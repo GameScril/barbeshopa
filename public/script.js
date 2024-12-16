@@ -208,7 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Check if it's Saturday
             const isSaturday = dateObj.getDay() === 6;
-            // Set end time based on day
             const endTime = isSaturday ? 15 * 60 : 16 * 60; // 3 PM on Saturday, 4 PM other days
 
             const response = await fetch(`${API_BASE_URL}/api/appointments/slots/${formattedDate}`);
@@ -224,11 +223,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const bookedRanges = bookedSlots.map(slot => {
                 const [hours, minutes] = slot.time.split(':').map(Number);
                 const startMinutes = hours * 60 + minutes;
-                const duration = parseInt(slot.duration) || 30;
+                const duration = parseInt(slot.duration);
                 return {
                     start: startMinutes,
-                    end: startMinutes + duration,
-                    duration: duration
+                    end: startMinutes + duration
                 };
             });
             console.log('Converted booked ranges:', bookedRanges);
@@ -236,24 +234,30 @@ document.addEventListener('DOMContentLoaded', () => {
             const startTime = 8 * 60; // 8:00
             const interval = 10; // 10-minute intervals
 
+            // Generate all possible time slots
             for (let time = startTime; time <= endTime - serviceDuration; time += interval) {
                 const slotEndTime = time + serviceDuration;
                 
-                // Detailed overlap check
+                // Check if this slot overlaps with any booked slots
                 const isAvailable = !bookedRanges.some(range => {
-                    const hasOverlap = (
-                        (time >= range.start && time < range.end) || // Starts during a booking
-                        (slotEndTime > range.start && slotEndTime <= range.end) || // Ends during a booking
-                        (time <= range.start && slotEndTime >= range.end) // Encompasses a booking
+                    // Check if any part of the new appointment would overlap with this booked slot
+                    const wouldOverlap = (
+                        // New appointment starts during a booked slot
+                        (time >= range.start && time < range.end) ||
+                        // New appointment ends during a booked slot
+                        (slotEndTime > range.start && slotEndTime <= range.end) ||
+                        // New appointment completely encompasses a booked slot
+                        (time <= range.start && slotEndTime >= range.end)
                     );
-                    
-                    if (hasOverlap) {
-                        console.log(`Slot ${formatMinutes(time)}-${formatMinutes(slotEndTime)} overlaps with booking ${formatMinutes(range.start)}-${formatMinutes(range.end)}`);
+
+                    if (wouldOverlap) {
+                        console.log(`Slot ${formatMinutes(time)}-${formatMinutes(slotEndTime)} would overlap with booking ${formatMinutes(range.start)}-${formatMinutes(range.end)}`);
                     }
-                    
-                    return hasOverlap;
+
+                    return wouldOverlap;
                 });
 
+                // Only add the slot if it's available
                 if (isAvailable) {
                     const option = document.createElement('option');
                     option.value = formatMinutes(time);
