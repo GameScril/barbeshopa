@@ -550,74 +550,110 @@ body {
 }
 
 .time-slots-wrapper {
+    position: relative;
     width: 100%;
     margin: 1rem 0;
     padding: 0 1rem;
     box-sizing: border-box;
 }
 
+/* Custom select styling */
 .time-select {
-    all: unset;
-    
-    display: block;
-    width: 100%;
-    height: 50px;
-    background-color: var(--black);
-    color: white;
-    border: 2px solid var(--gold);
-    border-radius: 8px;
-    padding: 0 15px;
-    font-size: 16px;
-    cursor: pointer;
-    box-sizing: border-box;
-    
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D4AF37'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 15px center;
-    background-size: 24px;
-    
+    /* Reset appearance */
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-}
-
-.time-select::-ms-expand {
-    display: none;
-}
-
-.time-select option {
-    padding: 16px;
+    
+    /* Base styles */
+    display: block;
+    width: 100%;
+    min-width: 200px;
+    height: 50px;
+    padding: 12px 40px 12px 16px;
     font-size: 16px;
+    font-family: inherit;
+    line-height: 1.4;
+    
+    /* Colors and borders */
+    color: white;
+    background-color: var(--black);
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    
+    /* Dropdown arrow */
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D4AF37'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 20px;
+    
+    /* Other */
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+/* Dropdown options */
+.time-select option {
+    padding: 12px;
     background-color: var(--black);
     color: white;
+    font-size: 16px;
+}
+
+/* Focus state */
+.time-select:focus {
+    outline: none;
+    border-color: var(--light-gold);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+
+/* Hover state */
+.time-select:hover {
+    border-color: var(--light-gold);
 }
 
 /* Mobile styles */
 @media (max-width: 768px) {
     .time-slots-wrapper {
-        padding: 0 1rem;
+        padding: 0 15px;
     }
 
     .time-select {
         width: 100%;
-        padding-right: 40px;
+        min-width: 0;
+        font-size: 16px;
+        padding: 12px 40px 12px 16px;
     }
 }
 
 /* Small mobile devices */
 @media (max-width: 480px) {
+    .time-slots-wrapper {
+        margin: 0.5rem 0;
+        padding: 0 15px;
+    }
+
     .booking-form {
         padding: 1rem;
     }
 
-    .time-slots-wrapper {
-        padding: 0 1rem;
-    }
-
     .time-select {
         width: 100%;
-        padding-right: 40px;
+        min-width: 0;
+        height: 50px;
+        font-size: 16px;
+        padding: 12px 40px 12px 16px;
     }
+}
+
+/* For Firefox */
+.time-select:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 white;
+}
+
+/* For IE/Edge */
+.time-select::-ms-expand {
+    display: none;
 }
 
 /* Calendar navigation arrows */
