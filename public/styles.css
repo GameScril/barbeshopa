@@ -488,12 +488,26 @@ h2 {
 
 /* Update customer info section */
 .customer-info {
-    max-width: 500px;
+    width: 100%;
+    max-width: 700px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1rem;
+}
+
+.customer-info h2 {
+    text-align: center;
+    width: 100%;
+}
+
+.customer-info .mb-3 {
+    width: 100%;
+}
+
+.customer-info input {
+    width: 100%;
 }
 
 /* Update form controls */
