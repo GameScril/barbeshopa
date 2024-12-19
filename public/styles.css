@@ -195,4 +195,56 @@ h2 {
         font-size: 1rem;
     }
 }
- 
+
+/* Add styles for disabled dates */
+.calendar-dates div.disabled {
+    color: rgba(255, 255, 255, 0.3);
+    cursor: not-allowed;
+    position: relative;
+}
+
+.calendar-dates div.disabled:hover {
+    background-color: transparent;
+}
+
+/* Style for selected date display */
+#selected-date {
+    color: var(--gold);
+    text-align: center;
+    padding: 10px;
+    margin: 10px 0;
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    background: rgba(212, 175, 55, 0.1);
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#selected-date.visible {
+    opacity: 1;
+}
+
+/* Update customer info section */
+.customer-info {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.customer-info h2 {
+    text-align: center;
+    width: 100%;
+}
+
+.customer-info .mb-3 {
+    width: 100%;
+}
+
+.customer-info input {
+    width: 100%;
+}

@@ -98,3 +98,62 @@ document.addEventListener('DOMContentLoaded', () => {
     // Start the app
     init();
 }); 
+
+function selectDate(dateObj, dateCell) {
+    console.log('Selected date object:', dateObj);
+    
+    // Add validation for weekends and past dates
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    // Check if it's a Sunday (0 is Sunday in getDay())
+    if (dateObj.getDay() === 0) {
+        showNotification('Upozorenje', 'Nedjelja je neradni dan');
+        return;
+    }
+
+    if (dateObj < today) {
+        showNotification('Upozorenje', 'Ne možete izabrati datum u prošlosti');
+        return;
+    }
+    
+    // Rest of the function remains the same...
+}
+
+async function createCalendar(date) {
+    if (!calendarContainer) {
+        console.error('Calendar container not found!');
+        return;
+    }
+
+    const datesContainer = calendarContainer.querySelector('.calendar-dates');
+    const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    
+    // Calculate padding for first week
+    let firstDayIndex = firstDay.getDay() || 7; // Convert Sunday (0) to 7 for proper padding
+    firstDayIndex--; // Adjust to start from Monday
+    
+    // Add padding cells
+    for (let i = 0; i < firstDayIndex; i++) {
+        const paddingCell = document.createElement('div');
+        datesContainer.appendChild(paddingCell);
+    }
+    
+    // Add date cells
+    for (let day = 1; day <= lastDay.getDate(); day++) {
+        const dateCell = document.createElement('div');
+        const dateObj = new Date(date.getFullYear(), date.getMonth(), day);
+        
+        dateCell.textContent = day;
+        
+        // Disable Sundays and past dates
+        if (dateObj.getDay() === 0 || dateObj < new Date(new Date().setHours(0, 0, 0, 0))) {
+            dateCell.classList.add('disabled');
+        } else {
+            dateCell.addEventListener('click', () => selectDate(dateObj, dateCell));
+        }
+        
+        datesContainer.appendChild(dateCell);
+    }
+}
