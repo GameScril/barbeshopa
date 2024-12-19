@@ -3,6 +3,10 @@
     --black: #1a1a1a;
     --dark-gray: #333;
     --light-gold: #F4E4BC;
+    --transition-speed: 0.3s;
+    --border-radius: 12px;
+    --shadow-sm: 0 4px 12px rgba(0,0,0,0.3);
+    --shadow-lg: 0 6px 16px rgba(0,0,0,0.4);
 }
 
 body {
@@ -15,8 +19,12 @@ body {
 }
 
 /* Typography */
-h1 {
+h1, h2 {
     color: var(--gold);
+    margin-bottom: 1.2rem;
+}
+
+h1 {
     font-size: 2.2rem;
     text-transform: uppercase;
     letter-spacing: 2px;
@@ -25,18 +33,16 @@ h1 {
 }
 
 h2 {
-    color: var(--gold);
     font-size: 1.3rem;
-    margin-bottom: 1.2rem;
 }
 
 /* Service Cards */
 .service-card {
     background: linear-gradient(145deg, #222 0%, var(--black) 100%);
     padding: 1.2rem;
-    border-radius: 12px;
+    border-radius: var(--border-radius);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all var(--transition-speed) ease;
     border: 2px solid transparent;
     text-align: center;
     max-width: none;
@@ -49,7 +55,7 @@ h2 {
 .service-card:hover {
     border-color: var(--gold);
     transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+    box-shadow: var(--shadow-lg);
 }
 
 .service-card.selected {
@@ -57,233 +63,58 @@ h2 {
     background: linear-gradient(145deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.2) 100%);
 }
 
-.price {
+.service-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+}
+
+.service-card .price {
     color: var(--gold);
     font-size: 1.2rem;
     font-weight: bold;
     margin-bottom: 0;
 }
 
+.service-card .duration {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    font-style: italic;
+}
+
+/* Form Elements */
+.form-control,
+.form-select.time-select,
+.book-btn {
+    height: 50px;
+    border-radius: 8px;
+}
+
+.form-select.time-select {
+    padding: 0 40px 0 1rem;
+}
+
+.book-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2rem;
+    padding: 0;
+    font-size: 1.1rem;
+}
+
 /* Calendar Styles */
 .calendar-wrapper {
     background: var(--black);
-    border-radius: 12px;
+    border-radius: var(--border-radius);
     overflow: hidden;
     max-width: 800px;
     margin: 0 auto;
     padding: 1.5rem;
 }
 
-.calendar {
-    width: 100%;
-    max-width: 100%;
-}
-
-.calendar-days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-    padding: 15px;
-    text-align: center;
-}
-
-.calendar-days div {
-    padding: 10px;
-    font-weight: 600;
-    color: var(--gold);
-    font-size: 1rem;
-}
-
-.calendar-dates {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-    padding: 15px;
-}
-
-.calendar-dates div {
-    padding: 10px;
-    text-align: center;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
-}
-
-.calendar-dates div:hover:not(.empty):not(.disabled) {
-    background: rgba(212, 175, 55, 0.1);
-    border-color: var(--gold);
-}
-
-.calendar-dates div.selected {
-    background: var(--gold);
-    color: var(--black);
-    font-weight: bold;
-}
-
-.calendar-dates div.empty {
-    cursor: default;
-}
-
-.calendar-dates div.disabled {
-    color: #666;
-    cursor: not-allowed;
-    pointer-events: none;
-}
-
-.calendar-dates div.today {
-    border: 1px solid var(--gold);
-}
-
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    margin-bottom: 0.5rem;
-}
-
-.calendar-header h3 {
-    color: var(--gold);
-    font-size: 1.2rem;
-    margin: 0;
-    flex-grow: 1;
-    text-align: center;
-}
-
-.calendar-header button {
-    background: var(--gold);
-    border: none;
-    border-radius: 50%;
-    width: 35px;
-    height: 35px;
-    cursor: pointer;
-    color: var(--black);
-    font-weight: bold;
-    font-size: 1.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    margin: 0 10px;
-}
-
-.calendar-header button:hover {
-    background: var(--light-gold);
-    transform: scale(1.05);
-}
-
-/* Form Controls */
-.form-control {
-    background: rgba(0,0,0,0.2);
-    border: 2px solid var(--dark-gray);
-    color: white;
-    padding: 1rem;
-    font-size: 1rem;
-    border-radius: 8px;
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-.form-control:focus {
-    background: rgba(0,0,0,0.2);
-    border-color: var(--gold);
-    color: white;
-    box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
-}
-
-.form-select.time-select {
-    background-color: var(--black);
-    color: white;
-    border: 2px solid var(--gold);
-    height: auto;
-    padding: 0.75rem 2.25rem 0.75rem 1rem;
-    background-position: right 0.75rem center;
-    background-size: 16px 12px;
-    cursor: pointer;
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-.form-select.time-select option {
-    padding: 0.75rem;
-    background-color: var(--black);
-    color: white;
-}
-
-/* Button Styles */
-.book-btn {
-    background: var(--gold);
-    color: var(--black);
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
-    padding: 1.2rem;
-    max-width: 500px;
-    margin: 2rem auto 0;
-}
-
-.book-btn:hover {
-    background: var(--light-gold);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
-}
-
-/* Modal Styles */
-.modal-content {
-    background-color: var(--black);
-    border: 2px solid var(--gold);
-}
-
-.modal-body {
-    padding: 1.5rem;
-}
-
-.text-gold {
-    color: var(--gold) !important;
-}
-
-.border-gold {
-    border-color: var(--gold) !important;
-}
-
-.btn-gold {
-    background: var(--gold);
-    color: var(--black);
-    font-weight: bold;
-}
-
-.btn-gold:hover {
-    background: var(--light-gold);
-    color: var(--black);
-}
-
-/* Service Icons */
-.service-card[data-service="brada"]::before {
-    content: '✂️';
-    font-size: 2rem;
-    display: block;
-    margin-bottom: 1rem;
-}
-
-.service-card[data-service="kosa"]::before {
-    content: '💇‍♂️';
-    font-size: 2rem;
-    display: block;
-    margin-bottom: 1rem;
-}
-
-.service-card[data-service="bradaikosa"]::before {
-    content: '💈';
-    font-size: 2rem;
-    display: block;
-    margin-bottom: 1rem;
-}
-
 /* Install Button */
 .install-button {
-    position: static;
     display: none;
     background: var(--gold);
     color: var(--black);
@@ -292,9 +123,9 @@ h2 {
     font-weight: bold;
     cursor: pointer;
     border: none;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    box-shadow: var(--shadow-sm);
     margin: 2rem auto 0;
-    transform: none;
+    transition: all var(--transition-speed) ease;
 }
 
 .install-button.show {
@@ -304,313 +135,41 @@ h2 {
 .install-button:hover {
     background: var(--light-gold);
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+    box-shadow: var(--shadow-lg);
 }
 
+/* Responsive Design - Single Media Query */
 @media (max-width: 768px) {
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    
+    .container { padding: 1rem; }
+    .booking-form { padding: 1rem; }
+    
+    .calendar-wrapper {
+        padding: 0.5rem;
+        max-width: 100%;
+    }
+    
+    .calendar-days,
+    .calendar-dates {
+        gap: 2px;
+        padding: 5px;
+    }
+    
+    .calendar-days div,
+    .calendar-dates div {
+        padding: 8px 2px;
+        font-size: 0.9rem;
+    }
+    
     .install-button {
         width: calc(100% - 2rem);
         margin: 2rem 1rem;
         padding: 15px;
         font-size: 1rem;
     }
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    h1 {
-        font-size: 2rem;
-    }
-
-    h2 {
-        font-size: 1.5rem;
-    }
-
-    .service-card {
-        padding: 1.5rem;
-    }
-
-    .container {
-        padding: 1rem;
-    }
-
-    .booking-form {
-        padding: 1rem;
-    }
-
-    .calendar-wrapper,
-    .customer-info,
-    .form-control, 
-    .form-select.time-select {
-        max-width: 100%;
-    }
-
-    .service-card {
-        max-width: none;
-    }
-}
-
-/* Selected date styling */
-.selected-date {
-    text-align: center;
-    color: var(--gold);
-    font-size: 1.1rem;
-    margin: 1rem 0;
-    display: none;
-}
-
-.selected-date.visible {
-    display: block;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .calendar-header h3 {
-        font-size: 1.1rem;
-    }
-
-    .calendar-header button {
-        width: 30px;
-        height: 30px;
-        font-size: 1rem;
-    }
-}
-
-/* Bootstrap overrides */
-.btn {
-    font-family: 'Montserrat', sans-serif;
-}
-
-.form-control::placeholder {
-    color: rgba(255, 255, 255, 0.5);
-}
-
-.form-control:focus {
-    background-color: rgba(0, 0, 0, 0.2);
-    color: white;
-    border-color: var(--gold);
-    box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
-}
-
-.bg-dark {
-    background-color: var(--dark-gray) !important;
-}
-
-.bg-black {
-    background-color: var(--black) !important;
-}
-
-/* Make sure modals work properly on mobile */
-@media (max-width: 576px) {
-    .modal-dialog {
-        margin: 1rem;
-    }
-}
-
-/* Add this to your existing styles */
-.time-slots-wrapper {
-    display: none; /* Hide by default */
-}
-
-.time-slots-wrapper.visible {
-    display: block;
-}
-
-/* Update container width */
-.container {
-    max-width: 1000px !important; /* Wider container to match red lines */
-    margin: 0 auto;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-/* Update booking form */
-.booking-form {
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto 2rem;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-/* Update service cards */
-.service-card {
-    padding: 1.2rem;
-    max-width: none; /* Remove max-width to allow cards to fill space */
-}
-
-.service-card h3 {
-    font-size: 1.1rem; /* Smaller font for service names */
-    margin-bottom: 0.5rem;
-}
-
-.service-card .price {
-    font-size: 1.2rem; /* Smaller price font */
-}
-
-/* Update row spacing */
-.row.g-3 {
-    --bs-gutter-x: 1rem; /* Reduce spacing between cards */
-}
-
-/* Update calendar wrapper to be proportional */
-.calendar-wrapper {
-    max-width: 500px; /* Slightly wider calendar */
-    margin: 0 auto;
-    padding: 1.5rem;
-}
-
-/* Update form controls to match new width */
-.customer-info,
-.form-control, 
-.form-select.time-select {
-    max-width: 500px;
-}
-
-/* Update book button */
-.book-btn {
-    max-width: 500px;
-}
-
-/* Update typography */
-h1 {
-    font-size: 2.2rem; /* Slightly smaller main title */
-}
-
-h2 {
-    font-size: 1.3rem; /* Smaller section titles */
-    margin-bottom: 1.2rem;
-}
-
-/* Update customer info section */
-.customer-info {
-    width: 100%;
-    max-width: 700px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-}
-
-.customer-info h2 {
-    text-align: center;
-    width: 100%;
-}
-
-.customer-info .mb-3 {
-    width: 100%;
-}
-
-.customer-info input {
-    width: 100%;
-}
-
-/* Update form controls */
-.form-control, 
-.form-select.time-select {
-    width: 100%;
-    max-width: 500px;
-    margin: 0 auto;
-    display: block;
-}
-
-/* Update form groups */
-.mb-3 {
-    width: 100%;
-    max-width: 500px;
-    margin: 0 auto 1rem auto;
-}
-
-/* Update container padding */
-.container {
-    max-width: 1000px !important;
-    margin: 0 auto;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-/* Update booking form */
-.booking-form {
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto 2rem;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-/* Update sections */
-.services,
-.datetime-picker {
-    width: 100%;
-    text-align: center;
-}
-
-/* Keep time select centered */
-.time-slots-wrapper {
-    width: 100%;
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-/* Update form controls width */
-.form-control, 
-.form-select.time-select,
-.book-btn,
-.time-slots-wrapper,
-.customer-info,
-.mb-3 {
-    width: 100%;
-    max-width: 700px; /* Increased width */
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* Update input styling */
-.form-control {
-    background: rgba(0,0,0,0.2);
-    border: 2px solid var(--dark-gray);
-    color: white;
-    padding: 1rem;
-    font-size: 1rem;
-    border-radius: 8px;
-    height: 50px; /* Consistent height */
-}
-
-/* Update time select styling */
-.form-select.time-select {
-    height: 50px; /* Consistent height */
-    padding: 0 40px 0 1rem;
-}
-
-/* Update button styling */
-.book-btn {
-    height: 50px; /* Consistent height */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 2rem;
-    padding: 0;
-    font-size: 1.1rem;
-}
-
-/* Update customer info section */
-.customer-info {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
+    
     .form-control, 
     .form-select.time-select,
     .book-btn,
@@ -619,97 +178,5 @@ h2 {
     .mb-3 {
         max-width: 100%;
     }
-}
-
-/* Update calendar mobile styles */
-@media (max-width: 768px) {
-    .calendar-wrapper {
-        padding: 0.5rem;
-        max-width: 100%;
-    }
-
-    .calendar-days,
-    .calendar-dates {
-        gap: 2px;
-        padding: 5px;
-    }
-
-    .calendar-days div,
-    .calendar-dates div {
-        padding: 8px 2px;
-        font-size: 0.9rem;
-    }
-
-    .calendar-header {
-        padding: 0.5rem;
-        margin-bottom: 0.25rem;
-    }
-
-    .calendar-header h3 {
-        font-size: 1rem;
-    }
-
-    .calendar-header button {
-        width: 30px;
-        height: 30px;
-        font-size: 1rem;
-        margin: 0 5px;
-    }
-}
-
-/* Add styles for the duration text */
-.service-card .duration {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.9rem;
-    margin-top: 0.5rem;
-    font-style: italic;
-}
-
-/* Update service card padding to accommodate new line */
-.service-card {
-    padding: 1.2rem;
-    max-width: none;
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-}
-
-.service-card h3 {
-    font-size: 1.1rem;
-    margin-bottom: 0.3rem;
-}
-
-.service-card .price {
-    font-size: 1.2rem;
-    margin-bottom: 0;
-}
-
-/* Add styles for disabled dates */
-.calendar-dates div.disabled {
-    color: rgba(255, 255, 255, 0.3);
-    cursor: not-allowed;
-    position: relative;
-}
-
-.calendar-dates div.disabled:hover {
-    background-color: transparent;
-}
-
-/* Style for selected date display */
-#selected-date {
-    color: var(--gold);
-    text-align: center;
-    padding: 10px;
-    margin: 10px 0;
-    border: 2px solid var(--gold);
-    border-radius: 8px;
-    background: rgba(212, 175, 55, 0.1);
-    font-weight: 500;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-#selected-date.visible {
-    opacity: 1;
 }
  
