@@ -146,37 +146,53 @@ h2 {
     .container { padding: 1rem; }
     .booking-form { padding: 1rem; }
     
-    .calendar-wrapper {
-        padding: 0.5rem;
-        max-width: 100%;
-    }
-    
-    .calendar-days,
-    .calendar-dates {
-        gap: 2px;
-        padding: 5px;
-    }
-    
-    .calendar-days div,
-    .calendar-dates div {
-        padding: 8px 2px;
-        font-size: 0.9rem;
-    }
-    
-    .install-button {
-        width: calc(100% - 2rem);
-        margin: 2rem 1rem;
-        padding: 15px;
-        font-size: 1rem;
-    }
-    
     .form-control, 
     .form-select.time-select,
     .book-btn,
     .time-slots-wrapper,
     .customer-info,
-    .mb-3 {
+    .mb-3,
+    .calendar-wrapper {
         max-width: 100%;
+    }
+
+    .calendar-wrapper {
+        padding: 0.5rem;
+    }
+
+    .calendar-days,
+    .calendar-dates {
+        gap: 2px;
+        padding: 5px;
+    }
+
+    .calendar-days div,
+    .calendar-dates div {
+        padding: 8px 2px;
+        font-size: 0.9rem;
+    }
+
+    .calendar-header {
+        padding: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .calendar-header h3 {
+        font-size: 1rem;
+    }
+
+    .calendar-header button {
+        width: 30px;
+        height: 30px;
+        font-size: 1rem;
+        margin: 0 5px;
+    }
+
+    .install-button {
+        width: calc(100% - 2rem);
+        margin: 2rem 1rem;
+        padding: 15px;
+        font-size: 1rem;
     }
 }
  
