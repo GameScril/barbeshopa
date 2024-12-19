@@ -465,25 +465,55 @@ document.addEventListener('DOMContentLoaded', () => {
     let deferredPrompt;
     const installButton = document.getElementById('install-button');
 
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        
+    // Check if the device is iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    // Function to show iOS-specific instructions
+    function showIOSInstallInstructions() {
+        const modal = new bootstrap.Modal(document.getElementById('notification-modal'));
+        document.getElementById('modal-title').textContent = 'Instalacija na iPhone';
+        document.getElementById('modal-message').innerHTML = `
+            Za dodavanje na početni ekran:<br>
+            1. Kliknite na dugme "Share" (Podijeli) <br>
+            2. Scroll down i kliknite "Add to Home Screen" (Dodaj na početni ekran)<br>
+            3. Kliknite "Add" (Dodaj)
+        `;
+        modal.show();
+    }
+
+    if (isIOS) {
+        // For iOS devices
         if (installButton) {
             installButton.classList.add('show');
+            installButton.addEventListener('click', showIOSInstallInstructions);
         }
-    });
-
-    if (installButton) {
-        installButton.addEventListener('click', async () => {
-            if (!deferredPrompt) return;
+    } else {
+        // For other devices (Android, etc.)
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
             
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            console.log(`User response to the install prompt: ${outcome}`);
-            deferredPrompt = null;
-            installButton.classList.remove('show');
+            if (installButton) {
+                installButton.classList.add('show');
+            }
         });
+
+        if (installButton) {
+            installButton.addEventListener('click', async () => {
+                if (isIOS) {
+                    showIOSInstallInstructions();
+                    return;
+                }
+
+                if (!deferredPrompt) return;
+                
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response to the install prompt: ${outcome}`);
+                deferredPrompt = null;
+                installButton.classList.remove('show');
+            });
+        }
     }
 
     // Hide install button if already installed
