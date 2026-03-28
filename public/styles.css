@@ -1,0 +1,250 @@
+:root {
+    --gold: #D4AF37;
+    --black: #1a1a1a;
+    --dark-gray: #333;
+    --light-gold: #F4E4BC;
+    --transition-speed: 0.3s;
+    --border-radius: 12px;
+    --shadow-sm: 0 4px 12px rgba(0,0,0,0.3);
+    --shadow-lg: 0 6px 16px rgba(0,0,0,0.4);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, var(--black) 0%, #2c2c2c 100%);
+    color: white;
+    min-height: 100vh;
+}
+
+/* Typography */
+h1, h2 {
+    color: var(--gold);
+    margin-bottom: 1.2rem;
+}
+
+h1 {
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    margin-bottom: 2rem;
+}
+
+h2 {
+    font-size: 1.3rem;
+}
+
+/* Service Cards */
+.service-card {
+    background: linear-gradient(145deg, #222 0%, var(--black) 100%);
+    padding: 1.2rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    border: 2px solid transparent;
+    text-align: center;
+    max-width: none;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.service-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.service-card.selected {
+    border-color: var(--gold);
+    background: linear-gradient(145deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.2) 100%);
+}
+
+.service-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+}
+
+.service-card .price {
+    color: var(--gold);
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+.service-card .duration {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    font-style: italic;
+}
+
+/* Form Elements */
+.form-control,
+.form-select.time-select,
+.book-btn {
+    height: 50px;
+    border-radius: 8px;
+}
+
+.form-select.time-select {
+    padding: 0 40px 0 1rem;
+}
+
+.book-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2rem;
+    padding: 0;
+    font-size: 1.1rem;
+}
+
+/* Calendar Styles */
+.calendar-wrapper {
+    background: var(--black);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+/* Install Button */
+.install-button {
+    display: none;
+    background: var(--gold);
+    color: var(--black);
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    box-shadow: var(--shadow-sm);
+    margin: 2rem auto 0;
+    transition: all var(--transition-speed) ease;
+}
+
+.install-button.show {
+    display: block;
+}
+
+.install-button:hover {
+    background: var(--light-gold);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Responsive Design - Single Media Query */
+@media (max-width: 768px) {
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    
+    .container { padding: 1rem; }
+    .booking-form { padding: 1rem; }
+    
+    .form-control, 
+    .form-select.time-select,
+    .book-btn,
+    .time-slots-wrapper,
+    .customer-info,
+    .mb-3,
+    .calendar-wrapper {
+        max-width: 100%;
+    }
+
+    .calendar-wrapper {
+        padding: 0.5rem;
+    }
+
+    .calendar-days,
+    .calendar-dates {
+        gap: 2px;
+        padding: 5px;
+    }
+
+    .calendar-days div,
+    .calendar-dates div {
+        padding: 8px 2px;
+        font-size: 0.9rem;
+    }
+
+    .calendar-header {
+        padding: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .calendar-header h3 {
+        font-size: 1rem;
+    }
+
+    .calendar-header button {
+        width: 30px;
+        height: 30px;
+        font-size: 1rem;
+        margin: 0 5px;
+    }
+
+    .install-button {
+        width: calc(100% - 2rem);
+        margin: 2rem 1rem;
+        padding: 15px;
+        font-size: 1rem;
+    }
+}
+
+/* Add styles for disabled dates */
+.calendar-dates div.disabled {
+    color: rgba(255, 255, 255, 0.3);
+    cursor: not-allowed;
+    position: relative;
+}
+
+.calendar-dates div.disabled:hover {
+    background-color: transparent;
+}
+
+/* Style for selected date display */
+#selected-date {
+    color: var(--gold);
+    text-align: center;
+    padding: 10px;
+    margin: 10px 0;
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    background: rgba(212, 175, 55, 0.1);
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#selected-date.visible {
+    opacity: 1;
+}
+
+/* Update customer info section */
+.customer-info {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.customer-info h2 {
+    text-align: center;
+    width: 100%;
+}
+
+.customer-info .mb-3 {
+    width: 100%;
+}
+
+.customer-info input {
+    width: 100%;
+}

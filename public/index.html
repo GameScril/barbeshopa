@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a1a1a">
+    <meta name="description" content="Book your appointment at Royal Barbershop">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Preload critical assets -->
+    <link rel="preload" href="/styles.css" as="style">
+    <link rel="preload" href="/script.js" as="script">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" as="style">
+    
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <title>Royal Barbershop</title>
+    
+    <!-- Fonts and Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+</head> 
+<body>
+    <div class="container py-4">
+        <h1 class="text-center mb-4">Royal Barbershop</h1>
+        
+        <div class="booking-form bg-dark p-4 rounded-3 shadow">
+            <!-- Services Section -->
+            <div class="services mb-4">
+                <h2 class="mb-3">Izaberite uslugu</h2>
+                <div class="row g-3 service-options">
+                    <div class="col-12 col-md-4">
+                        <div class="service-card h-100" data-service="brada" data-price="4">
+                            <h3>Brijanje</h3>
+                            <p class="price mb-0">4 KM</p>
+                            <p class="duration">Trajanje: 10 min</p>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="service-card h-100" data-service="kosa" data-price="8">
+                            <h3>Šisanje</h3>
+                            <p class="price mb-0">8 KM</p>
+                            <p class="duration">Trajanje: 20 min</p>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="service-card h-100" data-service="bradaikosa" data-price="12">
+                            <h3>Brijanje i Šisanje</h3>
+                            <p class="price mb-0">12 KM</p>
+                            <p class="duration">Trajanje: 30 min</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DateTime Picker Section -->
+            <div class="datetime-picker mb-4">
+                <h2 class="mb-3">Izaberite datum i vrijeme</h2>
+                <div class="calendar-wrapper bg-black p-4 rounded-3">
+                    <div id="calendar-container" class="calendar mb-3">
+                        <!-- Calendar content -->
+                    </div>
+                    <div id="selected-date" class="selected-date mb-3"></div>
+                    <div class="time-slots-wrapper">
+                        <select class="form-select time-select" id="time-slots">
+                            <option selected disabled>Izaberite vrijeme</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Info Section -->
+            <div class="customer-info mb-4">
+                <h2 class="mb-3">Vaše Informacije</h2>
+                <div class="mb-3">
+                    <input type="text" id="name" class="form-control" placeholder="Ime i Prezime" required>
+                </div>
+                <div class="mb-3">
+                    <input type="tel" id="phone" class="form-control" placeholder="Broj Mobitela" required>
+                </div>
+            </div>
+
+            <button id="book-appointment" class="btn btn-lg w-100 book-btn">Rezerviši</button>
+        </div>
+        
+        <!-- Move the install button after the booking form -->
+        <button id="install-button" class="install-button">
+            📱 Dodaj na Početni Ekran
+        </button>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="notification-modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border-gold">
+                <div class="modal-body text-center p-4">
+                    <h3 id="modal-title" class="text-gold mb-3"></h3>
+                    <p id="modal-message" class="text-white mb-4"></p>
+                    <button type="button" class="btn btn-gold modal-close" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Move scripts to end of body -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="/script.js" defer></script>
+</body>
+</html> 
