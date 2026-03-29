@@ -1,5 +1,5 @@
 [build]
-builder = "nixpacks"
+builder = "metal"
 buildCommand = "npm install"
 
 [deploy]
