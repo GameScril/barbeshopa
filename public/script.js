@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.classList.add('selected');
                 selectedService = card.dataset.service;
                 selectedPrice = card.dataset.price;
-                
+
                 if (selectedDate) {
                     fetchAvailableSlots(selectedDate);
                 }
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleInstallButton() {
         if (!elements.installButton) return;
-        
+
         if (isIOS) {
             elements.installButton.classList.add('show');
             elements.installButton.addEventListener('click', () => {
@@ -89,18 +89,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function createCalendar(date) {
         if (!elements.calendarContainer) return;
-        
+
         const year = date.getFullYear();
         const month = date.getMonth();
-        
+
         const firstDay = new Date(year, month, 1);
         const lastDay = new Date(year, month + 1, 0);
-        
-        let firstDayIndex = firstDay.getDay() || 7; 
-        firstDayIndex--; 
-        
+
+        let firstDayIndex = firstDay.getDay() || 7;
+        firstDayIndex--;
+
         const monthNames = ["Januar", "Februar", "Mart", "April", "Maj", "Juni", "Juli", "August", "Septembar", "Oktobar", "Novembar", "Decembar"];
-        
+
         let html = `
             <div class="calendar-header d-flex justify-content-between align-items-center mb-2">
                 <button class="btn btn-outline-light btn-sm" id="prev-month">&lt;</button>
@@ -113,38 +113,38 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div class="calendar-dates d-flex flex-wrap" style="text-align: center;">
         `;
-        
+
         for (let i = 0; i < firstDayIndex; i++) {
             html += `<div style="flex: 1 0 14%; padding: 10px;"></div>`;
         }
-        
+
         const today = new Date(new Date().setHours(0, 0, 0, 0));
-        
+
         for (let day = 1; day <= lastDay.getDate(); day++) {
             const dateObj = new Date(year, month, day);
             const isPast = dateObj < today;
             const isSunday = dateObj.getDay() === 0;
             const isDisabled = isPast || isSunday;
-            
+
             let classes = isDisabled ? "disabled" : "calendar-date-cell";
             let cursor = isDisabled ? "not-allowed" : "pointer";
             let color = isDisabled ? "rgba(255,255,255,0.3)" : "white";
-            
+
             let bg = 'transparent';
-            if (selectedDate && 
-                selectedDate.getDate() === day && 
-                selectedDate.getMonth() === month && 
+            if (selectedDate &&
+                selectedDate.getDate() === day &&
+                selectedDate.getMonth() === month &&
                 selectedDate.getFullYear() === year) {
                 bg = 'var(--gold)';
                 color = 'var(--black)';
             }
-            
+
             html += `<div class="${classes}" data-day="${day}" style="flex: 1 0 14%; padding: 10px; cursor: ${cursor}; color: ${color}; background: ${bg}; border-radius: 4px;">${day}</div>`;
         }
-        
+
         html += `</div>`;
         elements.calendarContainer.innerHTML = html;
-        
+
         document.getElementById('prev-month').addEventListener('click', () => {
             currentViewingDate.setMonth(currentViewingDate.getMonth() - 1);
             createCalendar(currentViewingDate);
@@ -153,9 +153,9 @@ document.addEventListener('DOMContentLoaded', () => {
             currentViewingDate.setMonth(currentViewingDate.getMonth() + 1);
             createCalendar(currentViewingDate);
         });
-        
+
         elements.calendarContainer.querySelectorAll('.calendar-date-cell').forEach(cell => {
-            cell.addEventListener('click', function() {
+            cell.addEventListener('click', function () {
                 const day = parseInt(this.getAttribute('data-day'), 10);
                 const clickedDate = new Date(year, month, day);
                 selectDate(clickedDate);
@@ -170,18 +170,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         selectedDate = dateObj;
-        
+
         const dateStr = dateObj.toLocaleDateString('bs-BA', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '.');
         elements.dateDisplay.textContent = `Odabrani datum: ${dateStr}`;
         elements.dateDisplay.classList.add('visible');
-        
+
         createCalendar(currentViewingDate);
         fetchAvailableSlots(dateObj);
     }
 
     async function fetchAvailableSlots(dateObj) {
         const offset = dateObj.getTimezoneOffset();
-        const targetDate = new Date(dateObj.getTime() - (offset*60*1000));
+        const targetDate = new Date(dateObj.getTime() - (offset * 60 * 1000));
         const dateString = targetDate.toISOString().split('T')[0];
 
         try {
@@ -202,9 +202,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function generateTimeSlots(bookedSlots) {
         const startHour = 9;
-        const endHour = 18; 
-        const duration = getDuration(selectedService); 
-        
+        const endHour = 18;
+        const duration = getDuration(selectedService);
+
         let optionsHtml = '<option selected disabled>Izaberite vrijeme</option>';
         let hasSlots = false;
 
@@ -260,13 +260,13 @@ document.addEventListener('DOMContentLoaded', () => {
     async function handleBooking() {
         if (!selectedService) return showModal('Upozorenje', 'Izaberite uslugu!');
         if (!selectedDate) return showModal('Upozorenje', 'Izaberite datum!');
-        if (elements.timeSlots.value === 'Izaberite vrijeme' || !elements.timeSlots.value) 
+        if (elements.timeSlots.value === 'Izaberite vrijeme' || !elements.timeSlots.value)
             return showModal('Upozorenje', 'Izaberite vrijeme!');
         if (!elements.nameInput.value.trim()) return showModal('Upozorenje', 'Unesite Ime i Prezime!');
         if (!elements.phoneInput.value.trim()) return showModal('Upozorenje', 'Unesite Broj Mobitela!');
 
         const offset = selectedDate.getTimezoneOffset();
-        const targetDate = new Date(selectedDate.getTime() - (offset*60*1000));
+        const targetDate = new Date(selectedDate.getTime() - (offset * 60 * 1000));
         const dateString = targetDate.toISOString().split('T')[0];
 
         const payload = {
