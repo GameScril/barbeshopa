@@ -103,19 +103,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let html = `
             <div class="calendar-header d-flex justify-content-between align-items-center mb-2">
-                <button class="btn btn-outline-light btn-sm" id="prev-month">&lt;</button>
-                <h3 class="mb-0 text-white" style="font-size: 1.1rem;">${monthNames[month]} ${year}</h3>
-                <button class="btn btn-outline-light btn-sm" id="next-month">&gt;</button>
+                <button class="btn btn-outline-light btn-sm" id="prev-month" aria-label="Previous month">&lt;</button>
+                <h3 class="mb-0">${monthNames[month]} ${year}</h3>
+                <button class="btn btn-outline-light btn-sm" id="next-month" aria-label="Next month">&gt;</button>
             </div>
-            <div class="calendar-days d-flex text-white mb-2 text-center" style="font-weight: bold; font-size: 0.9rem;">
-                <div style="flex:1">Pon</div><div style="flex:1">Uto</div><div style="flex:1">Sri</div>
-                <div style="flex:1">Čet</div><div style="flex:1">Pet</div><div style="flex:1">Sub</div><div style="flex:1">Ned</div>
+            <div class="calendar-days text-center mb-2">
+                <div class="calendar-day-label">Pon</div><div class="calendar-day-label">Uto</div><div class="calendar-day-label">Sri</div>
+                <div class="calendar-day-label">Čet</div><div class="calendar-day-label">Pet</div><div class="calendar-day-label">Sub</div><div class="calendar-day-label">Ned</div>
             </div>
-            <div class="calendar-dates d-flex flex-wrap" style="text-align: center;">
+            <div class="calendar-dates" style="text-align: center;">
         `;
 
         for (let i = 0; i < firstDayIndex; i++) {
-            html += `<div style="flex: 1 0 14%; padding: 10px;"></div>`;
+            html += `<div class="calendar-spacer"></div>`;
         }
 
         const today = new Date(new Date().setHours(0, 0, 0, 0));
@@ -125,21 +125,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const isPast = dateObj < today;
             const isSunday = dateObj.getDay() === 0;
             const isDisabled = isPast || isSunday;
-
-            let classes = isDisabled ? "disabled" : "calendar-date-cell";
-            let cursor = isDisabled ? "not-allowed" : "pointer";
-            let color = isDisabled ? "rgba(255,255,255,0.3)" : "white";
-
-            let bg = 'transparent';
-            if (selectedDate &&
+            const isSelected = selectedDate &&
                 selectedDate.getDate() === day &&
                 selectedDate.getMonth() === month &&
-                selectedDate.getFullYear() === year) {
-                bg = 'var(--gold)';
-                color = 'var(--black)';
-            }
+                selectedDate.getFullYear() === year;
+            const isToday = dateObj.getTime() === today.getTime();
 
-            html += `<div class="${classes}" data-day="${day}" style="flex: 1 0 14%; padding: 10px; cursor: ${cursor}; color: ${color}; background: ${bg}; border-radius: 4px;">${day}</div>`;
+            const classes = ["calendar-date-cell"];
+            if (isDisabled) classes.push("disabled");
+            if (isSelected) classes.push("selected");
+            if (isToday) classes.push("today");
+
+            html += `<div class="${classes.join(' ')}" data-day="${day}" ${isDisabled ? 'aria-disabled="true"' : ''}>${day}</div>`;
         }
 
         html += `</div>`;
@@ -154,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
             createCalendar(currentViewingDate);
         });
 
-        elements.calendarContainer.querySelectorAll('.calendar-date-cell').forEach(cell => {
+        elements.calendarContainer.querySelectorAll('.calendar-date-cell:not(.disabled)').forEach(cell => {
             cell.addEventListener('click', function () {
                 const day = parseInt(this.getAttribute('data-day'), 10);
                 const clickedDate = new Date(year, month, day);
