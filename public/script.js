@@ -123,8 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let day = 1; day <= lastDay.getDate(); day++) {
             const dateObj = new Date(year, month, day);
             const isPast = dateObj < today;
-            const isSunday = dateObj.getDay() === 0;
-            const isDisabled = isPast || isSunday;
+            const isDisabled = isPast;
             const isSelected = selectedDate &&
                 selectedDate.getDate() === day &&
                 selectedDate.getMonth() === month &&
@@ -198,8 +197,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function generateTimeSlots(bookedSlots) {
-        const startHour = 9;
-        const endHour = 18;
+        const startHour = 8;
+        const endHour = 16;
         const duration = getDuration(selectedService);
 
         let optionsHtml = '<option selected disabled>Izaberite vrijeme</option>';

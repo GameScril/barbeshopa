@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "local": "node local-server.js"
   },
   "dependencies": {
     "@types/node": "^22.10.1",

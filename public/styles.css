@@ -9,23 +9,23 @@
     --shadow-lg: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
-body {
+body.booking-page {
     margin: 0;
     padding: 0;
     font-family: 'Montserrat', sans-serif;
-    background: linear-gradient(135deg, var(--black) 0%, #2c2c2c 100%);
+    background: linear-gradient(135deg, #0e0e0e 0%, #171717 100%);
     color: white;
     min-height: 100vh;
 }
 
 /* Typography */
-h1,
-h2 {
+body.booking-page h1,
+body.booking-page h2 {
     color: var(--gold);
     margin-bottom: 1.2rem;
 }
 
-h1 {
+body.booking-page h1 {
     font-size: 2.2rem;
     text-transform: uppercase;
     letter-spacing: 2px;
@@ -33,8 +33,215 @@ h1 {
     margin-bottom: 2rem;
 }
 
-h2 {
+body.booking-page h2 {
     font-size: 1.3rem;
+}
+
+body.booking-page .booking-hero {
+    min-height: auto;
+    padding: 3.5rem 2.5rem 2.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+body.booking-page .booking-card {
+    max-width: 560px;
+    width: 100%;
+}
+
+body.booking-page .booking-center {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+body.booking-page .booking-hero .hero-left {
+    display: none;
+}
+
+body.booking-page .booking-hero .hero-right {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+body.booking-page .nav {
+    justify-content: flex-end;
+}
+
+body.booking-page .booking-form-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.2rem;
+}
+
+body.booking-page .booking-card .services,
+body.booking-page .booking-card .datetime-picker,
+body.booking-page .booking-card .customer-info {
+    width: 100%;
+}
+
+body.booking-page .service-card {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 1.5rem 1.2rem;
+    min-height: 100%;
+    box-shadow: none;
+}
+
+body.booking-page .service-card:hover {
+    border-color: #3a2e18;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
+}
+
+body.booking-page .service-card.selected {
+    background: #1a1610;
+    border-color: #c9a84c;
+}
+
+body.booking-page .service-card h3,
+body.booking-page .reservation-info-card h3,
+body.booking-page .hero-card-title,
+body.booking-page .section-title {
+    font-family: 'Playfair Display', serif;
+    letter-spacing: 0.3px;
+}
+
+body.booking-page .calendar-wrapper {
+    max-width: 560px;
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 12px;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+    padding: 1.25rem;
+}
+
+body.booking-page .calendar-header h3 {
+    color: #f0ece0;
+}
+
+body.booking-page .calendar-header .btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 6px;
+    border-color: #3a2e18;
+    color: #c9a84c;
+    background: #1a1610;
+}
+
+body.booking-page .calendar-header .btn:hover {
+    background: #2a2214;
+    color: #f0ece0;
+    border-color: #c9a84c;
+}
+
+body.booking-page .calendar-day-label {
+    color: #a89878;
+}
+
+body.booking-page .calendar-date-cell {
+    background: #0a0a0a;
+    border-color: #1e1e1e;
+    border-radius: 10px !important;
+    color: #f0ece0;
+    box-shadow: none;
+}
+
+body.booking-page .calendar-date-cell:not(.disabled):hover {
+    background: #1a1610 !important;
+    color: #c9a84c !important;
+    border-color: #3a2e18;
+}
+
+body.booking-page .calendar-date-cell.today {
+    border-color: rgba(201, 168, 76, 0.45);
+}
+
+body.booking-page .calendar-date-cell.selected {
+    background: #c9a84c !important;
+    color: #0e0e0e !important;
+    box-shadow: none;
+}
+
+body.booking-page .form-control,
+body.booking-page .form-select.time-select {
+    height: 50px;
+    border-radius: 8px;
+    background: #0a0a0a;
+    border: 1px solid #222;
+    color: #f0ece0;
+    box-shadow: none;
+}
+
+body.booking-page .form-control:focus,
+body.booking-page .form-select.time-select:focus {
+    background: #111;
+    border-color: #c9a84c;
+    box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.18);
+}
+
+body.booking-page .form-control::placeholder,
+body.booking-page #name::placeholder,
+body.booking-page #phone::placeholder {
+    color: rgba(240, 236, 224, 0.7);
+}
+
+body.booking-page #selected-date {
+    color: #c9a84c;
+    border-color: #3a2e18;
+    background: #1a1610;
+    border-radius: 8px;
+}
+
+body.booking-page .book-btn {
+    background: #c9a84c;
+    color: #0e0e0e;
+    border-radius: 8px;
+    box-shadow: none;
+}
+
+body.booking-page .book-btn:hover {
+    background: #b8963e;
+    box-shadow: none;
+}
+
+body.booking-page .reservation-info-card,
+body.booking-page .cta-banner {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 12px;
+}
+
+body.booking-page .cta-banner {
+    background: #c9a84c;
+    color: #0e0e0e;
+}
+
+body.booking-page .cta-banner p {
+    color: #5a4a20;
+}
+
+body.booking-page .btn-dark {
+    background: #0e0e0e;
+    color: #c9a84c;
+}
+
+body.booking-page .btn-dark:hover {
+    background: #1e1e1e;
+}
+
+body.booking-page .footer-links a {
+    color: #a89878;
+}
+
+body.booking-page .footer {
+    justify-content: center;
 }
 
 /* Service Cards */
