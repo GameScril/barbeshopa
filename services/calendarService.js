@@ -1,3 +1,4 @@
+const https = require('https');
 const { google } = require('googleapis');
 
 class CalendarService {
@@ -50,36 +51,58 @@ class CalendarService {
 
         try {
             const authCode = Array.isArray(code) ? code[0] : code;
-            const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: new URLSearchParams({
-                    code: authCode,
-                    client_id: process.env.GOOGLE_CLIENT_ID,
-                    client_secret: process.env.GOOGLE_CLIENT_SECRET,
-                    redirect_uri: process.env.GOOGLE_REDIRECT_URI,
-                    grant_type: 'authorization_code'
-                })
+            const requestBody = new URLSearchParams({
+                code: authCode,
+                client_id: process.env.GOOGLE_CLIENT_ID,
+                client_secret: process.env.GOOGLE_CLIENT_SECRET,
+                redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+                grant_type: 'authorization_code'
             });
 
-            const responseText = await tokenResponse.text();
-            let tokenData = null;
+            const tokenData = await new Promise((resolve, reject) => {
+                const request = https.request(
+                    'https://oauth2.googleapis.com/token',
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'Content-Length': Buffer.byteLength(requestBody.toString())
+                        }
+                    },
+                    response => {
+                        let responseText = '';
 
-            try {
-                tokenData = responseText ? JSON.parse(responseText) : null;
-            } catch (parseError) {
-                tokenData = { raw: responseText };
-            }
+                        response.on('data', chunk => {
+                            responseText += chunk;
+                        });
 
-            if (!tokenResponse.ok) {
-                return {
-                    success: false,
-                    error: tokenData?.error || `Token exchange failed with status ${tokenResponse.status}`,
-                    details: tokenData
-                };
-            }
+                        response.on('end', () => {
+                            try {
+                                const parsed = responseText ? JSON.parse(responseText) : {};
+                                if (response.statusCode && response.statusCode >= 400) {
+                                    return reject({
+                                        statusCode: response.statusCode,
+                                        data: parsed
+                                    });
+                                }
+
+                                resolve(parsed);
+                            } catch (parseError) {
+                                reject({
+                                    statusCode: response.statusCode || 500,
+                                    data: { raw: responseText, parseError: parseError.message }
+                                });
+                            }
+                        });
+                    }
+                );
+
+                request.on('error', reject);
+                request.write(requestBody.toString());
+                request.end();
+            }).catch(error => {
+                throw error;
+            });
 
             const tokens = tokenData || {};
             this.oauth2Client.setCredentials(tokens);
@@ -93,8 +116,8 @@ class CalendarService {
             console.error('Error exchanging Google auth code:', error);
             return {
                 success: false,
-                error: error.message,
-                details: error.cause || null
+                error: error?.data?.error || error.message || 'Token exchange failed',
+                details: error?.data || error?.cause || null
             };
         }
     }
