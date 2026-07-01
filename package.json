@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "local": "node local-server.js"
+    "local": "node local-server.js",
+    "google:auth-url": "node scripts/google-auth.js url",
+    "google:exchange": "node scripts/google-auth.js token"
   },
   "dependencies": {
     "@types/node": "^22.10.1",

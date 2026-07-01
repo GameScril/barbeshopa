@@ -1,5 +1,4 @@
 const https = require('https');
-const { google } = require('googleapis');
 
 class CalendarService {
     constructor() {
@@ -17,31 +16,21 @@ class CalendarService {
         }
 
         this.isConfigured = true;
-        this.oauth2Client = new google.auth.OAuth2(
-            process.env.GOOGLE_CLIENT_ID,
-            process.env.GOOGLE_CLIENT_SECRET,
-            process.env.GOOGLE_REDIRECT_URI
-        );
-
-        if (process.env.GOOGLE_REFRESH_TOKEN) {
-            this.oauth2Client.setCredentials({
-                refresh_token: process.env.GOOGLE_REFRESH_TOKEN
-            });
-        }
-
-        this.calendar = google.calendar({ 
-            version: 'v3', 
-            auth: this.oauth2Client 
-        });
+        this.refreshToken = process.env.GOOGLE_REFRESH_TOKEN || null;
     }
 
     getAuthUrl() {
         if (!this.isConfigured) return null;
-        return this.oauth2Client.generateAuthUrl({
+        const params = new URLSearchParams({
             access_type: 'offline',
-            scope: ['https://www.googleapis.com/auth/calendar'],
-            prompt: 'consent'
+            scope: 'https://www.googleapis.com/auth/calendar',
+            prompt: 'consent',
+            response_type: 'code',
+            client_id: process.env.GOOGLE_CLIENT_ID,
+            redirect_uri: process.env.GOOGLE_REDIRECT_URI
         });
+
+        return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
     }
 
     async exchangeCodeForToken(code) {
@@ -105,7 +94,9 @@ class CalendarService {
             });
 
             const tokens = tokenData || {};
-            this.oauth2Client.setCredentials(tokens);
+            if (tokens.refresh_token) {
+                this.refreshToken = tokens.refresh_token;
+            }
 
             return {
                 success: true,
@@ -120,6 +111,124 @@ class CalendarService {
                 details: error?.data || error?.cause || null
             };
         }
+    }
+
+    async refreshAccessToken() {
+        if (!this.isConfigured || !this.refreshToken) {
+            return { success: false, error: 'Google refresh token is not configured' };
+        }
+
+        const requestBody = new URLSearchParams({
+            client_id: process.env.GOOGLE_CLIENT_ID,
+            client_secret: process.env.GOOGLE_CLIENT_SECRET,
+            refresh_token: this.refreshToken,
+            grant_type: 'refresh_token'
+        }).toString();
+
+        try {
+            const tokenData = await new Promise((resolve, reject) => {
+                const request = https.request(
+                    'https://oauth2.googleapis.com/token',
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'Content-Length': Buffer.byteLength(requestBody)
+                        }
+                    },
+                    response => {
+                        let responseText = '';
+
+                        response.on('data', chunk => {
+                            responseText += chunk;
+                        });
+
+                        response.on('end', () => {
+                            try {
+                                const parsed = responseText ? JSON.parse(responseText) : {};
+                                if (response.statusCode && response.statusCode >= 400) {
+                                    return reject({
+                                        statusCode: response.statusCode,
+                                        data: parsed
+                                    });
+                                }
+
+                                resolve(parsed);
+                            } catch (parseError) {
+                                reject({
+                                    statusCode: response.statusCode || 500,
+                                    data: { raw: responseText, parseError: parseError.message }
+                                });
+                            }
+                        });
+                    }
+                );
+
+                request.on('error', reject);
+                request.write(requestBody);
+                request.end();
+            });
+
+            return {
+                success: true,
+                accessToken: tokenData.access_token || null,
+                expiresIn: tokenData.expires_in || null
+            };
+        } catch (error) {
+            return {
+                success: false,
+                error: error?.data?.error || error.message || 'Access token refresh failed',
+                details: error?.data || null
+            };
+        }
+    }
+
+    async createCalendarEvent(accessToken, event) {
+        const requestBody = JSON.stringify(event);
+
+        return new Promise((resolve, reject) => {
+            const request = https.request(
+                'https://www.googleapis.com/calendar/v3/calendars/primary/events',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json',
+                        'Content-Length': Buffer.byteLength(requestBody)
+                    }
+                },
+                response => {
+                    let responseText = '';
+
+                    response.on('data', chunk => {
+                        responseText += chunk;
+                    });
+
+                    response.on('end', () => {
+                        try {
+                            const parsed = responseText ? JSON.parse(responseText) : {};
+                            if (response.statusCode && response.statusCode >= 400) {
+                                return reject({
+                                    statusCode: response.statusCode,
+                                    data: parsed
+                                });
+                            }
+
+                            resolve(parsed);
+                        } catch (parseError) {
+                            reject({
+                                statusCode: response.statusCode || 500,
+                                data: { raw: responseText, parseError: parseError.message }
+                            });
+                        }
+                    });
+                }
+            );
+
+            request.on('error', reject);
+            request.write(requestBody);
+            request.end();
+        });
     }
 
     async addEvent({ startDateTime, duration, summary, description, location }) {
@@ -165,24 +274,30 @@ class CalendarService {
                 duration
             });
 
-            // Actually create the event in Google Calendar
-            const response = await this.calendar.events.insert({
-                calendarId: 'primary', // Use the primary calendar
-                requestBody: event,
-            });
+            const tokenResult = await this.refreshAccessToken();
+            if (!tokenResult.success || !tokenResult.accessToken) {
+                return {
+                    success: false,
+                    error: tokenResult.error || 'Unable to refresh Google access token',
+                    details: tokenResult.details || null
+                };
+            }
 
-            console.log('Calendar event created:', response.data);
+            const response = await this.createCalendarEvent(tokenResult.accessToken, event);
+
+            console.log('Calendar event created:', response);
 
             return {
                 success: true,
-                eventId: response.data.id,
-                htmlLink: response.data.htmlLink // URL to view the event
+                eventId: response.id,
+                htmlLink: response.htmlLink // URL to view the event
             };
         } catch (error) {
             console.error('Error creating calendar event:', error);
             return {
                 success: false,
-                error: error.message
+                error: error?.data?.error || error.message || 'Calendar event creation failed',
+                details: error?.data || null
             };
         }
     }
