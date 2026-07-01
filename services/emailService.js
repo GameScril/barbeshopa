@@ -8,10 +8,17 @@ class EmailService {
 
     createTransporter() {
         if (process.env.SMTP_HOST) {
+            const smtpPort = Number(process.env.SMTP_PORT || (process.env.SMTP_HOST === 'smtp.gmail.com' ? 587 : 587));
+            const secure = process.env.SMTP_SECURE === 'true' || smtpPort === 465;
+
             return nodemailer.createTransport({
                 host: process.env.SMTP_HOST,
-                port: Number(process.env.SMTP_PORT || 587),
-                secure: process.env.SMTP_SECURE === 'true' || process.env.SMTP_PORT === '465',
+                port: smtpPort,
+                secure,
+                requireTLS: !secure,
+                connectionTimeout: 15000,
+                greetingTimeout: 15000,
+                socketTimeout: 30000,
                 auth: process.env.SMTP_USER && process.env.SMTP_PASS ? {
                     user: process.env.SMTP_USER,
                     pass: process.env.SMTP_PASS
@@ -22,6 +29,12 @@ class EmailService {
         if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
             return nodemailer.createTransport({
                 service: 'gmail',
+                port: 587,
+                secure: false,
+                requireTLS: true,
+                connectionTimeout: 15000,
+                greetingTimeout: 15000,
+                socketTimeout: 30000,
                 auth: {
                     user: process.env.EMAIL_USER,
                     pass: process.env.EMAIL_PASS

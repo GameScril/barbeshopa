@@ -394,53 +394,57 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
 
         await connection.commit();
 
-        let calendarResult = { success: false, error: 'Calendar not attempted' };
-
-        try {
-            const serviceName = req.serviceLabel;
-
-            calendarResult = await calendarService.addEvent({
-                startDateTime: appointmentDate,
-                duration: req.serviceDuration,
-                summary: `${serviceName} - ${req.body.name}`,
-                description: `
-                    Klijent: ${req.body.name}
-                    Telefon: ${req.body.phone}
-                    Usluga: ${serviceName}
-                    Cijena: ${req.servicePrice} KM
-                `,
-                location: process.env.SHOP_ADDRESS,
-                timeZone: 'Europe/Belgrade'
-            });
-
-            if (!calendarResult.success) {
-                console.error('Failed to create Google Calendar event:', calendarResult.error);
-            }
-        } catch (calendarError) {
-            console.error('Google Calendar error:', calendarError);
-        }
-
-        try {
-            const emailResult = await emailService.sendOwnerNotification({
-                ...req.body,
-                id: result.insertId,
-                duration: req.serviceDuration,
-                calendarLink: calendarResult.htmlLink
-            });
-
-            if (!emailResult.success) {
-                console.error('Failed to send email notification:', emailResult.error);
-            }
-        } catch (emailError) {
-            console.error('Email/Calendar error:', emailError);
-        }
-
         res.json({
             success: true,
             appointment: {
                 ...req.body,
                 id: result.insertId
             }
+        });
+
+        void (async () => {
+            let calendarResult = { success: false, error: 'Calendar not attempted' };
+
+            try {
+                const serviceName = req.serviceLabel;
+
+                calendarResult = await calendarService.addEvent({
+                    startDateTime: appointmentDate,
+                    duration: req.serviceDuration,
+                    summary: `${serviceName} - ${req.body.name}`,
+                    description: `
+                    Klijent: ${req.body.name}
+                    Telefon: ${req.body.phone}
+                    Usluga: ${serviceName}
+                    Cijena: ${req.servicePrice} KM
+                `,
+                    location: process.env.SHOP_ADDRESS,
+                    timeZone: 'Europe/Belgrade'
+                });
+
+                if (!calendarResult.success) {
+                    console.error('Failed to create Google Calendar event:', calendarResult.error);
+                }
+            } catch (calendarError) {
+                console.error('Google Calendar error:', calendarError);
+            }
+
+            try {
+                const emailResult = await emailService.sendOwnerNotification({
+                    ...req.body,
+                    id: result.insertId,
+                    duration: req.serviceDuration,
+                    calendarLink: calendarResult.htmlLink
+                });
+
+                if (!emailResult.success) {
+                    console.error('Failed to send email notification:', emailResult.error);
+                }
+            } catch (emailError) {
+                console.error('Email/Calendar error:', emailError);
+            }
+        })().catch(notificationError => {
+            console.error('Post-booking notification error:', notificationError);
         });
 
     } catch (error) {
