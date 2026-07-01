@@ -2,10 +2,60 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
+const { formatDateKey, isWorkingDay } = require('./services/availabilityService');
 
 const app = express();
 const publicDir = path.join(__dirname, 'public');
 const port = process.env.PORT || 3000;
+
+const TIME_ZONE = 'Europe/Belgrade';
+const WORK_START_MINUTES = 8 * 60;
+const WORK_END_MINUTES = 16 * 60;
+const SLOT_STEP_MINUTES = 10;
+const NEXT_SLOT_DURATION = 30;
+
+function formatDisplayDate(date) {
+    const displayDate = new Intl.DateTimeFormat('bs-BA', {
+        timeZone: TIME_ZONE,
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long'
+    }).format(date);
+
+    return displayDate.charAt(0).toUpperCase() + displayDate.slice(1);
+}
+
+function formatDisplayTime(minutes) {
+    const hours = Math.floor(minutes / 60).toString().padStart(2, '0');
+    const mins = (minutes % 60).toString().padStart(2, '0');
+    return `${hours}:${mins}`;
+}
+
+function findNextLocalSlot(fromDate = new Date()) {
+    const now = new Date(fromDate);
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    for (let dayOffset = 0; dayOffset <= 30; dayOffset += 1) {
+        const candidateDate = new Date(now);
+        candidateDate.setDate(now.getDate() + dayOffset);
+        if (!isWorkingDay(candidateDate)) {
+            continue;
+        }
+        const earliestMinutes = dayOffset === 0 ? Math.max(WORK_START_MINUTES, currentMinutes) : WORK_START_MINUTES;
+        let slotMinutes = Math.ceil(earliestMinutes / SLOT_STEP_MINUTES) * SLOT_STEP_MINUTES;
+
+        while (slotMinutes + NEXT_SLOT_DURATION <= WORK_END_MINUTES) {
+            return {
+                date: formatDateKey(candidateDate),
+                time: formatDisplayTime(slotMinutes),
+                displayDate: formatDisplayDate(candidateDate),
+                isToday: dayOffset === 0
+            };
+        }
+    }
+
+    return null;
+}
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -62,6 +112,13 @@ app.get('/api/appointments/slots/:date', (req, res) => {
     res.json({
         success: true,
         bookedSlots: []
+    });
+});
+
+app.get('/api/appointments/next-slot', (req, res) => {
+    res.json({
+        success: true,
+        nextSlot: findNextLocalSlot()
     });
 });
 

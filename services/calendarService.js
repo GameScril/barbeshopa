@@ -43,6 +43,29 @@ class CalendarService {
         });
     }
 
+    async exchangeCodeForToken(code) {
+        if (!this.isConfigured) {
+            return { success: false, error: 'Calendar integration not configured' };
+        }
+
+        try {
+            const { tokens } = await this.oauth2Client.getToken(code);
+            this.oauth2Client.setCredentials(tokens);
+
+            return {
+                success: true,
+                refreshToken: tokens.refresh_token || null,
+                accessToken: tokens.access_token || null
+            };
+        } catch (error) {
+            console.error('Error exchanging Google auth code:', error);
+            return {
+                success: false,
+                error: error.message
+            };
+        }
+    }
+
     async addEvent({ startDateTime, duration, summary, description, location }) {
         if (!this.isConfigured) {
             return { success: false, error: 'Calendar integration not configured' };

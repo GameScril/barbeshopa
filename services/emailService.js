@@ -1,19 +1,46 @@
 const nodemailer = require('nodemailer');
-const { calendarService } = require('./calendarService');
 
 class EmailService {
     constructor() {
-        this.transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        });
+        this.transporter = this.createTransporter();
+        this.fromAddress = process.env.EMAIL_FROM || process.env.EMAIL_USER;
+    }
+
+    createTransporter() {
+        if (process.env.SMTP_HOST) {
+            return nodemailer.createTransport({
+                host: process.env.SMTP_HOST,
+                port: Number(process.env.SMTP_PORT || 587),
+                secure: process.env.SMTP_SECURE === 'true' || process.env.SMTP_PORT === '465',
+                auth: process.env.SMTP_USER && process.env.SMTP_PASS ? {
+                    user: process.env.SMTP_USER,
+                    pass: process.env.SMTP_PASS
+                } : undefined
+            });
+        }
+
+        if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+            return nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASS
+                }
+            });
+        }
+
+        return null;
     }
 
     async sendOwnerNotification(appointment) {
         try {
+            if (!this.transporter) {
+                return {
+                    success: false,
+                    error: 'Email transport is not configured'
+                };
+            }
+
             // Format the date and time for calendar
             const [year, month, day] = appointment.date.split('-');
             const [hours, minutes] = appointment.time.split(':');
@@ -43,29 +70,12 @@ class EmailService {
             
             // Get service name
             const serviceName = this.getServiceName(appointment.service);
-            
-            // Create calendar event
-            const calendarResult = await calendarService.addEvent({
-                startDateTime: appointmentDate,
-                duration: appointment.duration,
-                summary: `${serviceName} - ${appointment.name}`,
-                description: `
-                    Klijent: ${appointment.name}
-                    Telefon: ${appointment.phone}
-                    Usluga: ${serviceName}
-                    Cijena: ${appointment.price} KM
-                `,
-                location: process.env.SHOP_ADDRESS,
-                timeZone: timeZone
-            });
 
-            if (!calendarResult.success) {
-                console.warn('Calendar event creation skipped or failed:', calendarResult.error || 'Unknown error');
-            }
+            const calendarLink = appointment.calendarLink || appointment.htmlLink || null;
 
             // Send email to shop owner only
             const emailContent = {
-                from: process.env.EMAIL_USER,
+                from: this.fromAddress,
                 to: process.env.SHOP_EMAIL,
                 subject: `📅 Nova Rezervacija: Royal Barbershop - ${serviceName}`,
                 html: `
@@ -87,6 +97,11 @@ class EmailService {
                                 <p style="margin: 10px 0; color: #ffffff;">
                                     <strong style="color: #D4AF37;">Lokacija:</strong> ${process.env.SHOP_ADDRESS}
                                 </p>
+                                ${calendarLink ? `
+                                <p style="margin: 10px 0; color: #ffffff;">
+                                    <strong style="color: #D4AF37;">Google Calendar:</strong> <a href="${calendarLink}" style="color: #D4AF37;">Otvori događaj</a>
+                                </p>
+                                ` : ''}
                             </div>
 
                             <div style="background-color: #2c2c2c; border-radius: 10px; padding: 25px; border-left: 4px solid #D4AF37;">
@@ -108,8 +123,7 @@ class EmailService {
             await this.transporter.sendMail(emailContent);
 
             return {
-                success: true,
-                calendarEventId: calendarResult.eventId
+                success: true
             };
         } catch (error) {
             console.error('Error sending notification:', error);
@@ -122,18 +136,28 @@ class EmailService {
 
     getServiceEmoji(service) {
         const emojis = {
-            'brada': '🪒',
-            'kosa': '✂️',
-            'bradaikosa': '💈'
+            pranje: '🫧',
+            depilacija: '✨',
+            ciscenjeusiju: '👂',
+            sisanje: '✂️',
+            brada: '🪒',
+            sisanjeibrada: '💈',
+            kosa: '✂️',
+            bradaikosa: '💈'
         };
         return emojis[service] || '✨';
     }
 
     getServiceName(service) {
         const services = {
-            'brada': 'Brijanje',
-            'kosa': 'Šišanje',
-            'bradaikosa': 'Brijanje i Šišanje'
+            pranje: 'Pranje',
+            depilacija: 'Depilacija',
+            ciscenjeusiju: 'Čišćenje ušiju',
+            sisanje: 'Šišanje',
+            brada: 'Brada',
+            sisanjeibrada: 'Šišanje i brada',
+            kosa: 'Šišanje',
+            bradaikosa: 'Šišanje i brada'
         };
         return services[service] || service;
     }

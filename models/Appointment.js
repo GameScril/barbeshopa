@@ -4,7 +4,7 @@ const appointmentSchema = new mongoose.Schema({
     service: {
         type: String,
         required: true,
-        enum: ['brada', 'kosa', 'bradaikosa']
+        enum: ['pranje', 'depilacija', 'ciscenjeusiju', 'sisanje', 'brada', 'sisanjeibrada', 'kosa', 'bradaikosa']
     },
     price: {
         type: Number,

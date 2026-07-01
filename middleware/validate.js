@@ -1,9 +1,14 @@
 const { pool } = require('../db');
 
 const serviceDurations = {
-    'brada': 10,    // Brijanje - 10 minutes
-    'kosa': 20,     // Šišanje - 20 minutes
-    'bradaikosa': 30 // Both - 30 minutes
+    pranje: 10,
+    depilacija: 10,
+    ciscenjeusiju: 10,
+    sisanje: 20,
+    brada: 10,
+    sisanjeibrada: 30,
+    kosa: 20,
+    bradaikosa: 30
 };
 
 const validateAppointment = async (req, res, next) => {
@@ -19,11 +24,16 @@ const validateAppointment = async (req, res, next) => {
     
     // Get service duration
     const durations = {
-        'brada': 10,
-        'kosa': 20,
-        'bradaikosa': 30
+        pranje: 10,
+        depilacija: 10,
+        ciscenjeusiju: 10,
+        sisanje: 20,
+        brada: 10,
+        sisanjeibrada: 30,
+        kosa: 20,
+        bradaikosa: 30
     };
-    const duration = durations[service] || 20;
+    const duration = durations[service] || 10;
     
     // Convert requested time to minutes for comparison
     const [hours, minutes] = time.split(':').map(Number);

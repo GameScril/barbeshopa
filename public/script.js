@@ -12,18 +12,43 @@ document.addEventListener('DOMContentLoaded', () => {
         timeSlotsWrapper: document.querySelector('.time-slots-wrapper'),
         installButton: document.getElementById('install-button'),
         nameInput: document.getElementById('name'),
-        phoneInput: document.getElementById('phone')
+        phoneInput: document.getElementById('phone'),
+        homeNextSlotBadge: document.getElementById('next-slot-badge'),
+        homeNextSlotDate: document.getElementById('next-slot-date'),
+        homeNextSlotTime: document.getElementById('next-slot-time'),
+        homeNextSlotStatus: document.getElementById('next-slot-status')
     };
 
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const dateFormatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Belgrade' });
+    const API_URL = '/api';
+    const WORK_DAYS = new Set([1, 2, 3, 4, 5, 6]);
+
     let selectedDate = null;
     let selectedService = null;
     let selectedPrice = null;
     let currentViewingDate = new Date();
+    let reservationRefreshTimer = null;
+    let homeRefreshTimer = null;
 
-    const API_URL = '/api';
+    function getDateString(dateObj) {
+        return dateFormatter.format(dateObj);
+    }
+
+    function isWorkingDay(dateObj) {
+        const day = dateObj.getDay();
+        return WORK_DAYS.has(day === 0 ? 7 : day);
+    }
 
     function showModal(title, message, isHTML = false) {
+        if (!elements.modal || !window.bootstrap || !window.bootstrap.Modal) {
+            const plainMessage = typeof message === 'string'
+                ? message.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '')
+                : String(message);
+            window.alert(plainMessage);
+            return;
+        }
+
         const modal = new bootstrap.Modal(elements.modal);
         elements.modalTitle.textContent = title;
         if (isHTML) {
@@ -35,6 +60,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function init() {
+        if (elements.calendarContainer && elements.timeSlots && elements.bookButton) {
+            initReservationPage();
+        }
+
+        if (elements.homeNextSlotBadge && elements.homeNextSlotDate && elements.homeNextSlotTime) {
+            initHomePage();
+        }
+    }
+
+    function initReservationPage() {
         createCalendar(currentViewingDate);
         handleInstallButton();
 
@@ -52,6 +87,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         elements.bookButton.addEventListener('click', handleBooking);
+
+        reservationRefreshTimer = window.setInterval(() => {
+            if (selectedDate) {
+                fetchAvailableSlots(selectedDate);
+            }
+        }, 60000);
+    }
+
+    function initHomePage() {
+        updateHomeNextSlot();
+        homeRefreshTimer = window.setInterval(updateHomeNextSlot, 60000);
     }
 
     function handleInstallButton() {
@@ -74,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 deferredPrompt = e;
                 elements.installButton.classList.add('show');
             });
+
             elements.installButton.addEventListener('click', async () => {
                 if (deferredPrompt) {
                     deferredPrompt.prompt();
@@ -84,6 +131,43 @@ document.addEventListener('DOMContentLoaded', () => {
                     deferredPrompt = null;
                 }
             });
+        }
+    }
+
+    async function updateHomeNextSlot() {
+        if (!elements.homeNextSlotBadge || !elements.homeNextSlotDate || !elements.homeNextSlotTime) return;
+
+        try {
+            elements.homeNextSlotBadge.textContent = 'Učitavanje...';
+            elements.homeNextSlotDate.textContent = 'Provjera termina...';
+            elements.homeNextSlotTime.textContent = '';
+
+            if (elements.homeNextSlotStatus) {
+                elements.homeNextSlotStatus.textContent = 'Slobodan';
+            }
+
+            const response = await fetch(`${API_URL}/appointments/next-slot`);
+            const data = await response.json();
+
+            if (!data.success || !data.nextSlot) {
+                throw new Error(data.error || 'Nema dostupnih termina');
+            }
+
+            elements.homeNextSlotBadge.textContent = data.nextSlot.isToday ? 'Danas' : data.nextSlot.displayDate.split(',')[0];
+            elements.homeNextSlotDate.textContent = data.nextSlot.displayDate;
+            elements.homeNextSlotTime.textContent = data.nextSlot.time;
+
+            if (elements.homeNextSlotStatus) {
+                elements.homeNextSlotStatus.textContent = data.nextSlot.isToday ? 'Danas' : 'Slobodan';
+            }
+        } catch (error) {
+            elements.homeNextSlotBadge.textContent = 'Nedostupno';
+            elements.homeNextSlotDate.textContent = 'Trenutno nema podataka';
+            elements.homeNextSlotTime.textContent = '';
+
+            if (elements.homeNextSlotStatus) {
+                elements.homeNextSlotStatus.textContent = 'Provjeri kasnije';
+            }
         }
     }
 
@@ -99,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let firstDayIndex = firstDay.getDay() || 7;
         firstDayIndex--;
 
-        const monthNames = ["Januar", "Februar", "Mart", "April", "Maj", "Juni", "Juli", "August", "Septembar", "Oktobar", "Novembar", "Decembar"];
+        const monthNames = ['Januar', 'Februar', 'Mart', 'April', 'Maj', 'Juni', 'Juli', 'August', 'Septembar', 'Oktobar', 'Novembar', 'Decembar'];
 
         let html = `
             <div class="calendar-header d-flex justify-content-between align-items-center mb-2">
@@ -123,17 +207,17 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let day = 1; day <= lastDay.getDate(); day++) {
             const dateObj = new Date(year, month, day);
             const isPast = dateObj < today;
-            const isDisabled = isPast;
+            const isDisabled = isPast || !isWorkingDay(dateObj);
             const isSelected = selectedDate &&
                 selectedDate.getDate() === day &&
                 selectedDate.getMonth() === month &&
                 selectedDate.getFullYear() === year;
             const isToday = dateObj.getTime() === today.getTime();
 
-            const classes = ["calendar-date-cell"];
-            if (isDisabled) classes.push("disabled");
-            if (isSelected) classes.push("selected");
-            if (isToday) classes.push("today");
+            const classes = ['calendar-date-cell'];
+            if (isDisabled) classes.push('disabled');
+            if (isSelected) classes.push('selected');
+            if (isToday) classes.push('today');
 
             html += `<div class="${classes.join(' ')}" data-day="${day}" ${isDisabled ? 'aria-disabled="true"' : ''}>${day}</div>`;
         }
@@ -176,9 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function fetchAvailableSlots(dateObj) {
-        const offset = dateObj.getTimezoneOffset();
-        const targetDate = new Date(dateObj.getTime() - (offset * 60 * 1000));
-        const dateString = targetDate.toISOString().split('T')[0];
+        const dateString = getDateString(dateObj);
 
         try {
             elements.timeSlots.innerHTML = '<option selected disabled>Učitavanje...</option>';
@@ -205,7 +287,12 @@ document.addEventListener('DOMContentLoaded', () => {
         let hasSlots = false;
 
         const now = new Date();
-        const isToday = selectedDate.toDateString() === now.toDateString();
+        const isToday = selectedDate && selectedDate.toDateString() === now.toDateString();
+
+        if (selectedDate && !isWorkingDay(selectedDate)) {
+            elements.timeSlots.innerHTML = '<option selected disabled>Rezervacije nisu dostupne nedjeljom</option>';
+            return;
+        }
 
         for (let h = startHour; h < endHour; h++) {
             for (let m = 0; m < 60; m += 10) {
@@ -224,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const hasConflict = bookedSlots.some(booking => {
                     const [bh, bm] = booking.time.split(':').map(Number);
                     const bookingStart = bh * 60 + bm;
-                    const bookingEnd = bookingStart + parseInt(booking.duration);
+                    const bookingEnd = bookingStart + parseInt(booking.duration, 10);
 
                     return (
                         (slotMinutes >= bookingStart && slotMinutes < bookingEnd) ||
@@ -249,26 +336,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getDuration(service) {
-        const durations = { 'brada': 10, 'kosa': 20, 'bradaikosa': 30 };
-        return durations[service] || 20;
+        const durations = {
+            pranje: 10,
+            depilacija: 10,
+            ciscenjeusiju: 10,
+            sisanje: 20,
+            brada: 10,
+            sisanjeibrada: 30,
+            kosa: 20,
+            bradaikosa: 30
+        };
+        return durations[service] || 10;
     }
 
     async function handleBooking() {
         if (!selectedService) return showModal('Upozorenje', 'Izaberite uslugu!');
         if (!selectedDate) return showModal('Upozorenje', 'Izaberite datum!');
-        if (elements.timeSlots.value === 'Izaberite vrijeme' || !elements.timeSlots.value)
+        if (elements.timeSlots.value === 'Izaberite vrijeme' || !elements.timeSlots.value) {
             return showModal('Upozorenje', 'Izaberite vrijeme!');
+        }
         if (!elements.nameInput.value.trim()) return showModal('Upozorenje', 'Unesite Ime i Prezime!');
         if (!elements.phoneInput.value.trim()) return showModal('Upozorenje', 'Unesite Broj Mobitela!');
 
-        const offset = selectedDate.getTimezoneOffset();
-        const targetDate = new Date(selectedDate.getTime() - (offset * 60 * 1000));
-        const dateString = targetDate.toISOString().split('T')[0];
-
         const payload = {
             service: selectedService,
-            price: parseInt(selectedPrice),
-            date: dateString,
+            price: parseInt(selectedPrice, 10),
+            date: getDateString(selectedDate),
             time: elements.timeSlots.value,
             name: elements.nameInput.value.trim(),
             phone: elements.phoneInput.value.trim()
@@ -297,6 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 selectedDate = null;
                 elements.dateDisplay.classList.remove('visible');
                 createCalendar(currentViewingDate);
+                updateHomeNextSlot();
             } else {
                 showModal('Greška', data.error || 'Došlo je do greške prilikom rezervacije.');
                 fetchAvailableSlots(selectedDate);

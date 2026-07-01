@@ -6,10 +6,103 @@ const { pool, initializeDatabase, testConnection } = require('./db');
 const { validateAppointment } = require('./middleware/validate');
 const { emailService } = require('./services/emailService');
 const { calendarService } = require('./services/calendarService');
+const { findNextAvailableSlot, formatDateKey, isWorkingDay } = require('./services/availabilityService');
 
 const app = express();
 
+const TIME_ZONE = 'Europe/Belgrade';
+const WORK_START_MINUTES = 8 * 60;
+const WORK_END_MINUTES = 16 * 60;
+const SLOT_STEP_MINUTES = 10;
+const NEXT_SLOT_DURATION = 30;
+const NEXT_SLOT_HORIZON_DAYS = 30;
+
+function getServiceDisplayName(service) {
+    const serviceNames = {
+        pranje: 'Pranje',
+        depilacija: 'Depilacija',
+        ciscenjeusiju: 'Čišćenje ušiju',
+        sisanje: 'Šišanje',
+        brada: 'Brada',
+        sisanjeibrada: 'Šišanje i brada',
+        kosa: 'Šišanje',
+        bradaikosa: 'Šišanje i brada'
+    };
+
+    return serviceNames[service] || service;
+}
+
 process.env.TZ = 'Europe/Belgrade';
+
+function formatDisplayDate(date) {
+    const displayDate = new Intl.DateTimeFormat('bs-BA', {
+        timeZone: TIME_ZONE,
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long'
+    }).format(date);
+
+    return displayDate.charAt(0).toUpperCase() + displayDate.slice(1);
+}
+
+function formatDisplayTime(minutes) {
+    const hours = Math.floor(minutes / 60).toString().padStart(2, '0');
+    const mins = (minutes % 60).toString().padStart(2, '0');
+    return `${hours}:${mins}`;
+}
+
+function groupBookedSlots(rows) {
+    return rows.reduce((accumulator, row) => {
+        if (!accumulator.has(row.date)) {
+            accumulator.set(row.date, []);
+        }
+
+        const [hour, minute] = row.time.split(':').map(Number);
+        accumulator.get(row.date).push({
+            startMinutes: hour * 60 + minute,
+            endMinutes: hour * 60 + minute + Number(row.duration || 0)
+        });
+
+        return accumulator;
+    }, new Map());
+}
+
+function findNextSlotFromGroupedBookings(bookingsByDate, fromDate = new Date()) {
+    const now = new Date(fromDate);
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    for (let dayOffset = 0; dayOffset <= NEXT_SLOT_HORIZON_DAYS; dayOffset += 1) {
+        const candidateDate = new Date(now);
+        candidateDate.setDate(now.getDate() + dayOffset);
+
+        if (!isWorkingDay(candidateDate)) {
+            continue;
+        }
+
+        const dateKey = formatDateKey(candidateDate);
+        const bookedSlots = bookingsByDate.get(dateKey) || [];
+        const earliestMinutes = dayOffset === 0 ? Math.max(WORK_START_MINUTES, currentMinutes) : WORK_START_MINUTES;
+        let slotMinutes = Math.ceil(earliestMinutes / SLOT_STEP_MINUTES) * SLOT_STEP_MINUTES;
+
+        while (slotMinutes + NEXT_SLOT_DURATION <= WORK_END_MINUTES) {
+            const slotEnd = slotMinutes + NEXT_SLOT_DURATION;
+            const hasConflict = bookedSlots.some(booking => slotMinutes < booking.endMinutes && slotEnd > booking.startMinutes);
+
+            if (!hasConflict) {
+                return {
+                    date: dateKey,
+                    time: formatDisplayTime(slotMinutes),
+                    displayDate: formatDisplayDate(candidateDate),
+                    isToday: dayOffset === 0
+                };
+            }
+
+            slotMinutes += SLOT_STEP_MINUTES;
+        }
+    }
+
+    return null;
+}
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -20,12 +113,59 @@ initializeDatabase().catch(console.error);
 
 // Debug routes
 app.get('/api/debug-env', (req, res) => {
+    const emailConfigured = !!process.env.SMTP_HOST
+        ? !!process.env.SMTP_USER && !!process.env.SMTP_PASS
+        : !!process.env.EMAIL_USER && !!process.env.EMAIL_PASS;
+
+    const calendarConfigured = !!process.env.GOOGLE_CLIENT_ID &&
+        !!process.env.GOOGLE_CLIENT_SECRET &&
+        !!process.env.GOOGLE_REDIRECT_URI &&
+        !!process.env.GOOGLE_REFRESH_TOKEN;
+
     res.json({
-        email_configured: !!process.env.EMAIL_USER && !!process.env.SHOP_EMAIL,
-        calendar_configured: !!process.env.GOOGLE_CLIENT_ID && 
-                           !!process.env.GOOGLE_CLIENT_SECRET && 
-                           !!process.env.GOOGLE_REFRESH_TOKEN,
+        email_configured: emailConfigured && !!process.env.SHOP_EMAIL,
+        calendar_configured: calendarConfigured,
         shop_info_configured: !!process.env.SHOP_ADDRESS && !!process.env.SHOP_NAME
+    });
+});
+
+app.get('/api/google/auth-url', (req, res) => {
+    const authUrl = calendarService.getAuthUrl();
+
+    if (!authUrl) {
+        return res.status(400).json({
+            success: false,
+            error: 'Google Calendar integration is not configured'
+        });
+    }
+
+    res.json({
+        success: true,
+        authUrl
+    });
+});
+
+app.get('/api/google/oauth2callback', async (req, res) => {
+    const { code } = req.query;
+
+    if (!code) {
+        return res.status(400).json({
+            success: false,
+            error: 'Missing authorization code'
+        });
+    }
+
+    const tokenResult = await calendarService.exchangeCodeForToken(code);
+
+    if (!tokenResult.success) {
+        return res.status(500).json(tokenResult);
+    }
+
+    res.json({
+        success: true,
+        message: 'Authorization successful. Copy the refresh token into Railway or your .env file.',
+        refreshToken: tokenResult.refreshToken,
+        accessToken: tokenResult.accessToken
     });
 });
 
@@ -185,6 +325,37 @@ app.get('/api/appointments/slots/:date', async (req, res) => {
     }
 });
 
+app.get('/api/appointments/next-slot', async (req, res) => {
+    let connection;
+
+    try {
+        connection = await pool.getConnection();
+        const startDate = formatDateKey(new Date());
+        const endDate = formatDateKey(new Date(Date.now() + NEXT_SLOT_HORIZON_DAYS * 24 * 60 * 60 * 1000));
+
+        const [rows] = await connection.execute(
+            'SELECT DATE_FORMAT(date, "%Y-%m-%d") as date, TIME_FORMAT(time, "%H:%i") as time, duration FROM appointments WHERE date BETWEEN ? AND ? ORDER BY date ASC, time ASC',
+            [startDate, endDate]
+        );
+
+        const nextSlot = findNextSlotFromGroupedBookings(groupBookedSlots(rows));
+
+        res.json({
+            success: true,
+            nextSlot
+        });
+    } catch (error) {
+        console.error('Error fetching next available slot:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to fetch next available slot',
+            nextSlot: null
+        });
+    } finally {
+        if (connection) connection.release();
+    }
+});
+
 // POST route for creating appointments
 app.post('/api/appointments', validateAppointment, async (req, res) => {
     let connection;
@@ -234,11 +405,38 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
 
         await connection.commit();
 
+        let calendarResult = { success: false, error: 'Calendar not attempted' };
+
+        try {
+            const serviceName = getServiceDisplayName(req.body.service);
+
+            calendarResult = await calendarService.addEvent({
+                startDateTime: appointmentDate,
+                duration: req.serviceDuration,
+                summary: `${serviceName} - ${req.body.name}`,
+                description: `
+                    Klijent: ${req.body.name}
+                    Telefon: ${req.body.phone}
+                    Usluga: ${serviceName}
+                    Cijena: ${req.body.price} KM
+                `,
+                location: process.env.SHOP_ADDRESS,
+                timeZone: 'Europe/Belgrade'
+            });
+
+            if (!calendarResult.success) {
+                console.error('Failed to create Google Calendar event:', calendarResult.error);
+            }
+        } catch (calendarError) {
+            console.error('Google Calendar error:', calendarError);
+        }
+
         try {
             const emailResult = await emailService.sendOwnerNotification({
                 ...req.body,
                 id: result.insertId,
-                duration: req.serviceDuration
+                duration: req.serviceDuration,
+                calendarLink: calendarResult.htmlLink
             });
 
             if (!emailResult.success) {

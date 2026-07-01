@@ -41,17 +41,9 @@
         <a class="btn-outline" href="#services">Pogledaj usluge</a>
       </div>
       <div class="hero-stats">
-        <div>
+        <div class="hero-stat-center">
           <div class="stat-num">500+</div>
           <div class="stat-label">Zadovoljnih klijenata</div>
-        </div>
-        <div>
-          <div class="stat-num">1</div>
-          <div class="stat-label">Iskusni majstor</div>
-        </div>
-        <div>
-          <div class="stat-num">5★</div>
-          <div class="stat-label">Prosječna ocjena</div>
         </div>
       </div>
     </div>
@@ -59,19 +51,14 @@
       <div class="hero-card">
         <div class="hero-card-header">
           <span class="hero-card-title">Sljedeći slobodan termin</span>
-          <span class="hero-card-badge">Danas</span>
+          <span class="hero-card-badge" id="next-slot-badge">Učitavanje...</span>
         </div>
         <div class="next-slot">
           <div class="slot-info">
-            <p>Šisanje + Brijanje</p>
-            <p>14:30 — 15:00 · Petak</p>
+            <p id="next-slot-date">Provjera termina...</p>
+            <p id="next-slot-time"></p>
           </div>
-          <div class="slot-price">18 KM</div>
-        </div>
-        <div class="services-mini">
-          <div class="svc-row"><span>✂ Šisanje</span><span>13 KM · 20 min</span></div>
-          <div class="svc-row"><span>🪒 Brijanje</span><span>5 KM · 10 min</span></div>
-          <div class="svc-row"><span>✦ Šisanje + Brijanje</span><span>18 KM · 30 min</span></div>
+          <div class="slot-price" id="next-slot-status">Slobodan</div>
         </div>
         <a class="book-now-mini" href="/reservation.html">Rezerviši odmah</a>
       </div>
@@ -82,28 +69,49 @@
   <section class="section" id="services">
     <div class="section-tag">Naše usluge</div>
     <h2 class="section-title">Sve što vam treba,<br>na jednom mjestu</h2>
-    <p class="section-sub">Nudimo tri provjerne usluge sa brzim zakazivanjem i transparentnim cijenama.</p>
+    <p class="section-sub">Nudimo šest jasnih usluga sa brzim zakazivanjem i transparentnim cijenama.</p>
     <div class="services-grid">
       <div class="service-card">
         <div class="service-card-accent"></div>
-        <div class="service-icon">🪒</div>
-        <div class="service-name">Brijanje</div>
+        <div class="service-icon">🫧</div>
+        <div class="service-name">Pranje</div>
         <div class="service-duration">Trajanje: 10 minuta</div>
         <div class="service-price">5 <span>KM</span></div>
       </div>
       <div class="service-card">
         <div class="service-card-accent"></div>
+        <div class="service-icon">✨</div>
+        <div class="service-name">Depilacija</div>
+        <div class="service-duration">Trajanje: 10 minuta</div>
+        <div class="service-price">5 <span>KM</span></div>
+      </div>
+      <div class="service-card">
+        <div class="service-card-accent"></div>
+        <div class="service-icon">👂</div>
+        <div class="service-name">Čišćenje ušiju</div>
+        <div class="service-duration">Trajanje: 10 minuta</div>
+        <div class="service-price">10 <span>KM</span></div>
+      </div>
+      <div class="service-card">
+        <div class="service-card-accent"></div>
         <div class="service-icon">✂</div>
-        <div class="service-name">Šisanje</div>
+        <div class="service-name">Šišanje</div>
         <div class="service-duration">Trajanje: 20 minuta</div>
         <div class="service-price">13 <span>KM</span></div>
       </div>
       <div class="service-card">
         <div class="service-card-accent"></div>
-        <div class="service-icon">✦</div>
-        <div class="service-name">Šisanje + Brijanje</div>
+        <div class="service-icon">🪒</div>
+        <div class="service-name">Brada</div>
+        <div class="service-duration">Trajanje: 10 minuta</div>
+        <div class="service-price">7 <span>KM</span></div>
+      </div>
+      <div class="service-card">
+        <div class="service-card-accent"></div>
+        <div class="service-icon">💈</div>
+        <div class="service-name">Šišanje + brada</div>
         <div class="service-duration">Trajanje: 30 minuta</div>
-        <div class="service-price">18 <span>KM</span></div>
+        <div class="service-price">20 <span>KM</span></div>
       </div>
     </div>
   </section>
@@ -145,22 +153,53 @@
       <div class="reservation-info-card">
         <h3>Radno vrijeme i termini</h3>
         <ul>
-          <li>Ponedjeljak - Nedjelja: 08:00 - 16:00</li>
+          <li>Ponedjeljak - Subota: 08:00 - 16:00</li>
           <li>Termini se nude svakih 10 minuta</li>
-          <li>Rezervacije su dostupne svih 7 dana</li>
+          <li>Rezervacije su dostupne 6 dana u sedmici</li>
         </ul>
       </div>
       <div class="reservation-info-card">
         <h3>Usluge i trajanje</h3>
         <ul>
-          <li>Brijanje: 10 min · 5 KM</li>
-          <li>Šisanje: 20 min · 13 KM</li>
-          <li>Šisanje + Brijanje: 30 min · 18 KM</li>
+          <li>Pranje: 10 min · 5 KM</li>
+          <li>Depilacija: 10 min · 5 KM</li>
+          <li>Čišćenje ušiju: 10 min · 10 KM</li>
+          <li>Šišanje: 20 min · 13 KM</li>
+          <li>Brada: 10 min · 7 KM</li>
+          <li>Šišanje + brada: 30 min · 20 KM</li>
         </ul>
       </div>
       <div class="reservation-info-card">
         <h3>Šta je potrebno</h3>
         <p>Za potvrdu rezervacije unesite ime i prezime, broj mobitela, odabrani datum, vrijeme i željenu uslugu.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOCATION -->
+  <section class="section location-section" id="location">
+    <div class="section-tag">Lokacija</div>
+    <h2 class="section-title">Zdravka Čelara bb,<br>Srbac 78420</h2>
+    <p class="section-sub">Pronađite nas lako ili otvorite mapu da vidite tačnu lokaciju salona.</p>
+    <div class="location-grid">
+      <div class="location-card location-map-card">
+        <div class="map-preview" aria-label="Stylized map of Royal Barbershop location">
+          <div class="map-grid"></div>
+          <div class="map-road map-road-horizontal"></div>
+          <div class="map-road map-road-vertical"></div>
+          <div class="map-road map-road-diagonal"></div>
+          <div class="map-pin">
+            <span class="map-pin-drop"></span>
+            <span class="map-pin-label">Royal Barbershop</span>
+          </div>
+        </div>
+      </div>
+      <div class="location-card location-details-card">
+        <div class="location-label">Adresa salona</div>
+        <h3>Zdravka Čelara bb</h3>
+        <p>Srbac 78420</p>
+        <p class="location-note">Royal Barbershop je u samom gradu i lako ga je pronaći putem mape.</p>
+        <a class="btn-dark" href="https://www.google.com/maps/search/?api=1&query=Zdravka+%C4%8Celara+bb%2C+Srbac+78420" target="_blank" rel="noreferrer">Otvori u Google Maps</a>
       </div>
     </div>
   </section>
@@ -178,7 +217,10 @@
 
   <!-- FOOTER -->
   <footer class="footer" id="footer">
-    <div class="footer-logo">Royal Barbershop</div>
+    <div class="footer-brand">
+      <div class="footer-logo">Royal Barbershop</div>
+      <div class="footer-address">Zdravka Čelara bb, Srbac 78420</div>
+    </div>
     <div class="footer-copy">© 2025 Royal Barbershop. Sva prava zadržana.</div>
     <div class="footer-links">
       <a href="#">Instagram</a>
@@ -186,6 +228,8 @@
       <a href="#">Kontakt</a>
     </div>
   </footer>
+
+  <script src="/script.js" defer></script>
 
 </body>
 </html>
