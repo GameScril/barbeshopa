@@ -103,6 +103,16 @@ body.booking-page .service-card.selected {
     border-color: #c9a84c;
 }
 
+body.booking-page .service-card.disabled-choice {
+    opacity: 0.5;
+    transform: none;
+    pointer-events: none;
+}
+
+body.booking-page .service-options {
+    row-gap: 1rem;
+}
+
 body.booking-page .service-card h3,
 body.booking-page .reservation-info-card h3,
 body.booking-page .hero-card-title,
@@ -209,6 +219,31 @@ body.booking-page .book-btn {
 body.booking-page .book-btn:hover {
     background: #b8963e;
     box-shadow: none;
+}
+
+body.booking-page .total-price-display {
+    width: 100%;
+    padding: 0.9rem 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(201, 168, 76, 0.35);
+    background: rgba(201, 168, 76, 0.08);
+    color: #f0ece0;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 0.2px;
+}
+
+body.booking-page #notification-modal .modal-dialog {
+    max-width: 420px;
+    margin: 1.75rem auto;
+}
+
+body.booking-page #notification-modal .modal-content {
+    border-radius: 18px;
+}
+
+body.booking-page #notification-modal .modal-body {
+    text-align: center;
 }
 
 body.booking-page .reservation-info-card,
@@ -466,6 +501,14 @@ body.booking-page .footer {
     font-weight: bold;
     cursor: pointer;
     border: none;
+body.booking-page .service-card.disabled-choice {
+    opacity: 0.5;
+    transform: none;
+    pointer-events: none;
+}
+body.booking-page .service-options {
+    row-gap: 1rem;
+}
     box-shadow: var(--shadow-sm);
     margin: 2rem auto 0;
     transition: all var(--transition-speed) ease;
@@ -497,6 +540,22 @@ body.booking-page .footer {
 
     .booking-form {
         padding: 1rem;
+    }
+
+    body.booking-page .service-options {
+        row-gap: 0.9rem;
+    }
+
+    body.booking-page .service-options > [class*="col-"] {
+        padding-bottom: 0.25rem;
+    }
+
+    body.booking-page .service-options {
+        row-gap: 0.9rem;
+    }
+
+    body.booking-page .service-options > [class*="col-"] {
+        padding-bottom: 0.25rem;
     }
 
     .form-control,
@@ -549,6 +608,16 @@ body.booking-page .footer {
         margin: 2rem 1rem;
         padding: 15px;
         font-size: 1rem;
+    }
+
+    body.booking-page #notification-modal .modal-dialog {
+        margin: 1rem auto;
+        max-width: calc(100% - 2rem);
+    }
+
+    body.booking-page #notification-modal .modal-dialog {
+        margin: 1rem auto;
+        max-width: calc(100% - 2rem);
     }
 }
 

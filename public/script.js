@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
         installButton: document.getElementById('install-button'),
         nameInput: document.getElementById('name'),
         phoneInput: document.getElementById('phone'),
+        totalPriceDisplay: document.getElementById('total-price-display'),
         homeNextSlotBadge: document.getElementById('next-slot-badge'),
         homeNextSlotDate: document.getElementById('next-slot-date'),
         homeNextSlotTime: document.getElementById('next-slot-time'),
@@ -23,10 +24,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const dateFormatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Belgrade' });
     const API_URL = '/api';
     const WORK_DAYS = new Set([1, 2, 3, 4, 5, 6]);
+    const SERVICE_CONFIG = {
+        pranje: { label: 'Pranje', duration: 10, price: 5 },
+        depilacija: { label: 'Depilacija', duration: 10, price: 5 },
+        ciscenjeusiju: { label: 'Čišćenje ušiju', duration: 10, price: 10 },
+        sisanje: { label: 'Šišanje', duration: 20, price: 13 },
+        brada: { label: 'Brada', duration: 10, price: 7 },
+        sisanjeibrada: { label: 'Šišanje i brada', duration: 30, price: 20 }
+    };
 
     let selectedDate = null;
-    let selectedService = null;
-    let selectedPrice = null;
+    let selectedServices = [];
     let currentViewingDate = new Date();
     let reservationRefreshTimer = null;
     let homeRefreshTimer = null;
@@ -59,6 +67,63 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.show();
     }
 
+    function getServiceConfig(service) {
+        return SERVICE_CONFIG[service] || null;
+    }
+
+    function getSelectedServiceConfigs() {
+        return selectedServices.map(service => getServiceConfig(service)).filter(Boolean);
+    }
+
+    function getSelectedDuration() {
+        return getSelectedServiceConfigs().reduce((total, service) => total + service.duration, 0);
+    }
+
+    function getSelectedPrice() {
+        return getSelectedServiceConfigs().reduce((total, service) => total + service.price, 0);
+    }
+
+    function getSelectedServiceLabel() {
+        return getSelectedServiceConfigs().map(service => service.label).join(' + ');
+    }
+
+    function updateTotalPriceDisplay() {
+        if (!elements.totalPriceDisplay) return;
+
+        const total = getSelectedPrice();
+        if (!selectedServices.length) {
+            elements.totalPriceDisplay.textContent = 'Ukupno: 0 KM';
+            return;
+        }
+
+        const labels = getSelectedServiceConfigs().map(service => service.label).join(' + ');
+        elements.totalPriceDisplay.textContent = `Ukupno: ${total} KM${labels ? ` · ${labels}` : ''}`;
+    }
+
+    function hasConflictWithSelection(candidate) {
+        const hasHair = selectedServices.includes('sisanje');
+        const hasBeard = selectedServices.includes('brada');
+        const hasCombo = selectedServices.includes('sisanjeibrada');
+
+        if (candidate === 'sisanjeibrada') {
+            return selectedServices.length > 0;
+        }
+
+        if (hasCombo) {
+            return true;
+        }
+
+        if (candidate === 'sisanje' && hasBeard) {
+            return true;
+        }
+
+        if (candidate === 'brada' && hasHair) {
+            return true;
+        }
+
+        return false;
+    }
+
     function init() {
         if (elements.calendarContainer && elements.timeSlots && elements.bookButton) {
             initReservationPage();
@@ -75,10 +140,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
         elements.serviceCards.forEach(card => {
             card.addEventListener('click', () => {
-                elements.serviceCards.forEach(c => c.classList.remove('selected'));
-                card.classList.add('selected');
-                selectedService = card.dataset.service;
-                selectedPrice = card.dataset.price;
+                const service = card.dataset.service;
+                const isSelected = selectedServices.includes(service);
+
+                if (isSelected) {
+                    selectedServices = selectedServices.filter(item => item !== service);
+                    card.classList.remove('selected');
+                } else if (hasConflictWithSelection(service)) {
+                    showModal('Upozorenje', 'Šišanje i brada se ne mogu izabrati zajedno. Koristite posebnu kombinovanu uslugu.');
+                    return;
+                } else {
+                    selectedServices = [...selectedServices, service];
+                    card.classList.add('selected');
+                }
+
+                elements.serviceCards.forEach(serviceCard => {
+                    const serviceKey = serviceCard.dataset.service;
+                    const shouldDisable = (
+                        selectedServices.includes('sisanjeibrada') && serviceKey !== 'sisanjeibrada'
+                    ) || (
+                        selectedServices.includes('sisanje') && serviceKey === 'brada'
+                    ) || (
+                        selectedServices.includes('brada') && serviceKey === 'sisanje'
+                    );
+
+                    serviceCard.classList.toggle('disabled-choice', shouldDisable);
+                });
+
+                updateTotalPriceDisplay();
 
                 if (selectedDate) {
                     fetchAvailableSlots(selectedDate);
@@ -244,7 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function selectDate(dateObj) {
-        if (!selectedService) {
+        if (!selectedServices.length) {
             showModal('Upozorenje', 'Molimo prvo izaberite uslugu!');
             return;
         }
@@ -281,7 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function generateTimeSlots(bookedSlots) {
         const startHour = 8;
         const endHour = 16;
-        const duration = getDuration(selectedService);
+        const duration = getSelectedDuration();
 
         let optionsHtml = '<option selected disabled>Izaberite vrijeme</option>';
         let hasSlots = false;
@@ -335,22 +424,8 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.timeSlots.innerHTML = optionsHtml;
     }
 
-    function getDuration(service) {
-        const durations = {
-            pranje: 10,
-            depilacija: 10,
-            ciscenjeusiju: 10,
-            sisanje: 20,
-            brada: 10,
-            sisanjeibrada: 30,
-            kosa: 20,
-            bradaikosa: 30
-        };
-        return durations[service] || 10;
-    }
-
     async function handleBooking() {
-        if (!selectedService) return showModal('Upozorenje', 'Izaberite uslugu!');
+        if (!selectedServices.length) return showModal('Upozorenje', 'Izaberite uslugu!');
         if (!selectedDate) return showModal('Upozorenje', 'Izaberite datum!');
         if (elements.timeSlots.value === 'Izaberite vrijeme' || !elements.timeSlots.value) {
             return showModal('Upozorenje', 'Izaberite vrijeme!');
@@ -359,8 +434,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!elements.phoneInput.value.trim()) return showModal('Upozorenje', 'Unesite Broj Mobitela!');
 
         const payload = {
-            service: selectedService,
-            price: parseInt(selectedPrice, 10),
+            service: getSelectedServiceLabel(),
+            services: selectedServices,
+            price: getSelectedPrice(),
             date: getDateString(selectedDate),
             time: elements.timeSlots.value,
             name: elements.nameInput.value.trim(),
@@ -385,10 +461,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 elements.nameInput.value = '';
                 elements.phoneInput.value = '';
                 elements.timeSlots.innerHTML = '<option selected disabled>Izaberite vrijeme</option>';
-                elements.serviceCards.forEach(c => c.classList.remove('selected'));
-                selectedService = null;
+                elements.serviceCards.forEach(c => c.classList.remove('selected', 'disabled-choice'));
+                selectedServices = [];
                 selectedDate = null;
                 elements.dateDisplay.classList.remove('visible');
+                updateTotalPriceDisplay();
                 createCalendar(currentViewingDate);
                 updateHomeNextSlot();
             } else {
@@ -403,5 +480,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    updateTotalPriceDisplay();
     init();
 });

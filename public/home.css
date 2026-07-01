@@ -291,6 +291,14 @@
   color: #c9a84c;
   margin-bottom: 0.6rem;
 }
+
+.home-page #why-us .section-tag {
+  margin-bottom: 1rem;
+}
+
+.home-page #why-us .section-title {
+  margin-top: 0.35rem;
+}
 .home-page .section-title {
   font-family: 'Playfair Display', serif;
   font-size: clamp(1.8rem, 3vw, 2.5rem);

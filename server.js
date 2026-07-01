@@ -17,21 +17,6 @@ const SLOT_STEP_MINUTES = 10;
 const NEXT_SLOT_DURATION = 30;
 const NEXT_SLOT_HORIZON_DAYS = 30;
 
-function getServiceDisplayName(service) {
-    const serviceNames = {
-        pranje: 'Pranje',
-        depilacija: 'Depilacija',
-        ciscenjeusiju: 'Čišćenje ušiju',
-        sisanje: 'Šišanje',
-        brada: 'Brada',
-        sisanjeibrada: 'Šišanje i brada',
-        kosa: 'Šišanje',
-        bradaikosa: 'Šišanje i brada'
-    };
-
-    return serviceNames[service] || service;
-}
-
 process.env.TZ = 'Europe/Belgrade';
 
 function formatDisplayDate(date) {
@@ -397,8 +382,8 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
         const [result] = await connection.execute(
             'INSERT INTO appointments (service, price, date, time, duration, name, phone) VALUES (?, ?, ?, ?, ?, ?, ?)',
             [
-                req.body.service,
-                req.body.price,
+                req.serviceLabel,
+                req.servicePrice,
                 req.body.date,
                 req.body.time,
                 req.serviceDuration,
@@ -412,7 +397,7 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
         let calendarResult = { success: false, error: 'Calendar not attempted' };
 
         try {
-            const serviceName = getServiceDisplayName(req.body.service);
+            const serviceName = req.serviceLabel;
 
             calendarResult = await calendarService.addEvent({
                 startDateTime: appointmentDate,
@@ -422,7 +407,7 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
                     Klijent: ${req.body.name}
                     Telefon: ${req.body.phone}
                     Usluga: ${serviceName}
-                    Cijena: ${req.body.price} KM
+                    Cijena: ${req.servicePrice} KM
                 `,
                 location: process.env.SHOP_ADDRESS,
                 timeZone: 'Europe/Belgrade'

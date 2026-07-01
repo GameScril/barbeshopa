@@ -1,39 +1,61 @@
 const { pool } = require('../db');
 
-const serviceDurations = {
-    pranje: 10,
-    depilacija: 10,
-    ciscenjeusiju: 10,
-    sisanje: 20,
-    brada: 10,
-    sisanjeibrada: 30,
-    kosa: 20,
-    bradaikosa: 30
+const serviceConfig = {
+    pranje: { label: 'Pranje', duration: 10, price: 5 },
+    depilacija: { label: 'Depilacija', duration: 10, price: 5 },
+    ciscenjeusiju: { label: 'Čišćenje ušiju', duration: 10, price: 10 },
+    sisanje: { label: 'Šišanje', duration: 20, price: 13 },
+    brada: { label: 'Brada', duration: 10, price: 7 },
+    sisanjeibrada: { label: 'Šišanje i brada', duration: 30, price: 20 }
 };
 
 const validateAppointment = async (req, res, next) => {
-    const { service, date, time, name, phone } = req.body;
+    const { service, services, date, time, name, phone } = req.body;
     
     // Basic validation
-    if (!service || !date || !time || !name || !phone) {
+    if ((!service && !services) || !date || !time || !name || !phone) {
         return res.status(400).json({
             success: false,
             error: 'Sva polja su obavezna'
         });
     }
     
-    // Get service duration
-    const durations = {
-        pranje: 10,
-        depilacija: 10,
-        ciscenjeusiju: 10,
-        sisanje: 20,
-        brada: 10,
-        sisanjeibrada: 30,
-        kosa: 20,
-        bradaikosa: 30
-    };
-    const duration = durations[service] || 10;
+    const selectedServices = Array.isArray(services)
+        ? services
+        : String(service || '')
+            .split(',')
+            .map(item => item.trim())
+            .filter(Boolean);
+
+    if (selectedServices.length === 0) {
+        return res.status(400).json({
+            success: false,
+            error: 'Sva polja su obavezna'
+        });
+    }
+
+    const unknownService = selectedServices.find(item => !serviceConfig[item]);
+    if (unknownService) {
+        return res.status(400).json({
+            success: false,
+            error: `Nepoznata usluga: ${unknownService}`
+        });
+    }
+
+    const hasHair = selectedServices.includes('sisanje');
+    const hasBeard = selectedServices.includes('brada');
+    const hasCombo = selectedServices.includes('sisanjeibrada');
+
+    if ((hasHair && hasBeard) || (hasCombo && selectedServices.length > 1)) {
+        return res.status(400).json({
+            success: false,
+            error: 'Šišanje i brada se ne mogu izabrati zajedno. Koristite posebnu kombinovanu uslugu.'
+        });
+    }
+
+    const duration = selectedServices.reduce((total, item) => total + serviceConfig[item].duration, 0);
+    const totalPrice = selectedServices.reduce((total, item) => total + serviceConfig[item].price, 0);
+    const serviceLabel = selectedServices.map(item => serviceConfig[item].label).join(' + ');
     
     // Convert requested time to minutes for comparison
     const [hours, minutes] = time.split(':').map(Number);
@@ -85,7 +107,10 @@ const validateAppointment = async (req, res, next) => {
         }
         
         // Add duration to the request object
+        req.selectedServices = selectedServices;
         req.serviceDuration = duration;
+        req.servicePrice = totalPrice;
+        req.serviceLabel = serviceLabel;
         next();
     } catch (error) {
         console.error('Validation error:', error);
