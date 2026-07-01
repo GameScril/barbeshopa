@@ -50,7 +50,38 @@ class CalendarService {
 
         try {
             const authCode = Array.isArray(code) ? code[0] : code;
-            const { tokens } = await this.oauth2Client.getToken(authCode);
+            const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    code: authCode,
+                    client_id: process.env.GOOGLE_CLIENT_ID,
+                    client_secret: process.env.GOOGLE_CLIENT_SECRET,
+                    redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+                    grant_type: 'authorization_code'
+                })
+            });
+
+            const responseText = await tokenResponse.text();
+            let tokenData = null;
+
+            try {
+                tokenData = responseText ? JSON.parse(responseText) : null;
+            } catch (parseError) {
+                tokenData = { raw: responseText };
+            }
+
+            if (!tokenResponse.ok) {
+                return {
+                    success: false,
+                    error: tokenData?.error || `Token exchange failed with status ${tokenResponse.status}`,
+                    details: tokenData
+                };
+            }
+
+            const tokens = tokenData || {};
             this.oauth2Client.setCredentials(tokens);
 
             return {
@@ -63,7 +94,7 @@ class CalendarService {
             return {
                 success: false,
                 error: error.message,
-                details: error.response?.data || null
+                details: error.cause || null
             };
         }
     }
