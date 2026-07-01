@@ -158,7 +158,11 @@ app.get('/api/google/oauth2callback', async (req, res) => {
     const tokenResult = await calendarService.exchangeCodeForToken(code);
 
     if (!tokenResult.success) {
-        return res.status(500).json(tokenResult);
+        return res.status(500).json({
+            success: false,
+            error: tokenResult.error,
+            details: tokenResult.details || null
+        });
     }
 
     res.json({

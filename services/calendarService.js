@@ -49,7 +49,8 @@ class CalendarService {
         }
 
         try {
-            const { tokens } = await this.oauth2Client.getToken(code);
+            const authCode = Array.isArray(code) ? code[0] : code;
+            const { tokens } = await this.oauth2Client.getToken(authCode);
             this.oauth2Client.setCredentials(tokens);
 
             return {
@@ -61,7 +62,8 @@ class CalendarService {
             console.error('Error exchanging Google auth code:', error);
             return {
                 success: false,
-                error: error.message
+                error: error.message,
+                details: error.response?.data || null
             };
         }
     }
