@@ -418,7 +418,6 @@ app.post('/api/appointments', validateAppointment, async (req, res) => {
                     Usluga: ${serviceName}
                     Cijena: ${req.servicePrice} KM
                 `,
-                    location: process.env.SHOP_ADDRESS,
                     timeZone: 'Europe/Belgrade'
                 });
 

@@ -42,16 +42,16 @@ const validateAppointment = async (req, res, next) => {
         });
     }
 
-    const hasHair = selectedServices.includes('sisanje');
-    const hasBeard = selectedServices.includes('brada');
-    const hasCombo = selectedServices.includes('sisanjeibrada');
+    const phoneDigitsOnly = String(phone).replace(/\D/g, '');
 
-    if ((hasHair && hasBeard) || (hasCombo && selectedServices.length > 1)) {
+    if (!/^\d{9}$/.test(phoneDigitsOnly)) {
         return res.status(400).json({
             success: false,
-            error: 'Šišanje i brada se ne mogu izabrati zajedno. Koristite posebnu kombinovanu uslugu.'
+            error: 'Broj mobitela mora imati tačno 9 cifara'
         });
     }
+
+    req.body.phone = phoneDigitsOnly;
 
     const duration = selectedServices.reduce((total, item) => total + serviceConfig[item].duration, 0);
     const totalPrice = selectedServices.reduce((total, item) => total + serviceConfig[item].price, 0);

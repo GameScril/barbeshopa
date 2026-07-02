@@ -43,6 +43,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return dateFormatter.format(dateObj);
     }
 
+    function formatDisplayDate(dateObj) {
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const year = dateObj.getFullYear();
+        return `${day}.${month}.${year}`;
+    }
+
     function isWorkingDay(dateObj) {
         const day = dateObj.getDay();
         return WORK_DAYS.has(day === 0 ? 7 : day);
@@ -138,6 +145,15 @@ document.addEventListener('DOMContentLoaded', () => {
         createCalendar(currentViewingDate);
         handleInstallButton();
 
+        if (elements.phoneInput) {
+            elements.phoneInput.setAttribute('inputmode', 'numeric');
+            elements.phoneInput.setAttribute('maxlength', '9');
+            elements.phoneInput.addEventListener('input', () => {
+                const digitsOnly = elements.phoneInput.value.replace(/\D/g, '').slice(0, 9);
+                elements.phoneInput.value = digitsOnly;
+            });
+        }
+
         elements.serviceCards.forEach(card => {
             card.addEventListener('click', () => {
                 const service = card.dataset.service;
@@ -146,25 +162,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (isSelected) {
                     selectedServices = selectedServices.filter(item => item !== service);
                     card.classList.remove('selected');
-                } else if (hasConflictWithSelection(service)) {
-                    showModal('Upozorenje', 'Šišanje i brada se ne mogu izabrati zajedno. Koristite posebnu kombinovanu uslugu.');
-                    return;
                 } else {
                     selectedServices = [...selectedServices, service];
                     card.classList.add('selected');
                 }
 
                 elements.serviceCards.forEach(serviceCard => {
-                    const serviceKey = serviceCard.dataset.service;
-                    const shouldDisable = (
-                        selectedServices.includes('sisanjeibrada') && serviceKey !== 'sisanjeibrada'
-                    ) || (
-                        selectedServices.includes('sisanje') && serviceKey === 'brada'
-                    ) || (
-                        selectedServices.includes('brada') && serviceKey === 'sisanje'
-                    );
-
-                    serviceCard.classList.toggle('disabled-choice', shouldDisable);
+                    serviceCard.classList.remove('disabled-choice');
                 });
 
                 updateTotalPriceDisplay();
@@ -340,7 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         selectedDate = dateObj;
 
-        const dateStr = dateObj.toLocaleDateString('bs-BA', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '.');
+        const dateStr = formatDisplayDate(dateObj);
         elements.dateDisplay.textContent = `Odabrani datum: ${dateStr}`;
         elements.dateDisplay.classList.add('visible');
 

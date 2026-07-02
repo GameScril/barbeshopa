@@ -231,7 +231,7 @@ class CalendarService {
         });
     }
 
-    async addEvent({ startDateTime, duration, summary, description, location }) {
+    async addEvent({ startDateTime, duration, summary, description }) {
         if (!this.isConfigured) {
             return { success: false, error: 'Calendar integration not configured' };
         }
@@ -245,7 +245,6 @@ class CalendarService {
             
             const event = {
                 summary,
-                location,
                 description,
                 start: {
                     dateTime: startDate.toISOString(),
