@@ -163,6 +163,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     selectedServices = selectedServices.filter(item => item !== service);
                     card.classList.remove('selected');
                 } else {
+                    if (service === 'sisanjeibrada') {
+                        selectedServices = selectedServices.filter(item => item !== 'sisanje' && item !== 'brada');
+                        document.querySelector('.service-card[data-service="sisanje"]')?.classList.remove('selected');
+                        document.querySelector('.service-card[data-service="brada"]')?.classList.remove('selected');
+                    } else if (service === 'sisanje' || service === 'brada') {
+                        selectedServices = selectedServices.filter(item => item !== 'sisanjeibrada');
+                        document.querySelector('.service-card[data-service="sisanjeibrada"]')?.classList.remove('selected');
+                    }
+
                     selectedServices = [...selectedServices, service];
                     card.classList.add('selected');
                 }

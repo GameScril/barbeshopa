@@ -12,8 +12,10 @@ class EmailService {
         const pass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
 
         if (host) {
-            const smtpPort = Number(process.env.SMTP_PORT || (host === 'smtp.gmail.com' ? 587 : 587));
-            const secure = process.env.SMTP_SECURE === 'true' || smtpPort === 465;
+            // Force port 465 and secure for Gmail to bypass ISP blocks on port 587
+            const isGmail = host === 'smtp.gmail.com';
+            const smtpPort = isGmail ? 465 : Number(process.env.SMTP_PORT || 587);
+            const secure = isGmail ? true : (process.env.SMTP_SECURE === 'true' || smtpPort === 465);
 
             return nodemailer.createTransport({
                 host: host,
@@ -34,9 +36,9 @@ class EmailService {
             const isGmail = user.includes('@gmail.com');
             return nodemailer.createTransport({
                 service: isGmail ? 'gmail' : undefined,
-                port: 587,
-                secure: false,
-                requireTLS: true,
+                port: isGmail ? 465 : 587,
+                secure: isGmail ? true : false,
+                requireTLS: !isGmail,
                 connectionTimeout: 15000,
                 greetingTimeout: 15000,
                 socketTimeout: 30000,

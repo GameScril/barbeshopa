@@ -42,6 +42,24 @@ const validateAppointment = async (req, res, next) => {
         });
     }
 
+    const hasCombo = selectedServices.includes('sisanjeibrada');
+    const hasHair = selectedServices.includes('sisanje');
+    const hasBeard = selectedServices.includes('brada');
+
+    if (hasCombo && (hasHair || hasBeard)) {
+        return res.status(400).json({
+            success: false,
+            error: 'Ne možete odabrati pojedinačno šišanje ili brijanje ako ste odabrali "Šišanje i brada"'
+        });
+    }
+
+    if (hasHair && hasBeard && !hasCombo) {
+        return res.status(400).json({
+            success: false,
+            error: 'Molimo odaberite uslugu "Šišanje i brada" umjesto pojedinačnih usluga'
+        });
+    }
+
     const phoneDigitsOnly = String(phone).replace(/\D/g, '');
 
     if (!/^\d{9}$/.test(phoneDigitsOnly)) {
