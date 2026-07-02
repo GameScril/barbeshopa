@@ -501,6 +501,11 @@ body.booking-page .footer {
     font-weight: bold;
     cursor: pointer;
     border: none;
+    box-shadow: var(--shadow-sm);
+    margin: 2rem auto 0;
+    transition: all var(--transition-speed) ease;
+}
+
 body.booking-page .service-card.disabled-choice {
     opacity: 0.5;
     transform: none;
@@ -508,10 +513,6 @@ body.booking-page .service-card.disabled-choice {
 }
 body.booking-page .service-options {
     row-gap: 1rem;
-}
-    box-shadow: var(--shadow-sm);
-    margin: 2rem auto 0;
-    transition: all var(--transition-speed) ease;
 }
 
 .install-button.show {
