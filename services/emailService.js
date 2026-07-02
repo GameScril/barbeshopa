@@ -3,32 +3,37 @@ const nodemailer = require('nodemailer');
 class EmailService {
     constructor() {
         this.transporter = this.createTransporter();
-        this.fromAddress = process.env.EMAIL_FROM || process.env.EMAIL_USER;
+        this.fromAddress = process.env.EMAIL_FROM || process.env.EMAIL_USER || process.env.SMTP_USER;
     }
 
     createTransporter() {
-        if (process.env.SMTP_HOST) {
-            const smtpPort = Number(process.env.SMTP_PORT || (process.env.SMTP_HOST === 'smtp.gmail.com' ? 587 : 587));
+        const host = process.env.SMTP_HOST;
+        const user = process.env.SMTP_USER || process.env.EMAIL_USER;
+        const pass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
+
+        if (host) {
+            const smtpPort = Number(process.env.SMTP_PORT || (host === 'smtp.gmail.com' ? 587 : 587));
             const secure = process.env.SMTP_SECURE === 'true' || smtpPort === 465;
 
             return nodemailer.createTransport({
-                host: process.env.SMTP_HOST,
+                host: host,
                 port: smtpPort,
                 secure,
                 requireTLS: !secure,
                 connectionTimeout: 15000,
                 greetingTimeout: 15000,
                 socketTimeout: 30000,
-                auth: process.env.SMTP_USER && process.env.SMTP_PASS ? {
-                    user: process.env.SMTP_USER,
-                    pass: process.env.SMTP_PASS
+                auth: user && pass ? {
+                    user: user,
+                    pass: pass
                 } : undefined
             });
         }
 
-        if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        if (user && pass) {
+            const isGmail = user.includes('@gmail.com');
             return nodemailer.createTransport({
-                service: 'gmail',
+                service: isGmail ? 'gmail' : undefined,
                 port: 587,
                 secure: false,
                 requireTLS: true,
@@ -36,8 +41,8 @@ class EmailService {
                 greetingTimeout: 15000,
                 socketTimeout: 30000,
                 auth: {
-                    user: process.env.EMAIL_USER,
-                    pass: process.env.EMAIL_PASS
+                    user: user,
+                    pass: pass
                 }
             });
         }
@@ -54,42 +59,67 @@ class EmailService {
                 };
             }
 
-            // Format the date and time for calendar
-            const [year, month, day] = appointment.date.split('-');
-            const [hours, minutes] = appointment.time.split(':');
-            
-            // Create date in local timezone
-            const appointmentDate = new Date(
-                parseInt(year),
-                parseInt(month) - 1, // Month is 0-based
-                parseInt(day),
-                parseInt(hours),
-                parseInt(minutes)
-            );
+            if (!this.fromAddress) {
+                return {
+                    success: false,
+                    error: 'Email sender address (EMAIL_FROM, EMAIL_USER, or SMTP_USER) is not configured'
+                };
+            }
 
-            // Set timezone to Belgrade
-            const timeZone = 'Europe/Belgrade';
-            const formatter = new Intl.DateTimeFormat('sr-Latn', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                timeZone: timeZone
-            });
+            const toAddress = process.env.SHOP_EMAIL || process.env.EMAIL_USER || process.env.SMTP_USER || this.fromAddress;
+            if (!toAddress) {
+                return {
+                    success: false,
+                    error: 'Email recipient address (SHOP_EMAIL, EMAIL_USER, or SMTP_USER) is not configured'
+                };
+            }
 
-            const formattedDateTime = formatter.format(appointmentDate);
+            // Format the date and time safely
+            let formattedDateTime = '';
+            try {
+                if (appointment.date && appointment.time) {
+                    const [year, month, day] = appointment.date.split('-');
+                    const [hours, minutes] = appointment.time.split(':');
+                    
+                    // Create date in local timezone
+                    const appointmentDate = new Date(
+                        parseInt(year),
+                        parseInt(month) - 1, // Month is 0-based
+                        parseInt(day),
+                        parseInt(hours),
+                        parseInt(minutes)
+                    );
+
+                    // Set timezone to Belgrade
+                    const timeZone = 'Europe/Belgrade';
+                    const formatter = new Intl.DateTimeFormat('sr-Latn', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        timeZone: timeZone
+                    });
+
+                    formattedDateTime = formatter.format(appointmentDate);
+                } else {
+                    formattedDateTime = `${appointment.date || ''} ${appointment.time || ''}`;
+                }
+            } catch (formatError) {
+                console.error('Error formatting date/time for email:', formatError);
+                formattedDateTime = `${appointment.date || ''} ${appointment.time || ''}`;
+            }
             
             // Get service name
             const serviceName = this.getServiceName(appointment.service);
 
             const calendarLink = appointment.calendarLink || appointment.htmlLink || null;
 
-            // Send email to shop owner only
+            // Send email to shop owner
             const emailContent = {
                 from: this.fromAddress,
-                to: process.env.SHOP_EMAIL,
+                to: toAddress,
                 subject: `📅 Nova Rezervacija: Royal Barbershop - ${serviceName}`,
                 html: `
                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #D4AF37; border-radius: 15px; overflow: hidden;">
@@ -139,6 +169,13 @@ class EmailService {
                 success: true
             };
         } catch (error) {
+            if (error && error.code === 'ETIMEDOUT') {
+                return {
+                    success: false,
+                    error: 'Email notification timed out'
+                };
+            }
+
             console.error('Error sending notification:', error);
             return {
                 success: false,
