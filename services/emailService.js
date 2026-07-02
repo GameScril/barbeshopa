@@ -25,6 +25,7 @@ class EmailService {
                 connectionTimeout: 15000,
                 greetingTimeout: 15000,
                 socketTimeout: 30000,
+                family: 4, // Force IPv4 to prevent ETIMEDOUT on deployments
                 auth: user && pass ? {
                     user: user,
                     pass: pass
@@ -42,6 +43,7 @@ class EmailService {
                 connectionTimeout: 15000,
                 greetingTimeout: 15000,
                 socketTimeout: 30000,
+                family: 4, // Force IPv4 to prevent ETIMEDOUT on deployments
                 auth: {
                     user: user,
                     pass: pass
@@ -55,11 +57,20 @@ class EmailService {
     async sendOwnerNotification(appointment) {
         try {
             if (!this.transporter) {
+                console.error('Email notification failed: transporter not configured');
                 return {
                     success: false,
                     error: 'Email transport is not configured'
                 };
             }
+
+            console.log('Attempting to send email with SMTP config:', {
+                host: this.transporter.options.host,
+                port: this.transporter.options.port,
+                secure: this.transporter.options.secure,
+                service: this.transporter.options.service,
+                user: this.transporter.options.auth ? this.transporter.options.auth.user : 'none'
+            });
 
             if (!this.fromAddress) {
                 return {
