@@ -1,9 +1,13 @@
 const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
 class EmailService {
     constructor() {
+        if (process.env.RESEND_API_KEY) {
+            this.resend = new Resend(process.env.RESEND_API_KEY);
+        }
         this.transporter = this.createTransporter();
-        this.fromAddress = process.env.EMAIL_FROM || process.env.EMAIL_USER || process.env.SMTP_USER;
+        this.fromAddress = process.env.EMAIL_FROM || process.env.EMAIL_USER || process.env.SMTP_USER || 'onboarding@resend.dev';
     }
 
     createTransporter() {
@@ -56,26 +60,18 @@ class EmailService {
 
     async sendOwnerNotification(appointment) {
         try {
-            if (!this.transporter) {
-                console.error('Email notification failed: transporter not configured');
+            if (!this.resend && !this.transporter) {
+                console.error('Email notification failed: No email service configured');
                 return {
                     success: false,
                     error: 'Email transport is not configured'
                 };
             }
 
-            console.log('Attempting to send email with SMTP config:', {
-                host: this.transporter.options.host,
-                port: this.transporter.options.port,
-                secure: this.transporter.options.secure,
-                service: this.transporter.options.service,
-                user: this.transporter.options.auth ? this.transporter.options.auth.user : 'none'
-            });
-
             if (!this.fromAddress) {
                 return {
                     success: false,
-                    error: 'Email sender address (EMAIL_FROM, EMAIL_USER, or SMTP_USER) is not configured'
+                    error: 'Email sender address is not configured'
                 };
             }
 
@@ -83,7 +79,7 @@ class EmailService {
             if (!toAddress) {
                 return {
                     success: false,
-                    error: 'Email recipient address (SHOP_EMAIL, EMAIL_USER, or SMTP_USER) is not configured'
+                    error: 'Email recipient address is not configured'
                 };
             }
 
@@ -126,61 +122,81 @@ class EmailService {
             
             // Get service name
             const serviceName = this.getServiceName(appointment.service);
-
             const calendarLink = appointment.calendarLink || appointment.htmlLink || null;
-
-            // Send email to shop owner
-            const emailContent = {
-                from: this.fromAddress,
-                to: toAddress,
-                subject: `📅 Nova Rezervacija: Royal Barbershop - ${serviceName}`,
-                html: `
-                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #D4AF37; border-radius: 15px; overflow: hidden;">
-                        <div style="background-color: #D4AF37; padding: 30px; text-align: center;">
-                            <h1 style="margin: 0; color: #1a1a1a; font-size: 28px; text-transform: uppercase;">Nova Rezervacija</h1>
+            const subjectLine = `📅 Nova Rezervacija: Royal Barbershop - ${serviceName}`;
+            const htmlContent = `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #D4AF37; border-radius: 15px; overflow: hidden;">
+                    <div style="background-color: #D4AF37; padding: 30px; text-align: center;">
+                        <h1 style="margin: 0; color: #1a1a1a; font-size: 28px; text-transform: uppercase;">Nova Rezervacija</h1>
+                    </div>
+                    
+                    <div style="background-color: #1a1a1a; padding: 30px;">
+                        <div style="background-color: #2c2c2c; border-radius: 10px; padding: 25px; margin-bottom: 20px; border-left: 4px solid #D4AF37;">
+                            <h2 style="color: #D4AF37; margin-top: 0; margin-bottom: 20px; font-size: 20px;">Detalji Rezervacije</h2>
+                            
+                            <p style="margin: 10px 0; color: #ffffff;">
+                                <strong style="color: #D4AF37;">Usluga:</strong> ${serviceName}
+                            </p>
+                            <p style="margin: 10px 0; color: #ffffff;">
+                                <strong style="color: #D4AF37;">Datum i vrijeme:</strong> ${formattedDateTime}
+                            </p>
+                            <p style="margin: 10px 0; color: #ffffff;">
+                                <strong style="color: #D4AF37;">Lokacija:</strong> ${process.env.SHOP_ADDRESS || 'Royal Barbershop'}
+                            </p>
+                            ${calendarLink ? `
+                            <p style="margin: 10px 0; color: #ffffff;">
+                                <strong style="color: #D4AF37;">Google Calendar:</strong> <a href="${calendarLink}" style="color: #D4AF37;">Otvori događaj</a>
+                            </p>
+                            ` : ''}
                         </div>
-                        
-                        <div style="background-color: #1a1a1a; padding: 30px;">
-                            <div style="background-color: #2c2c2c; border-radius: 10px; padding: 25px; margin-bottom: 20px; border-left: 4px solid #D4AF37;">
-                                <h2 style="color: #D4AF37; margin-top: 0; margin-bottom: 20px; font-size: 20px;">Detalji Rezervacije</h2>
-                                
-                                <p style="margin: 10px 0; color: #ffffff;">
-                                    <strong style="color: #D4AF37;">Usluga:</strong> ${serviceName}
-                                </p>
-                                <p style="margin: 10px 0; color: #ffffff;">
-                                    <strong style="color: #D4AF37;">Datum i vrijeme:</strong> ${formattedDateTime}
-                                </p>
-                                <p style="margin: 10px 0; color: #ffffff;">
-                                    <strong style="color: #D4AF37;">Lokacija:</strong> ${process.env.SHOP_ADDRESS}
-                                </p>
-                                ${calendarLink ? `
-                                <p style="margin: 10px 0; color: #ffffff;">
-                                    <strong style="color: #D4AF37;">Google Calendar:</strong> <a href="${calendarLink}" style="color: #D4AF37;">Otvori događaj</a>
-                                </p>
-                                ` : ''}
-                            </div>
 
-                            <div style="background-color: #2c2c2c; border-radius: 10px; padding: 25px; border-left: 4px solid #D4AF37;">
-                                <h2 style="color: #D4AF37; margin-top: 0; margin-bottom: 20px; font-size: 20px;">Informacije o Klijentu</h2>
-                                
-                                <p style="margin: 10px 0; color: #ffffff;">
-                                    <strong style="color: #D4AF37;">Ime:</strong> ${appointment.name}
-                                </p>
-                                <p style="margin: 10px 0; color: #ffffff;">
-                                    <strong style="color: #D4AF37;">Telefon:</strong> ${appointment.phone}
-                                </p>
-                            </div>
+                        <div style="background-color: #2c2c2c; border-radius: 10px; padding: 25px; border-left: 4px solid #D4AF37;">
+                            <h2 style="color: #D4AF37; margin-top: 0; margin-bottom: 20px; font-size: 20px;">Informacije o Klijentu</h2>
+                            
+                            <p style="margin: 10px 0; color: #ffffff;">
+                                <strong style="color: #D4AF37;">Ime:</strong> ${appointment.name}
+                            </p>
+                            <p style="margin: 10px 0; color: #ffffff;">
+                                <strong style="color: #D4AF37;">Telefon:</strong> ${appointment.phone}
+                            </p>
                         </div>
                     </div>
-                `
-            };
+                </div>
+            `;
 
-            // Send the email
-            await this.transporter.sendMail(emailContent);
+            if (this.resend) {
+                console.log('Sending email via Resend API');
+                const { data, error } = await this.resend.emails.send({
+                    from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+                    to: toAddress,
+                    subject: subjectLine,
+                    html: htmlContent
+                });
 
-            return {
-                success: true
-            };
+                if (error) {
+                    console.error('Resend error:', error);
+                    return { success: false, error: error.message };
+                }
+
+                return { success: true, data };
+            } else {
+                console.log('Attempting to send email with SMTP config:', {
+                    host: this.transporter.options.host,
+                    port: this.transporter.options.port,
+                    secure: this.transporter.options.secure,
+                    service: this.transporter.options.service,
+                    user: this.transporter.options.auth ? this.transporter.options.auth.user : 'none'
+                });
+
+                await this.transporter.sendMail({
+                    from: this.fromAddress,
+                    to: toAddress,
+                    subject: subjectLine,
+                    html: htmlContent
+                });
+
+                return { success: true };
+            }
         } catch (error) {
             if (error && error.code === 'ETIMEDOUT') {
                 return {
