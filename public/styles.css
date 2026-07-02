@@ -494,6 +494,11 @@ body.booking-page .footer {
 /* Install Button */
 .install-button {
     display: none;
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
     background: var(--gold);
     color: var(--black);
     padding: 12px 24px;
@@ -501,8 +506,7 @@ body.booking-page .footer {
     font-weight: bold;
     cursor: pointer;
     border: none;
-    box-shadow: var(--shadow-sm);
-    margin: 2rem auto 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     transition: all var(--transition-speed) ease;
 }
 
@@ -521,7 +525,7 @@ body.booking-page .service-options {
 
 .install-button:hover {
     background: var(--light-gold);
-    transform: translateY(-2px);
+    transform: translateX(-50%) translateY(-2px);
     box-shadow: var(--shadow-lg);
 }
 

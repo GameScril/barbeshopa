@@ -217,35 +217,31 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleInstallButton() {
         if (!elements.installButton) return;
 
-        if (isIOS) {
-            elements.installButton.classList.add('show');
-            elements.installButton.addEventListener('click', () => {
-                showModal('Instalacija na iPhone', `
-                    Za dodavanje na početni ekran:<br>
-                    1. Kliknite na dugme "Share" (Podijeli) <br>
-                    2. Scroll down i kliknite "Add to Home Screen" (Dodaj na početni ekran)<br>
-                    3. Kliknite "Add" (Dodaj)
-                `, true);
-            });
-        } else {
-            let deferredPrompt;
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                elements.installButton.classList.add('show');
-            });
-
-            elements.installButton.addEventListener('click', async () => {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    if (outcome === 'accepted') {
-                        elements.installButton.classList.remove('show');
-                    }
-                    deferredPrompt = null;
-                }
-            });
+        // Hide if already running as installed PWA
+        if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) {
+            return;
         }
+
+        // Always show the button
+        elements.installButton.classList.add('show');
+
+        elements.installButton.addEventListener('click', () => {
+            const message = `
+                <div style="text-align: left; font-size: 0.95rem; line-height: 1.5;">
+                    <p><strong>🍎 iOS (iPhone/iPad):</strong><br>
+                    1. Otvorite stranicu u <b>Safari</b> pregledniku.<br>
+                    2. Dodirnite ikonu <b>Share</b> (kvadrat sa strelicom gore) na dnu ekrana.<br>
+                    3. Odaberite <b>"Add to Home Screen"</b>.</p>
+                    <p><strong>🤖 Android:</strong><br>
+                    1. U <b>Chrome</b> pregledniku dodirnite <b>tri tačkice</b> gore desno.<br>
+                    2. Odaberite <b>"Add to Home screen"</b>.</p>
+                    <p><strong>💻 PC (Windows/Mac):</strong><br>
+                    1. U Chrome/Edge kliknite na <b>ikonu monitora sa strelicom</b> u adresnoj traci.<br>
+                    2. Odaberite <b>Install</b> (Instaliraj).</p>
+                </div>
+            `;
+            showModal('Instalacija aplikacije', message, true);
+        });
     }
 
     async function updateHomeNextSlot() {
