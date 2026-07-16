@@ -151,11 +151,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (elements.homeNextSlotBadge && elements.homeNextSlotDate && elements.homeNextSlotTime) {
             initHomePage();
         }
+
+        handleInstallButton();
     }
 
     function initReservationPage() {
         createCalendar(currentViewingDate);
-        handleInstallButton();
 
         if (elements.phoneInput) {
             elements.phoneInput.setAttribute('inputmode', 'numeric');

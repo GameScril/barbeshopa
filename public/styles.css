@@ -495,25 +495,24 @@ body.booking-page .footer {
 .install-button {
     display: none;
     position: fixed;
-    bottom: 30px;
-    left: 0;
-    right: 0;
-    margin: 0 auto;
-    width: max-content;
+    bottom: 24px;
+    right: 24px;
     z-index: 1000;
     background: var(--gold);
     color: var(--black);
-    padding: 12px 24px;
+    padding: 12px 20px;
     border-radius: 50px;
     font-family: 'Inter', sans-serif;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.95rem;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     cursor: pointer;
     border: none;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
     transition: all var(--transition-speed) ease;
+    align-items: center;
+    gap: 8px;
 }
 
 body.booking-page .service-card.disabled-choice {
@@ -526,13 +525,13 @@ body.booking-page .service-options {
 }
 
 .install-button.show {
-    display: block;
+    display: flex;
 }
 
 .install-button:hover {
     background: var(--light-gold);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.6);
 }
 
 /* Responsive Design - Single Media Query */
@@ -612,13 +611,6 @@ body.booking-page .service-options {
         height: 30px;
         font-size: 1rem;
         margin: 0 5px;
-    }
-
-    .install-button {
-        width: calc(100% - 2rem);
-        margin: 2rem 1rem;
-        padding: 15px;
-        font-size: 1rem;
     }
 
     body.booking-page #notification-modal .modal-dialog {

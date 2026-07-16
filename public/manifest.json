@@ -1,7 +1,7 @@
 {
     "name": "Royal Barbershop",
     "short_name": "RoyalBarber",
-    "start_url": "/",
+    "start_url": "/reservation.html",
     "display": "standalone",
     "background_color": "#1a1a1a",
     "theme_color": "#D4AF37",
