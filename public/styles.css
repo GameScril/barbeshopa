@@ -584,17 +584,17 @@ body.booking-page .service-options {
 
     .calendar-days,
     .calendar-dates {
-        gap: 4px;
-        padding: 4px 2px;
+        gap: 6px;
+        padding: 6px 2px;
     }
 
     .calendar-days {
-        font-size: 0.72rem;
+        font-size: 0.75rem;
     }
 
     .calendar-dates .calendar-date-cell,
     .calendar-spacer {
-        min-height: 36px;
+        min-height: 42px;
     }
 
     .calendar-header {
